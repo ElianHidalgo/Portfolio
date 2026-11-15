@@ -1,6 +1,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Component } from '@angular/core';
+import { provideRouter } from '@angular/router';
+import { ProjectsSection } from './projects-section/projects-section';
+
+@Component({ selector: 'app-projects-section', template: '' })
+class ProjectsSectionStub {}
 import { Profile } from '../../core/models/profile';
 import { HomePage } from './home-page';
 
@@ -41,7 +47,12 @@ describe('HomePage', () => {
   beforeEach(async () => {
     TestBed.configureTestingModule({
       imports: [HomePage],
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [provideHttpClient(), provideHttpClientTesting(), provideRouter([])],
+    });
+    // The projects section loads its own data and has its own tests; stub it here.
+    TestBed.overrideComponent(HomePage, {
+      remove: { imports: [ProjectsSection] },
+      add: { imports: [ProjectsSectionStub] },
     });
     http = TestBed.inject(HttpTestingController);
     fixture = TestBed.createComponent(HomePage);

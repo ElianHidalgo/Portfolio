@@ -95,7 +95,7 @@
         <target>El perfil no cargó. Vuelve a intentarlo en unos segundos.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">8,9</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
       </trans-unit>
       <trans-unit id="retry" datatype="html">
@@ -103,7 +103,11 @@
         <target>Reintentar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">9,10</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">51,52</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profileLoading" datatype="html">
@@ -111,7 +115,43 @@
         <target>Cargando perfil…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">12,15</context>
+          <context context-type="linenumber">13,16</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectsTitle" datatype="html">
+        <source>Projects</source>
+        <target>Proyectos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">3,4</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">48,49</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectCode" datatype="html">
+        <source>Code</source>
+        <target>Código</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">31,32</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectDemo" datatype="html">
+        <source>Live demo</source>
+        <target>Ver demo</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">37,38</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectsLoadError" datatype="html">
+        <source>Projects didn’t load.</source>
+        <target>Los proyectos no cargaron.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
+          <context context-type="linenumber">50,51</context>
         </context-group>
       </trans-unit>
       <trans-unit id="skillCategory.BACKEND" datatype="html">

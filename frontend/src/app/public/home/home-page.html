@@ -2,6 +2,7 @@
   @if (profile.hasValue()) {
     <app-hero-section [profile]="profile.value()" />
     <app-about-section [profile]="profile.value()" />
+    <app-projects-section />
     <app-skills-section [profile]="profile.value()" />
   } @else if (profile.error()) {
     <div class="status" role="alert">

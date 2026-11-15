@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Icon, IconName } from './icon';
 
 describe('Icon', () => {
-  const names: IconName[] = ['github', 'linkedin', 'mail', 'download'];
+  const names: IconName[] = ['github', 'linkedin', 'mail', 'download', 'external'];
 
   for (const name of names) {
     it(`renders a decorative "${name}" svg that inherits the text colour`, async () => {

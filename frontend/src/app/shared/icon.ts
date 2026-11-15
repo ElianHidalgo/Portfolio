@@ -1,6 +1,6 @@
 import { Component, input } from '@angular/core';
 
-export type IconName = 'github' | 'linkedin' | 'mail' | 'download';
+export type IconName = 'github' | 'linkedin' | 'mail' | 'download' | 'external';
 
 /**
  * Small inline SVG icons drawn in `currentColor`, so they follow the text colour of
@@ -36,6 +36,11 @@ export type IconName = 'github' | 'linkedin' | 'mail' | 'download';
       @case ('download') {
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="stroke">
           <path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19.5h14" />
+        </svg>
+      }
+      @case ('external') {
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="stroke">
+          <path d="M14 5h5v5M19 5l-8 8M17 14v4a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1h4" />
         </svg>
       }
     }
