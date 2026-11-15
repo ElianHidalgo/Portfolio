@@ -36,6 +36,10 @@ management:
 
 server:
   port: ${PORT:8080}
+  tomcat:
+    threads:
+      # 0.1 CPU / 512 MB: more threads only add memory (stacks) without adding throughput.
+      max: 20
 
 app:
   rate-limit:

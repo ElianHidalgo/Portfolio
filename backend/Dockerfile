@@ -21,6 +21,6 @@ USER app
 # Tuned for small free instances (Render: 512 MB, 0.1 CPU): one-thread GC, bounded heap,
 # C1-only JIT for a faster start, smaller thread stacks, and a clean exit instead of a
 # half-dead JVM if memory runs out.
-ENV JAVA_TOOL_OPTIONS="-XX:+UseSerialGC -XX:MaxRAMPercentage=70 -XX:TieredStopAtLevel=1 -Xss512k -XX:+ExitOnOutOfMemoryError"
+ENV JAVA_TOOL_OPTIONS="-XX:+UseSerialGC -XX:MaxRAMPercentage=60 -XX:TieredStopAtLevel=1 -Xss512k -XX:+ExitOnOutOfMemoryError"
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
