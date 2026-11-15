@@ -114,7 +114,7 @@ a {
 .button {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: 0.5em;
   max-width: 100%;
   min-height: 2.75rem;
   padding: var(--space-xs) var(--space-m);

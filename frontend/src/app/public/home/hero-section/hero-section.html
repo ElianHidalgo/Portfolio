@@ -12,15 +12,19 @@
       <ul class="hero__actions">
         @if (cvUrl) {
           <li>
-            <a class="button button--primary" [href]="cvUrl" target="_blank" rel="noopener" i18n="@@downloadCv"
-              >Download CV</a
-            >
+            <a class="button button--primary" [href]="cvUrl" target="_blank" rel="noopener">
+              <app-icon name="download" />
+              <span i18n="@@downloadCv">Download CV</span>
+            </a>
           </li>
         }
         @if (p.email) {
           <!-- Without a CV, the first available contact becomes the primary action. -->
           <li>
-            <a class="button" [class.button--primary]="!cvUrl" [href]="'mailto:' + p.email">{{ p.email }}</a>
+            <a class="button" [class.button--primary]="!cvUrl" [href]="'mailto:' + p.email" [title]="p.email">
+              <app-icon name="mail" />
+              <span i18n="@@emailMe">Email me</span>
+            </a>
           </li>
         }
         @if (p.githubUrl) {
@@ -32,12 +36,19 @@
               target="_blank"
               rel="noopener"
               translate="no"
-              >GitHub</a
             >
+              <app-icon name="github" />
+              <span>GitHub</span>
+            </a>
           </li>
         }
         @if (p.linkedinUrl) {
-          <li><a class="button" [href]="p.linkedinUrl" target="_blank" rel="noopener" translate="no">LinkedIn</a></li>
+          <li>
+            <a class="button" [href]="p.linkedinUrl" target="_blank" rel="noopener" translate="no">
+              <app-icon name="linkedin" />
+              <span>LinkedIn</span>
+            </a>
+          </li>
         }
       </ul>
     }
