@@ -7,6 +7,7 @@ import {
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
+import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -22,5 +23,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     // Anchor scrolling stops below the sticky header (3.5rem) plus a little air.
     provideAppInitializer(() => inject(ViewportScroller).setOffset([0, 80])),
+    // Reuses the prerendered DOM and the build-time HTTP responses (transfer cache):
+    // the first visit does not call the API. Clicks before hydration are replayed.
+    provideClientHydration(withEventReplay()),
   ],
 };

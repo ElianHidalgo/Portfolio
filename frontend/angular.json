@@ -36,7 +36,9 @@
             "polyfills": [
               "@angular/localize/init"
             ],
-            "i18nMissingTranslation": "error"
+            "i18nMissingTranslation": "error",
+            "server": "src/main.server.ts",
+            "outputMode": "static"
           },
           "configurations": {
             "production": {
