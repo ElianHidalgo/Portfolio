@@ -35,7 +35,7 @@
       </header>
 
       @if (p.imageUrl) {
-        <img class="project__image" [src]="p.imageUrl" alt="" width="1600" height="1000" fetchpriority="high" />
+        <img class="project__image" [src]="p.imageUrl" [alt]="p.title | localized" width="1600" height="1000" fetchpriority="high" />
       }
 
       <div class="project__body">

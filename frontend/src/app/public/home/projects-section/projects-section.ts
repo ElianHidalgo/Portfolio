@@ -2,6 +2,7 @@ import { httpResource } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ProjectSummary } from '../../../core/models/project';
+import { scrollToFragmentWhenReady } from '../../../shared/fragment-scroll';
 import { Icon } from '../../../shared/icon';
 import { LocalizedPipe } from '../../../shared/localized.pipe';
 
@@ -14,4 +15,8 @@ import { LocalizedPipe } from '../../../shared/localized.pipe';
 })
 export class ProjectsSection {
   protected readonly projects = httpResource<ProjectSummary[]>(() => '/api/projects');
+
+  constructor() {
+    scrollToFragmentWhenReady(() => this.projects.hasValue(), ['projects']);
+  }
 }

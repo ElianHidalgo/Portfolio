@@ -2,7 +2,9 @@ import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
+import { Router, provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 import { ProjectsSection } from './projects-section/projects-section';
 
 @Component({ selector: 'app-projects-section', template: '' })
@@ -61,6 +63,17 @@ describe('HomePage', () => {
   });
 
   afterEach(() => http.verify());
+
+  it('scrolls to the URL fragment once the profile has rendered', async () => {
+    const scroller = TestBed.inject(ViewportScroller);
+    const scrollToAnchor = vi.spyOn(scroller, 'scrollToAnchor');
+    const router = TestBed.inject(Router);
+    vi.spyOn(router, 'url', 'get').mockReturnValue('/#about');
+
+    await respond(sampleProfile());
+
+    expect(scrollToAnchor).toHaveBeenCalledWith('about');
+  });
 
   it('shows a loading message until the profile arrives', () => {
     expect(page().textContent).toContain('Loading profile…');
