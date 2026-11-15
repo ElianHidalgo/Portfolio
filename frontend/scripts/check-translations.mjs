@@ -6,7 +6,7 @@ const file = new URL('../src/locale/messages.es.xlf', import.meta.url);
 const xlf = readFileSync(file, 'utf8');
 const units = [...xlf.matchAll(/<trans-unit id="([^"]+)"[\s\S]*?<\/trans-unit>/g)];
 const untranslated = units
-  .filter(([unit]) => !/<target>\s*\S[\s\S]*?<\/target>/.test(unit))
+  .filter(([unit]) => !/<target\b[^>]*>\s*\S[\s\S]*?<\/target>/.test(unit))
   .map(([, id]) => id);
 
 if (untranslated.length > 0) {
