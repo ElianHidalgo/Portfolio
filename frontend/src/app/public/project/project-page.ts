@@ -3,6 +3,7 @@ import { Component, LOCALE_ID, computed, effect, inject, input } from '@angular/
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { ProjectDetail } from '../../core/models/project';
+import { SeoService } from '../../core/seo/seo.service';
 import { Icon } from '../../shared/icon';
 import { LocalizedPipe, pickLocalized } from '../../shared/localized.pipe';
 import { splitParagraphs } from '../../shared/paragraphs';
@@ -19,6 +20,7 @@ export class ProjectPage {
 
   private readonly locale = inject(LOCALE_ID);
   private readonly title = inject(Title);
+  private readonly seo = inject(SeoService);
 
   protected readonly project = httpResource<ProjectDetail>(() => `/api/projects/${this.slug()}`);
 
@@ -35,8 +37,13 @@ export class ProjectPage {
     const siteTitle = $localize`:@@pageTitle:Portfolio`;
     effect(() => {
       if (this.project.hasValue()) {
-        const name = pickLocalized(this.project.value().title, this.locale);
-        this.title.setTitle(`${name} | ${siteTitle}`);
+        const project = this.project.value();
+        this.seo.setPage({
+          title: `${pickLocalized(project.title, this.locale)} | ${siteTitle}`,
+          description: pickLocalized(project.summary, this.locale),
+          path: `/projects/${project.slug}`,
+          type: 'article',
+        });
       } else if (this.project.error()) {
         // The route has no static title; without this the tab keeps index.html's English one.
         this.title.setTitle(siteTitle);
