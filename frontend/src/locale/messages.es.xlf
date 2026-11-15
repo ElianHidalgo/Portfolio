@@ -2,12 +2,68 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="es" datatype="plaintext" original="ng2.template">
     <body>
+      <trans-unit id="skipToContent" datatype="html">
+        <source>Skip to content</source>
+        <target>Saltar al contenido</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/app.html</context>
+          <context context-type="linenumber">1,3</context>
+        </context-group>
+      </trans-unit>
       <trans-unit id="pageTitle" datatype="html">
         <source>Portfolio</source>
         <target>Portafolio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
           <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="builtWith" datatype="html">
+        <source>Built with Spring Boot and Angular.</source>
+        <target>Hecho con Spring Boot y Angular.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-footer/site-footer.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="viewSource" datatype="html">
+        <source>View the source code</source>
+        <target>Ver el código fuente</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-footer/site-footer.html</context>
+          <context context-type="linenumber">6,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="mainNavLabel" datatype="html">
+        <source>Main</source>
+        <target>Principal</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
+          <context context-type="linenumber">2</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navAbout" datatype="html">
+        <source>About</source>
+        <target>Sobre mí</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
+          <context context-type="linenumber">4,5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navProjects" datatype="html">
+        <source>Projects</source>
+        <target>Proyectos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
+          <context context-type="linenumber">5,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navSkills" datatype="html">
+        <source>Skills</source>
+        <target>Habilidades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
+          <context context-type="linenumber">6,8</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aboutTitle" datatype="html">
@@ -34,44 +90,12 @@
           <context context-type="linenumber">26,27</context>
         </context-group>
       </trans-unit>
-      <trans-unit id="skipToContent" datatype="html">
-        <source>Skip to content</source>
-        <target>Saltar al contenido</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">1,3</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="mainNavLabel" datatype="html">
-        <source>Main</source>
-        <target>Principal</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">4</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="navAbout" datatype="html">
-        <source>About</source>
-        <target>Sobre mí</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">6,7</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="navSkills" datatype="html">
-        <source>Skills</source>
-        <target>Habilidades</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">7,9</context>
-        </context-group>
-      </trans-unit>
       <trans-unit id="loadError" datatype="html">
         <source>The profile didn’t load. Try again in a few seconds.</source>
         <target>El perfil no cargó. Vuelve a intentarlo en unos segundos.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">24,25</context>
+          <context context-type="linenumber">8,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="retry" datatype="html">
@@ -79,7 +103,7 @@
         <target>Reintentar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">25,26</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
       </trans-unit>
       <trans-unit id="profileLoading" datatype="html">
@@ -87,23 +111,7 @@
         <target>Cargando perfil…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">28,32</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="builtWith" datatype="html">
-        <source>Built with Spring Boot and Angular.</source>
-        <target>Hecho con Spring Boot y Angular.</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">36,37</context>
-        </context-group>
-      </trans-unit>
-      <trans-unit id="viewSource" datatype="html">
-        <source>View the source code</source>
-        <target>Ver el código fuente</target>
-        <context-group purpose="location">
-          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">37,40</context>
+          <context context-type="linenumber">12,15</context>
         </context-group>
       </trans-unit>
       <trans-unit id="skillCategory.BACKEND" datatype="html">

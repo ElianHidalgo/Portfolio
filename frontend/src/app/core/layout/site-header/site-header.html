@@ -1,0 +1,14 @@
+<header class="site-header">
+  <nav class="site-header__inner" aria-label="Main" i18n-aria-label="@@mainNavLabel">
+    <ul class="site-nav">
+      <li><a routerLink="/" fragment="about" i18n="@@navAbout">About</a></li>
+      <li><a routerLink="/" fragment="projects" i18n="@@navProjects">Projects</a></li>
+      <li><a routerLink="/" fragment="skills" i18n="@@navSkills">Skills</a></li>
+    </ul>
+    @if (isSpanish) {
+      <a class="lang-switch" [href]="otherLanguageHref()" hreflang="en" lang="en">English</a>
+    } @else {
+      <a class="lang-switch" [href]="otherLanguageHref()" hreflang="es" lang="es">Español</a>
+    }
+  </nav>
+</header>

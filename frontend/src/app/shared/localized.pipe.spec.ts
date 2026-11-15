@@ -1,6 +1,12 @@
 import { LOCALE_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { LocalizedPipe } from './localized.pipe';
+import { LocalizedPipe, pickLocalized } from './localized.pipe';
+
+describe('pickLocalized', () => {
+  it('picks Spanish for regional Spanish locales', () => {
+    expect(pickLocalized({ es: 'Hola', en: 'Hello' }, 'es-EC')).toBe('Hola');
+  });
+});
 
 function pipeFor(locale: string): LocalizedPipe {
   TestBed.configureTestingModule({ providers: [{ provide: LOCALE_ID, useValue: locale }] });

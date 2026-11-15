@@ -151,6 +151,31 @@ a {
   }
 }
 
+/* Main content of each routed page: grows so the footer stays at the bottom. */
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--space-xl);
+}
+
+/* Loading, error and not-found states. */
+.status {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-m);
+  min-height: 60svh;
+  margin: 0;
+  color: var(--color-muted);
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
 /* Content sections: title in a narrow left column, content on the right. */
 .section {
   display: grid;
