@@ -1,7 +1,7 @@
 # Portafolio web — Diseño
 
 Fecha: 2026-11-14
-Estado: **aprobado** el 2026-11-15 (revisión 2: despliegue gratuito, bilingüe, página pública pre-generada)
+Estado: **aprobado** el 2026-11-15 (revisión 3, 2026-11-15: backend en Render en lugar de Cloud Run — Google Cloud exigía un prepago de 50 USD)
 
 ## 1. Intención y porqué
 
@@ -52,8 +52,8 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 - Angular CLI no está instalado globalmente: se usa vía `npx @angular/cli`.
 - Versiones: la última estable de Spring Boot compatible con Java 17 y la última estable de Angular al momento de crear el proyecto; se fijan en `pom.xml`/`package.json`.
 - **Desarrollo íntegramente en inglés** (decisión del usuario): código, nombres de clases/variables/columnas, comentarios, mensajes de commit, README y documentación técnica del repo. El contenido visible del sitio sigue siendo ES/EN, y el panel admin en español.
-- **Coste cero**: solo planes gratuitos. Se acepta registrar una tarjeta en Google Cloud (requisito de Cloud Run) siempre que no haya cargos.
-- Planes gratuitos vigentes (nov 2026): Cloudflare Pages (gratis, 500 builds/mes); Cloud Run (cuota gratuita permanente, escala a cero, arranque en frío de la JVM de ~10–20 s); Neon (PostgreSQL gratuito, 1 GB por proyecto, también escala a cero).
+- **Coste cero absoluto** (regla del usuario): ningún pago, prepago ni tarjeta. Solo planes gratuitos que no la exijan.
+- Planes gratuitos vigentes (nov 2026): Cloudflare Pages (gratis, 500 builds/mes); Render (servicio web gratuito sin tarjeta: 750 h/mes, 512 MB, 0,1 CPU, se duerme tras 15 min sin tráfico y despierta en ~30–60 s); Neon (PostgreSQL gratuito, 1 GB por proyecto, también escala a cero).
 
 ## 4. Enfoques considerados
 
@@ -86,7 +86,7 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 | B. Spring compilado a nativo (GraalVM) | Arranque < 1 s | Builds lentos, problemas con librerías; complejidad para aprender |
 | C. Cambiar de stack (p. ej. Cloudflare Workers + D1) | Instantáneo y gratis | Elimina Spring: contradice el propósito 3 |
 
-**Elegido por el usuario: A, con el backend en Cloud Run** (frente a Render: arranque de ~10–20 s en vez de ~1 min y más memoria).
+**Elegido por el usuario: A, con el backend en Render.** Inicialmente se eligió Cloud Run (arranque más rápido), pero Google Cloud le exigió al usuario un prepago de 50 USD, incompatible con el coste cero. Con la página pre-generada, el arranque lento de Render solo afecta al build, al formulario de contacto (mitigado con un ping al cargar la página) y al panel admin.
 
 ## 5. Arquitectura
 
@@ -95,10 +95,10 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 ```
 Visitante ──► Cloudflare Pages (HTML pre-generado /es y /en)   ← instantáneo
                  │
-                 ├─ formulario de contacto ─► Cloud Run (Spring) ─► Neon (PostgreSQL)
+                 ├─ formulario de contacto ─► Render (Spring) ─► Neon (PostgreSQL)
                  └─ "ping" al cargar la página para despertar el backend
 
-Admin ──► /admin (Angular, renderizado en el navegador) ─► Cloud Run ─► Neon
+Admin ──► /admin (Angular, renderizado en el navegador) ─► Render ─► Neon
             └─ botón "Publicar" ─► backend llama al deploy hook de Cloudflare Pages
                                      └─ Cloudflare reconstruye el sitio leyendo la API pública
 ```
@@ -111,7 +111,7 @@ portfolio/
   frontend/             Angular
   docker-compose.yml    desarrollo/demo local: postgres + backend + frontend
   .env.example          variables (credenciales admin, JWT secret, DB, CORS, deploy hook)
-  .github/workflows/    CI (tests) y despliegue del backend a Cloud Run
+  .github/workflows/    CI (tests); Render despliega el backend desde GitHub
   README.md
   docs/
 ```
@@ -146,7 +146,7 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
 - Spring Security stateless: `/api/admin/**` requiere token válido; el resto de `/api/**` es público.
 - **CORS**: orígenes permitidos desde la variable `CORS_ALLOWED_ORIGINS` (dominio `*.pages.dev` del sitio y `http://localhost:4200` en desarrollo).
 - `POST /api/contact` con validación de entrada y límite de tamaño; anti-spam básico: campo honeypot oculto.
-- Ningún secreto en el repositorio: `.env` en `.gitignore`; en Cloud Run, variables de entorno configuradas en el servicio.
+- Ningún secreto en el repositorio: `.env` en `.gitignore`; en Render, variables de entorno configuradas en el servicio.
 
 ### 5.6 API y calidad
 - Validación con Bean Validation en los DTOs de entrada.
@@ -185,10 +185,10 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
 - Configuración por variables de entorno; `.env.example` versionado, `.env` en `.gitignore`.
 
 **Producción (gratis)**
-- **Base de datos**: Neon, un proyecto en una región cercana a la de Cloud Run; conexión con SSL. Flyway aplica las migraciones al arrancar el backend.
-- **Backend**: Cloud Run, escala a cero (`min-instances=0`), memoria suficiente para Spring (512 MiB–1 GiB), región elegible para la cuota gratuita. La imagen se construye con el `Dockerfile` multi-stage y se guarda en Artifact Registry. Variables: credenciales DB, `JWT_SECRET`, `ADMIN_*`, `CORS_ALLOWED_ORIGINS`, `CF_DEPLOY_HOOK_URL`.
+- **Base de datos**: Neon, un proyecto en una región cercana a la de Render; conexión con SSL. Flyway aplica las migraciones al arrancar el backend.
+- **Backend**: Render, servicio web gratuito con el `Dockerfile` multi-stage, desplegado automáticamente desde `main`; JVM ajustada a 512 MB y 0,1 CPU. Variables: credenciales DB, `JWT_SECRET`, `ADMIN_*`, `CORS_ALLOWED_ORIGINS`, `CF_DEPLOY_HOOK_URL`.
 - **Frontend**: Cloudflare Pages conectado al repo de GitHub (integración Git): build en cada push a `main` y cuando el backend llama al **deploy hook** (botón "Publicar").
-- **GitHub Actions**: en cada push/PR ejecuta los tests del backend; en push a `main`, construye la imagen y despliega a Cloud Run.
+- **GitHub Actions**: en cada push/PR ejecuta los tests del backend; en push a `main`, Render despliega el backend automáticamente.
 - **Protección de coste**: alerta de presupuesto en Google Cloud a un monto mínimo para detectar cualquier cargo.
 
 ## 6. Construcción por partes
@@ -199,7 +199,7 @@ Cada parte deja algo funcionando y entendible:
 2. **Módulo `profile`** (lectura pública, bilingüe) + secciones hero/sobre mí/skills en Angular.
 3. **Módulo `projects`** (lectura pública, bilingüe) + sección proyectos y página de detalle.
 4. **Pre-generación**: build estático de `/es` y `/en` leyendo la API, redirección de la raíz y selector de idioma.
-5. **Primer despliegue**: Neon + Cloud Run + Cloudflare Pages + GitHub Actions; el sitio de solo lectura queda en línea.
+5. **Primer despliegue**: Neon + Render + Cloudflare Pages + GitHub Actions; el sitio de solo lectura queda en línea.
 6. **Módulo `contact`** + formulario y ping de despertar.
 7. **Módulo `auth`** + login y guard en Angular.
 8. **Panel admin**: CRUD bilingüe de perfil, skills, proyectos, bandeja de mensajes y botón "Publicar" (módulo `publishing`).
@@ -211,7 +211,7 @@ Cada parte deja algo funcionando y entendible:
 - Monolito modular con Spring Modulith.
 - Despliegue en la v1, con coste cero: frontend, backend y base de datos separados.
 - Sitio y contenido editable en español e inglés.
-- Página pública pre-generada; backend en Cloud Run (acepta registrar tarjeta sin cargos).
+- Página pública pre-generada; backend en Render (sin tarjeta), tras descartar Cloud Run por su prepago.
 
 **Tomadas por Claude (revisables)**
 - PostgreSQL + Flyway; Neon como proveedor en producción.
@@ -232,7 +232,7 @@ Cada parte deja algo funcionando y entendible:
 - Nombres exactos de clases, DTOs y columnas.
 - Paleta, tipografía y detalles visuales (dentro de "profesional y simple").
 - Formato exacto del contenido de semilla.
-- Región concreta de Cloud Run y Neon (cercanas entre sí y dentro de la cuota gratuita).
+- Región concreta de Render y Neon (cercanas entre sí y dentro de la cuota gratuita).
 - Ajustes para reducir el arranque en frío de Spring (p. ej. inicialización lazy, CDS) si se mide que hace falta.
 
 ## 9. Pendiente
