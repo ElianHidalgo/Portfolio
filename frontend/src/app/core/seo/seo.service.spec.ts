@@ -22,6 +22,11 @@ describe('SeoService', () => {
     doc = TestBed.inject(DOCUMENT);
   });
 
+  // Tests share one document: leave no SEO tags behind for other specs.
+  afterEach(() =>
+    doc.head.querySelectorAll('link[rel="canonical"], link[rel="alternate"], meta[name="description"], meta[property^="og:"]').forEach((el) => el.remove()),
+  );
+
   const page = {
     title: 'GameVault | Portafolio',
     description: 'App multiplataforma.',

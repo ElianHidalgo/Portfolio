@@ -3,7 +3,11 @@ import { TestBed } from '@angular/core/testing';
 import { SITE_ORIGIN } from './site-origin';
 
 describe('SITE_ORIGIN (browser)', () => {
-  afterEach(() => TestBed.inject(DOCUMENT).head.querySelector('link[rel="canonical"]')?.remove());
+  // Tests share one document: start and end without any canonical link left by other specs.
+  const removeCanonicals = () =>
+    TestBed.inject(DOCUMENT).head.querySelectorAll('link[rel="canonical"]').forEach((link) => link.remove());
+  beforeEach(removeCanonicals);
+  afterEach(removeCanonicals);
 
   it('keeps the public origin written at build time, not the host serving the page', () => {
     const doc = TestBed.inject(DOCUMENT);

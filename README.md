@@ -1,8 +1,10 @@
 # Portfolio
 
+[![CI](https://github.com/ElianHidalgo/Portfolio/actions/workflows/ci.yml/badge.svg)](https://github.com/ElianHidalgo/Portfolio/actions/workflows/ci.yml)
+
 Personal portfolio built as a full-stack showcase: a **Spring Boot** API designed as a modular monolith and an **Angular** front end, published in English and Spanish. Content (profile, skills, projects) will be managed from a private admin panel.
 
-> Status: **Part 3 — projects module.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
+> Status: **Part 5 — first deployment.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
 
 ## Architecture
 
@@ -104,6 +106,18 @@ cd frontend && npm run test:scripts     # build scripts (language picker, preren
 | `PRERENDER` | `true` | `false` builds a client-only app |
 
 The Docker image builds with `PRERENDER=false`: no API exists while `docker compose` builds images, and this keeps `docker compose up` working from a clean clone. Pages that were not prerendered (e.g. a new project before the next build) are served by the client-only shell (`index.csr.html`).
+
+## Deployment (zero cost)
+
+| Piece | Service (free tier, no card) | Notes |
+|---|---|---|
+| Public site | Cloudflare Pages | Static prerendered HTML; build `npm run build` in `frontend/`, output `dist/frontend/browser`, env `API_URL`, `SITE_URL`, `NODE_VERSION` |
+| API | Render web service (Docker, `backend/`) | 512 MB / 0.1 CPU, sleeps after 15 min (~2 min to wake); health check `/api/health`; env `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` |
+| Database | Neon PostgreSQL (AWS us-east-1) | Direct (non-pooler) host, `sslmode=require` |
+
+Visitors only load static files: public links point at prerendered pages and the first load reuses build-time data, so nobody waits for the sleeping API. The Pages build wakes it (retrying for ~3 min).
+
+Security: `_headers` sets a CSP whose script allow-list is the SHA-256 of each inline script found in the build (no `'unsafe-inline'` for scripts), plus HSTS, `nosniff`, `X-Frame-Options: DENY`, a referrer policy and a permissions policy. Secrets live only in the Render dashboard. CI runs every test suite on each push; Dependabot proposes weekly updates.
 
 ## Translations
 
