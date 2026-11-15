@@ -1,18 +1,18 @@
 // Writes the files that live at the output root (outside the /es/ and /en/ apps):
 // - index.html: language picker; the tested pickLocale() source is injected, so the
 //   shipped code is the tested code.
-// - _redirects / _headers: static-host rules (Cloudflare Pages syntax; ignored by nginx).
+// - 404.html pages: Cloudflare (assets with not_found_handling "404-page") serves the
+//   nearest 404.html only when no file matches, so prerendered pages always win. Each
+//   locale's 404 is its client-only shell, which shows "not found" (and, later, the admin
+//   area); the root 404 is the language picker.
+// - _headers: security and cache headers (Cloudflare syntax; ignored by nginx).
 import { createHash } from 'node:crypto';
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pickLocale } from './pick-locale.mjs';
 
 const LOCALES = ['es', 'en'];
-
-// Unknown paths of each language get its client-only shell, which shows "not found"
-// (or, later, the admin area) instead of the root language picker.
-const REDIRECTS = LOCALES.map((locale) => `/${locale}/* /${locale}/index.csr.html 200`).join('\n') + '\n';
 
 /** SHA-256 hashes of every executable inline <script> in the built HTML (CSP allow-list). */
 function inlineScriptHashes(outDir) {
@@ -71,7 +71,11 @@ export function writeRootFiles(outDir, env = process.env) {
   const html = template.replace('<!-- pick-locale -->', pickLocale.toString()).replaceAll('{{SITE_URL}}', siteUrl);
 
   writeFileSync(join(outDir, 'index.html'), html);
-  writeFileSync(join(outDir, '_redirects'), REDIRECTS);
+  writeFileSync(join(outDir, '404.html'), html);
+  for (const locale of LOCALES) {
+    const shell = join(outDir, locale, 'index.csr.html');
+    if (existsSync(shell)) copyFileSync(shell, join(outDir, locale, '404.html'));
+  }
   // Last: the hashes must cover every page, including the root page written above.
   writeFileSync(join(outDir, '_headers'), headers(inlineScriptHashes(outDir)));
 }
@@ -79,5 +83,5 @@ export function writeRootFiles(outDir, env = process.env) {
 // CLI: node scripts/copy-root.mjs
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   writeRootFiles(fileURLToPath(new URL('../dist/frontend/browser', import.meta.url)));
-  console.log('Root files written (index.html, _redirects, _headers).');
+  console.log('Root files written (index.html, 404 pages, _headers).');
 }

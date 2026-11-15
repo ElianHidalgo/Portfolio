@@ -18,11 +18,17 @@ test('writes the language page with the tested picker and the public URL', () =>
   assert.match(read('index.html'), /href="https:\/\/site\.pages\.dev\/en\/"/);
 });
 
-test('sends unknown paths of each language to its client-only shell (static host)', () => {
-  const redirects = read => read('_redirects');
-  const text = redirects(build());
-  assert.match(text, /^\/es\/\* \/es\/index\.csr\.html 200$/m);
-  assert.match(text, /^\/en\/\* \/en\/index\.csr\.html 200$/m);
+test('unknown paths of each language get its client-only shell as the 404 page', () => {
+  const out = mkdtempSync(join(tmpdir(), 'root-'));
+  for (const locale of ['es', 'en']) {
+    mkdirSync(join(out, locale));
+    writeFileSync(join(out, locale, 'index.csr.html'), `<html lang="${locale}">shell</html>`);
+  }
+  writeRootFiles(out, {});
+
+  assert.equal(readFileSync(join(out, 'es', '404.html'), 'utf8'), '<html lang="es">shell</html>');
+  assert.equal(readFileSync(join(out, 'en', '404.html'), 'utf8'), '<html lang="en">shell</html>');
+  assert.match(readFileSync(join(out, '404.html'), 'utf8'), /function pickLocale/);
 });
 
 test('builds a CSP that allows exactly the inline scripts of the built pages', () => {

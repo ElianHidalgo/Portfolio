@@ -1,0 +1,15 @@
+// Cloudflare Workers static assets (free plan; requests served from assets are not billed).
+// Only static files are deployed — there is no Worker script.
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "victor-hidalgo",
+  "compatibility_date": "2026-11-15",
+  "assets": {
+    "directory": "./dist/frontend/browser",
+    // Prerendered pages live in folders (projects/<slug>/index.html): serve them at "/".
+    "html_handling": "auto-trailing-slash",
+    // Unknown paths get the nearest 404.html (see scripts/copy-root.mjs) with status 404;
+    // existing files always win, so prerendered pages are never replaced.
+    "not_found_handling": "404-page"
+  }
+}

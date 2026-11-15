@@ -5,10 +5,12 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { verifyPrerender, verifySiteUrl } from './verify-prerender.mjs';
 
-test('requires the public SITE_URL when building on Cloudflare Pages', () => {
+test('requires the public SITE_URL when building on Cloudflare (Pages or Workers)', () => {
   assert.equal(verifySiteUrl({ CF_PAGES: '1' }).length, 1);
   assert.equal(verifySiteUrl({ CF_PAGES: '1', SITE_URL: 'http://localhost:8080' }).length, 1);
   assert.deepEqual(verifySiteUrl({ CF_PAGES: '1', SITE_URL: 'https://victor.pages.dev' }), []);
+  assert.equal(verifySiteUrl({ WORKERS_CI: '1' }).length, 1);
+  assert.deepEqual(verifySiteUrl({ WORKERS_CI: '1', SITE_URL: 'https://victor.workers.dev' }), []);
   assert.deepEqual(verifySiteUrl({}), []);
 });
 

@@ -13,11 +13,11 @@ const STATE_MARKER = 'data-state="';
 const HYDRATION_MARKER = ' ngh="';
 
 /**
- * On Cloudflare Pages (CF_PAGES is set by its build), SITE_URL must be the public URL:
+ * On Cloudflare builds (Pages sets CF_PAGES, Workers Builds sets WORKERS_CI), SITE_URL must be the public URL:
  * otherwise every canonical/hreflang/og link would be published pointing at localhost.
  */
 export function verifySiteUrl(env) {
-  if (!env.CF_PAGES) return [];
+  if (!env.CF_PAGES && !env.WORKERS_CI) return [];
   const siteUrl = env.SITE_URL ?? '';
   return !siteUrl || /localhost|127\.0\.0\.1/.test(siteUrl)
     ? [`SITE_URL must be the public URL of the site (got "${siteUrl}")`]
