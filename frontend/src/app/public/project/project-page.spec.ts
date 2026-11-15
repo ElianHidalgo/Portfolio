@@ -76,6 +76,12 @@ describe('ProjectPage', () => {
     expect(back?.getAttribute('href')).toBe('/#projects');
   });
 
+  it('uses the translated site title when the project does not exist', async () => {
+    TestBed.inject(Title).setTitle('');
+    await respond(null, 404);
+    expect(TestBed.inject(Title).getTitle()).toBe('Portfolio');
+  });
+
   it('sets the document title from the project', async () => {
     await respond(detail());
     expect(TestBed.inject(Title).getTitle()).toBe('GameVault | Portfolio');

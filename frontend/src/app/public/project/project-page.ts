@@ -32,10 +32,14 @@ export class ProjectPage {
   );
 
   constructor() {
+    const siteTitle = $localize`:@@pageTitle:Portfolio`;
     effect(() => {
       if (this.project.hasValue()) {
         const name = pickLocalized(this.project.value().title, this.locale);
-        this.title.setTitle(`${name} | ${$localize`:@@pageTitle:Portfolio`}`);
+        this.title.setTitle(`${name} | ${siteTitle}`);
+      } else if (this.project.error()) {
+        // The route has no static title; without this the tab keeps index.html's English one.
+        this.title.setTitle(siteTitle);
       }
     });
   }
