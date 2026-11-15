@@ -1,0 +1,26 @@
+@let p = profile();
+@let cvUrl = p.cvUrl | localized;
+<section id="hero" class="hero">
+  @if (p.avatarUrl) {
+    <img class="avatar" [src]="p.avatarUrl" [alt]="p.fullName" width="128" height="128" />
+  }
+  <h1>{{ p.fullName }}</h1>
+  <p class="headline">{{ p.headline | localized }}</p>
+  @if (p.location) {
+    <p class="location">{{ p.location }}</p>
+  }
+  <ul class="links">
+    @if (p.githubUrl) {
+      <li><a [href]="p.githubUrl" target="_blank" rel="noopener">GitHub</a></li>
+    }
+    @if (p.linkedinUrl) {
+      <li><a [href]="p.linkedinUrl" target="_blank" rel="noopener">LinkedIn</a></li>
+    }
+    @if (p.email) {
+      <li><a [href]="'mailto:' + p.email">{{ p.email }}</a></li>
+    }
+    @if (cvUrl) {
+      <li><a class="cv" [href]="cvUrl" target="_blank" rel="noopener" i18n="@@downloadCv">Download CV</a></li>
+    }
+  </ul>
+</section>

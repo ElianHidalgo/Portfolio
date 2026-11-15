@@ -2,12 +2,100 @@
 <xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
   <file source-language="en" target-language="es" datatype="plaintext" original="ng2.template">
     <body>
-      <trans-unit id="homeTitle" datatype="html">
-        <source>Portfolio under construction</source>
-        <target>Portafolio en construcción</target>
+      <trans-unit id="pageTitle" datatype="html">
+        <source>Portfolio</source>
+        <target>Portafolio</target>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">2,4</context>
+          <context context-type="sourcefile">src/app/app.routes.ts</context>
+          <context context-type="linenumber">5</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="aboutTitle" datatype="html">
+        <source>About me</source>
+        <target>Sobre mí</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/about-section/about-section.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="downloadCv" datatype="html">
+        <source>Download CV</source>
+        <target>Descargar CV</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/hero-section/hero-section.html</context>
+          <context context-type="linenumber">23,26</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="loadError" datatype="html">
+        <source>We couldn&apos;t load this section.</source>
+        <target>No pudimos cargar esta sección.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
+          <context context-type="linenumber">8,9</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="retry" datatype="html">
+        <source>Try again</source>
+        <target>Reintentar</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
+          <context context-type="linenumber">9,10</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="profileLoading" datatype="html">
+        <source>Loading profile…</source>
+        <target>Cargando perfil…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/home-page.html</context>
+          <context context-type="linenumber">12,15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillCategory.BACKEND" datatype="html">
+        <source>Backend</source>
+        <target>Backend</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/group-skills.ts</context>
+          <context context-type="linenumber">11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillCategory.FRONTEND" datatype="html">
+        <source>Frontend</source>
+        <target>Frontend</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/group-skills.ts</context>
+          <context context-type="linenumber">12</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillCategory.DATABASE" datatype="html">
+        <source>Databases</source>
+        <target>Bases de datos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/group-skills.ts</context>
+          <context context-type="linenumber">13</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillCategory.DEVOPS" datatype="html">
+        <source>DevOps</source>
+        <target>DevOps</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/group-skills.ts</context>
+          <context context-type="linenumber">14</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillCategory.TOOLS" datatype="html">
+        <source>Tools</source>
+        <target>Herramientas</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/group-skills.ts</context>
+          <context context-type="linenumber">15</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="skillsTitle" datatype="html">
+        <source>Skills</source>
+        <target>Habilidades</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/skills-section/skills-section.html</context>
+          <context context-type="linenumber">3,4</context>
         </context-group>
       </trans-unit>
     </body>

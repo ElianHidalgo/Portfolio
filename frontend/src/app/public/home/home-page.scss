@@ -1,0 +1,16 @@
+.page {
+  display: grid;
+  gap: var(--space-xl);
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-xl) var(--gutter);
+}
+
+.status {
+  color: var(--color-muted);
+  text-align: center;
+
+  button {
+    margin-top: var(--space-s);
+  }
+}

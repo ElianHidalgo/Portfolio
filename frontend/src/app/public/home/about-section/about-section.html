@@ -1,0 +1,6 @@
+<section id="about" aria-labelledby="about-title">
+  <h2 id="about-title" i18n="@@aboutTitle">About me</h2>
+  @for (paragraph of paragraphs(); track $index) {
+    <p>{{ paragraph }}</p>
+  }
+</section>

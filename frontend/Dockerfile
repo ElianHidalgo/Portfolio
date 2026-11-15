@@ -6,7 +6,7 @@ WORKDIR /workspace
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npx ng build --localize
+RUN npm run build
 
 # --- Runtime stage ---
 FROM nginx:stable-alpine

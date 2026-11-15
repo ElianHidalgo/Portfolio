@@ -1,0 +1,17 @@
+@if (groups().length > 0) {
+  <section id="skills" aria-labelledby="skills-title">
+    <h2 id="skills-title" i18n="@@skillsTitle">Skills</h2>
+    <div class="groups">
+      @for (group of groups(); track group.category) {
+        <div class="group">
+          <h3>{{ group.label }}</h3>
+          <ul>
+            @for (skill of group.skills; track skill.name) {
+              <li>{{ skill.name }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </section>
+}

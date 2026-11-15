@@ -1,0 +1,14 @@
+<main class="page">
+  @if (profile.hasValue()) {
+    <app-hero-section [profile]="profile.value()" />
+    <app-about-section [profile]="profile.value()" />
+    <app-skills-section [profile]="profile.value()" />
+  } @else if (profile.error()) {
+    <div class="status" role="alert">
+      <p i18n="@@loadError">We couldn't load this section.</p>
+      <button type="button" (click)="profile.reload()" i18n="@@retry">Try again</button>
+    </div>
+  } @else {
+    <p class="status" role="status" i18n="@@profileLoading">Loading profile…</p>
+  }
+</main>

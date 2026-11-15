@@ -1,0 +1,36 @@
+.hero {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-s);
+  text-align: center;
+}
+
+.avatar {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3rem);
+}
+
+.headline {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--color-muted);
+}
+
+.location {
+  margin: 0;
+  color: var(--color-muted);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-m);
+  padding: 0;
+  list-style: none;
+}
