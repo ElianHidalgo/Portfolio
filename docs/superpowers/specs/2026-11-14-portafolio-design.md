@@ -1,7 +1,7 @@
 # Portafolio web — Diseño
 
 Fecha: 2026-11-14
-Estado: **aprobado** el 2026-11-15 (revisión 3, 2026-11-15: backend en Render en lugar de Cloud Run — Google Cloud exigía un prepago de 50 USD)
+Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos)
 
 ## 1. Intención y porqué
 
@@ -53,7 +53,7 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 - Versiones: la última estable de Spring Boot compatible con Java 17 y la última estable de Angular al momento de crear el proyecto; se fijan en `pom.xml`/`package.json`.
 - **Desarrollo íntegramente en inglés** (decisión del usuario): código, nombres de clases/variables/columnas, comentarios, mensajes de commit, README y documentación técnica del repo. El contenido visible del sitio sigue siendo ES/EN, y el panel admin en español.
 - **Coste cero absoluto** (regla del usuario): ningún pago, prepago ni tarjeta. Solo planes gratuitos que no la exijan.
-- Planes gratuitos vigentes (nov 2026): Cloudflare Pages (gratis, 500 builds/mes); Render (servicio web gratuito sin tarjeta: 750 h/mes, 512 MB, 0,1 CPU, se duerme tras 15 min sin tráfico y despierta en ~30–60 s); Neon (PostgreSQL gratuito, 1 GB por proyecto, también escala a cero).
+- Planes gratuitos vigentes (nov 2026): Cloudflare Workers con archivos estáticos (gratis, sin tarjeta; 3 000 min de build/mes); Render (servicio web gratuito sin tarjeta: 750 h/mes, 512 MB, 0,1 CPU, se duerme tras 15 min sin tráfico y despierta en ~30–60 s); Neon (PostgreSQL gratuito, 1 GB por proyecto, también escala a cero).
 
 ## 4. Enfoques considerados
 
@@ -93,13 +93,13 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 ### 5.1 Vista general
 
 ```
-Visitante ──► Cloudflare Pages (HTML pre-generado /es y /en)   ← instantáneo
+Visitante ──► Cloudflare Workers (HTML pre-generado /es y /en)   ← instantáneo
                  │
                  ├─ formulario de contacto ─► Render (Spring) ─► Neon (PostgreSQL)
                  └─ "ping" al cargar la página para despertar el backend
 
 Admin ──► /admin (Angular, renderizado en el navegador) ─► Render ─► Neon
-            └─ botón "Publicar" ─► backend llama al deploy hook de Cloudflare Pages
+            └─ botón "Publicar" ─► backend llama al deploy hook de Cloudflare (Workers Builds)
                                      └─ Cloudflare reconstruye el sitio leyendo la API pública
 ```
 
@@ -125,7 +125,7 @@ Paquete raíz `dev.<usuario>.portfolio` (usuario de GitHub pendiente; se define 
 | `profile` | Datos personales (nombre, titular ES/EN, sobre mí ES/EN, ubicación, email, GitHub, LinkedIn, URL avatar, URL CV ES/EN) y lista de skills (nombre, categoría, orden) | `GET /api/profile` | `PUT /api/admin/profile`, CRUD `/api/admin/skills` |
 | `projects` | Proyectos: título ES/EN, slug, resumen ES/EN, descripción ES/EN, tecnologías (tags), URL repo, URL demo, URL imagen, destacado, orden, publicado | `GET /api/projects` (solo publicados), `GET /api/projects/{slug}` | CRUD `/api/admin/projects` |
 | `contact` | Mensajes del formulario: nombre, email, mensaje, idioma de la página, fecha, leído | `POST /api/contact` | `GET /api/admin/messages`, `PATCH .../{id}/read`, `DELETE .../{id}` |
-| `publishing` | Disparar la reconstrucción del sitio público (llamada HTTP al deploy hook de Cloudflare Pages) y guardar la fecha de la última publicación | — | `POST /api/admin/publish`, `GET /api/admin/publish/status` |
+| `publishing` | Disparar la reconstrucción del sitio público (llamada HTTP al deploy hook de Workers Builds) y guardar la fecha de la última publicación | — | `POST /api/admin/publish`, `GET /api/admin/publish/status` |
 | `auth` | Login del admin, emisión y validación de JWT, configuración de Spring Security | `POST /api/auth/login` | — |
 | `shared` | Manejo global de errores (`ProblemDetail`), CORS, config común | `GET /api/health` (ping de "despertar") | — |
 
@@ -167,7 +167,7 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
   - `/` — página mínima que redirige a `/es/` o `/en/` según el idioma del navegador (español por defecto).
   - Selector de idioma en el encabezado que lleva a la misma página en el otro idioma.
   - Etiquetas `lang` y `hreflang` correctas para accesibilidad y SEO.
-- **Panel admin** (`/admin/login` y `/admin/**`), **solo en español**, **cargado de forma lazy** y renderizado en el navegador (no se pre-genera); requiere regla de fallback de SPA en Cloudflare Pages.
+- **Panel admin** (`/admin/login` y `/admin/**`), **solo en español**, **cargado de forma lazy** y renderizado en el navegador (no se pre-genera); lo sirve el `404.html` de cada idioma (versión cliente) en Cloudflare Workers.
   - Formularios con campos ES y EN lado a lado.
   - Botón **"Publicar"** que llama a `POST /api/admin/publish` y muestra la fecha de la última publicación.
   - Aviso visible de que el panel puede tardar unos segundos al entrar (el backend despierta).
@@ -187,7 +187,7 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
 **Producción (gratis)**
 - **Base de datos**: Neon, un proyecto en una región cercana a la de Render; conexión con SSL. Flyway aplica las migraciones al arrancar el backend.
 - **Backend**: Render, servicio web gratuito con el `Dockerfile` multi-stage, desplegado automáticamente desde `main`; JVM ajustada a 512 MB y 0,1 CPU. Variables: credenciales DB, `JWT_SECRET`, `ADMIN_*`, `CORS_ALLOWED_ORIGINS`, `CF_DEPLOY_HOOK_URL`.
-- **Frontend**: Cloudflare Pages conectado al repo de GitHub (integración Git): build en cada push a `main` y cuando el backend llama al **deploy hook** (botón "Publicar").
+- **Frontend**: Cloudflare Workers (solo archivos estáticos, `frontend/wrangler.jsonc`) conectado al repo de GitHub (Workers Builds): build en cada push a `main` y cuando el backend llama al **deploy hook** (botón "Publicar").
 - **GitHub Actions**: en cada push/PR ejecuta los tests del backend; en push a `main`, Render despliega el backend automáticamente.
 - **Protección de coste**: alerta de presupuesto en Google Cloud a un monto mínimo para detectar cualquier cargo.
 
@@ -199,7 +199,7 @@ Cada parte deja algo funcionando y entendible:
 2. **Módulo `profile`** (lectura pública, bilingüe) + secciones hero/sobre mí/skills en Angular.
 3. **Módulo `projects`** (lectura pública, bilingüe) + sección proyectos y página de detalle.
 4. **Pre-generación**: build estático de `/es` y `/en` leyendo la API, redirección de la raíz y selector de idioma.
-5. **Primer despliegue**: Neon + Render + Cloudflare Pages + GitHub Actions; el sitio de solo lectura queda en línea.
+5. **Primer despliegue**: Neon + Render + Cloudflare Workers + GitHub Actions; el sitio de solo lectura queda en línea.
 6. **Módulo `contact`** + formulario y ping de despertar.
 7. **Módulo `auth`** + login y guard en Angular.
 8. **Panel admin**: CRUD bilingüe de perfil, skills, proyectos, bandeja de mensajes y botón "Publicar" (módulo `publishing`).
@@ -215,7 +215,7 @@ Cada parte deja algo funcionando y entendible:
 
 **Tomadas por Claude (revisables)**
 - PostgreSQL + Flyway; Neon como proveedor en producción.
-- Cloudflare Pages para el frontend.
+- Cloudflare Workers (archivos estáticos) para el frontend; Cloudflare creó Workers en lugar de Pages al conectar el repo.
 - JWT stateless de 2 h, sin refresh token; un único admin por variables de entorno.
 - Imágenes y CV por URL (sin subida de archivos en v1); un CV por idioma.
 - SCSS propio sin librería de UI.
@@ -223,7 +223,7 @@ Cada parte deja algo funcionando y entendible:
 - Textos bilingües como pares de columnas; slug compartido; categorías de skills fijas.
 - Panel admin solo en español.
 - Botón "Publicar" en vez de reconstruir con cada guardado.
-- Cloudflare Pages con integración Git + deploy hook; GitHub Actions para tests y despliegue del backend.
+- Cloudflare Workers Builds con integración Git + deploy hook; GitHub Actions para tests y despliegue del backend.
 - Alerta de presupuesto en Google Cloud.
 - nginx solo para la demo local con `docker compose`.
 
