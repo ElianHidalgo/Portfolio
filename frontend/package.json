@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node scripts/check-translations.mjs && ng build --localize && node scripts/copy-root.mjs",
+    "build": "node scripts/check-translations.mjs && ng build --localize && node scripts/copy-root.mjs && node scripts/verify-prerender.mjs",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:scripts": "node --test \"scripts/*.test.mjs\""

@@ -85,7 +85,25 @@ The backend reads `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `PORT` (default `80
 ```bash
 cd backend && ./mvnw test               # integration tests with Testcontainers + module boundary check
 cd frontend && npx ng test --watch=false
+cd frontend && npm run test:scripts     # build scripts (language picker, prerender guard)
 ```
+
+## Production build (prerendered)
+
+`npm run build` (in `frontend/`) generates the public site as static HTML, so visitors never wait for the API and the backend is not on the request path:
+
+1. Checks that every UI text has a Spanish translation.
+2. Builds both languages and **prerenders** `/es/`, `/en/` and every published project (`/es/projects/<slug>/`, `/en/projects/<slug>/`), reading the API at build time. The browser reuses that data (hydration + transfer cache) instead of fetching it again.
+3. Writes the root page `/`, which sends visitors to `/es/` or `/en/` from their browser language (Spanish by default).
+4. **Fails the build** if a language is missing, no project page was generated, or any page was captured in its loading/error state.
+
+| Variable | Default | Purpose |
+|---|---|---|
+| `API_URL` | `http://localhost:8080` | API read while prerendering (the backend must be running) |
+| `SITE_URL` | `http://localhost:8080` | Public origin for canonical, `hreflang` and Open Graph links |
+| `PRERENDER` | `true` | `false` builds a client-only app |
+
+The Docker image builds with `PRERENDER=false`: no API exists while `docker compose` builds images, and this keeps `docker compose up` working from a clean clone. Pages that were not prerendered (e.g. a new project before the next build) are served by the client-only shell (`index.csr.html`).
 
 ## Translations
 

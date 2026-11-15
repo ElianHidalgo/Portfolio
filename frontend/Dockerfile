@@ -6,6 +6,14 @@ WORKDIR /workspace
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+
+# No API exists while `docker compose` builds images, so the local image is client-only by
+# default. Production prerenders (part 5). To test a prerendered image locally, pass
+# --build-arg PRERENDER=true --build-arg API_URL=http://host.docker.internal:8080
+ARG PRERENDER=false
+ARG API_URL=
+ARG SITE_URL=
+ENV PRERENDER=$PRERENDER API_URL=$API_URL SITE_URL=$SITE_URL
 RUN npm run build
 
 # --- Runtime stage ---
