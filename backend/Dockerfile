@@ -13,7 +13,7 @@ COPY src ./src
 RUN mvn -B -q package -DskipTests && cp target/portfolio-*.jar /workspace/app.jar
 
 # --- Runtime stage ---
-FROM eclipse-temurin:17-jre
+FROM eclipse-temurin:25-jre
 RUN useradd --system --uid 10001 --no-create-home app
 WORKDIR /app
 COPY --from=build /workspace/app.jar app.jar
