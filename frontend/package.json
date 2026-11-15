@@ -4,9 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "node scripts/check-translations.mjs && ng build --localize",
+    "build": "node scripts/check-translations.mjs && ng build --localize && node scripts/copy-root.mjs",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "test:scripts": "node --test \"scripts/*.test.mjs\""
   },
   "private": true,
   "packageManager": "npm@10.8.1",
