@@ -55,6 +55,8 @@ cd backend && ./mvnw spring-boot:run # API on http://localhost:8080
 cd frontend && npm start             # Spanish build on http://localhost:4200, /api proxied to :8080
 ```
 
+`npm start` serves **only the Spanish build** — Angular's dev server handles one locale at a time, so `/en/` (and the "English" link) shows Spanish there. To check both languages, run the full stack (`docker compose up --build`, or `APP_PORT=8081` if 8080 is busy) and open `/es/` and `/en/`.
+
 If you changed `DB_PORT`, the backend does not read `.env`: point it at that port before starting it.
 
 ```bash
