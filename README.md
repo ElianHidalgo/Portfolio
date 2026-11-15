@@ -2,7 +2,7 @@
 
 Personal portfolio built as a full-stack showcase: a **Spring Boot** API designed as a modular monolith and an **Angular** front end, published in English and Spanish. Content (profile, skills, projects) will be managed from a private admin panel.
 
-> Status: **Part 1 — project skeleton.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
+> Status: **Part 2 — profile module.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
 
 ## Architecture
 
@@ -22,7 +22,16 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 | `/es/`, `/en/` | Angular app for each language |
 | `/api/*` | Proxied to the Spring Boot backend |
 
-Health check: `GET /api/health` → `{"status":"UP", ...}`.
+## API
+
+| Endpoint | Description |
+|---|---|
+| `GET /api/health` | Liveness check → `{"status":"UP", ...}`; also used to wake the backend up |
+| `GET /api/profile` | Public profile and skills; `404` problem detail if no profile exists |
+
+Translatable texts are returned in both languages as `{"es": "...", "en": "..."}`; the front end picks the one for the page's language. Errors use the `application/problem+json` format (RFC 9457).
+
+The backend is a modular monolith: each feature (`profile`, …) is a top-level package with `web`, `application` and `domain` layers, and `ModularityTests` fails the build if a module reaches into another module's internals.
 
 ## Prerequisites
 
@@ -83,4 +92,6 @@ cd frontend
 npx ng extract-i18n --output-path src/locale
 ```
 
-Then copy the new entries into `src/locale/messages.es.xlf` with a Spanish `<target>`.
+Then copy the new entries into `src/locale/messages.es.xlf` with a Spanish `<target>` and delete the generated `messages.xlf`.
+
+`npm run build` refuses to build when a Spanish translation is missing: `scripts/check-translations.mjs` rejects units without a `<target>`, and Angular's `i18nMissingTranslation: "error"` rejects texts that have no unit at all.
