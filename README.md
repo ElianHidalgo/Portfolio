@@ -46,6 +46,13 @@ cd backend && ./mvnw spring-boot:run # API on http://localhost:8080
 cd frontend && npm start             # Spanish build on http://localhost:4200, /api proxied to :8080
 ```
 
+If you changed `DB_PORT`, the backend does not read `.env`: point it at that port before starting it.
+
+```bash
+export DB_URL=jdbc:postgresql://localhost:5433/portfolio       # bash
+$env:DB_URL = "jdbc:postgresql://localhost:5433/portfolio"     # PowerShell
+```
+
 ## Configuration
 
 Copy `.env.example` to `.env` to override any default.
