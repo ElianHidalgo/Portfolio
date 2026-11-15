@@ -15,7 +15,11 @@
         <target>Portafolio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
-          <context context-type="linenumber">5</context>
+          <context context-type="linenumber">6</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.ts</context>
+          <context context-type="linenumber">38</context>
         </context-group>
       </trans-unit>
       <trans-unit id="builtWith" datatype="html">
@@ -109,6 +113,10 @@
           <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
           <context context-type="linenumber">51,52</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">55,56</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="profileLoading" datatype="html">
         <source>Loading profile…</source>
@@ -137,6 +145,10 @@
           <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
           <context context-type="linenumber">31,32</context>
         </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">21,22</context>
+        </context-group>
       </trans-unit>
       <trans-unit id="projectDemo" datatype="html">
         <source>Live demo</source>
@@ -144,6 +156,10 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
           <context context-type="linenumber">37,38</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">29,30</context>
         </context-group>
       </trans-unit>
       <trans-unit id="projectsLoadError" datatype="html">
@@ -200,6 +216,46 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/skills-section/skills-section.html</context>
           <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="backToProjects" datatype="html">
+        <source>All projects</source>
+        <target>Todos los proyectos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">5,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectNotFound" datatype="html">
+        <source>This project doesn’t exist.</source>
+        <target>Este proyecto no existe.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">49,50</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectNotFoundBack" datatype="html">
+        <source>Back to all projects</source>
+        <target>Volver a los proyectos</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">50,52</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectLoadError" datatype="html">
+        <source>The project didn’t load. Try again in a few seconds.</source>
+        <target>El proyecto no cargó. Vuelve a intentarlo en unos segundos.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">54,55</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="projectLoading" datatype="html">
+        <source>Loading project…</source>
+        <target>Cargando proyecto…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/project/project-page.html</context>
+          <context context-type="linenumber">58,61</context>
         </context-group>
       </trans-unit>
     </body>

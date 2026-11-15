@@ -1,0 +1,60 @@
+<main id="content" class="page">
+  @if (project.hasValue()) {
+    @let p = project.value();
+    <article class="project">
+      <a class="project__back" routerLink="/" fragment="projects" i18n="@@backToProjects">All projects</a>
+
+      <header class="project__header">
+        <h1 class="project__title">{{ p.title | localized }}</h1>
+        <p class="project__summary">{{ p.summary | localized }}</p>
+        <ul class="project__tech" translate="no">
+          @for (tech of p.technologies; track tech) {
+            <li>{{ tech }}</li>
+          }
+        </ul>
+        @if (p.repoUrl || p.demoUrl) {
+          <ul class="project__actions">
+            @if (p.repoUrl) {
+              <li>
+                <a class="button button--primary" [href]="p.repoUrl" target="_blank" rel="noopener">
+                  <app-icon name="github" />
+                  <span i18n="@@projectCode">Code</span>
+                </a>
+              </li>
+            }
+            @if (p.demoUrl) {
+              <li>
+                <a class="button" [class.button--primary]="!p.repoUrl" [href]="p.demoUrl" target="_blank" rel="noopener">
+                  <app-icon name="external" />
+                  <span i18n="@@projectDemo">Live demo</span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </header>
+
+      @if (p.imageUrl) {
+        <img class="project__image" [src]="p.imageUrl" alt="" width="1600" height="1000" fetchpriority="high" />
+      }
+
+      <div class="project__body">
+        @for (paragraph of paragraphs(); track $index) {
+          <p class="description">{{ paragraph }}</p>
+        }
+      </div>
+    </article>
+  } @else if (notFound()) {
+    <div class="status" role="alert">
+      <p i18n="@@projectNotFound">This project doesn’t exist.</p>
+      <a class="button" routerLink="/" fragment="projects" i18n="@@projectNotFoundBack">Back to all projects</a>
+    </div>
+  } @else if (project.error()) {
+    <div class="status" role="alert">
+      <p i18n="@@projectLoadError">The project didn’t load. Try again in a few seconds.</p>
+      <button class="button" type="button" (click)="project.reload()" i18n="@@retry">Try again</button>
+    </div>
+  } @else {
+    <p class="status" role="status" i18n="@@projectLoading">Loading project…</p>
+  }
+</main>

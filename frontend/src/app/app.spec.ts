@@ -16,4 +16,15 @@ describe('App routes', () => {
 
     expect(harness.routeNativeElement?.tagName.toLowerCase()).toBe('app-home-page');
   });
+
+  it("navigating to '/projects/:slug' renders the project page", async () => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/projects/gamevault');
+
+    expect(harness.routeNativeElement?.tagName.toLowerCase()).toBe('app-project-page');
+  });
 });
