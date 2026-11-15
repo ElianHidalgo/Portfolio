@@ -4,6 +4,8 @@
 
 Personal portfolio built as a full-stack showcase: a **Spring Boot** API designed as a modular monolith and an **Angular** front end, published in English and Spanish. Content (profile, skills, projects) will be managed from a private admin panel.
 
+**Live:** https://victor-hidalgo.victorelianhe.workers.dev · API: https://portfolio-api-nthv.onrender.com/api/profile
+
 > Status: **Part 5 — first deployment.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
 
 ## Architecture
