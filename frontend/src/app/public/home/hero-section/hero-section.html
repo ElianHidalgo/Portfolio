@@ -1,26 +1,48 @@
 @let p = profile();
 @let cvUrl = p.cvUrl | localized;
-<section id="hero" class="hero">
+<section id="hero" class="hero" [class.hero--with-avatar]="!!p.avatarUrl">
+  <div class="hero__text">
+    <h1 class="hero__name">{{ p.fullName }}</h1>
+    <p class="hero__headline">{{ p.headline | localized }}</p>
+    @if (p.location) {
+      <p class="hero__location">{{ p.location }}</p>
+    }
+
+    @if (cvUrl || p.email || p.githubUrl || p.linkedinUrl) {
+      <ul class="hero__actions">
+        @if (cvUrl) {
+          <li>
+            <a class="button button--primary" [href]="cvUrl" target="_blank" rel="noopener" i18n="@@downloadCv"
+              >Download CV</a
+            >
+          </li>
+        }
+        @if (p.email) {
+          <!-- Without a CV, the first available contact becomes the primary action. -->
+          <li>
+            <a class="button" [class.button--primary]="!cvUrl" [href]="'mailto:' + p.email">{{ p.email }}</a>
+          </li>
+        }
+        @if (p.githubUrl) {
+          <li>
+            <a
+              class="button"
+              [class.button--primary]="!cvUrl && !p.email"
+              [href]="p.githubUrl"
+              target="_blank"
+              rel="noopener"
+              >GitHub</a
+            >
+          </li>
+        }
+        @if (p.linkedinUrl) {
+          <li><a class="button" [href]="p.linkedinUrl" target="_blank" rel="noopener">LinkedIn</a></li>
+        }
+      </ul>
+    }
+  </div>
+
   @if (p.avatarUrl) {
-    <img class="avatar" [src]="p.avatarUrl" [alt]="p.fullName" width="128" height="128" />
+    <img class="hero__avatar" [src]="p.avatarUrl" [alt]="p.fullName" width="320" height="320" />
   }
-  <h1>{{ p.fullName }}</h1>
-  <p class="headline">{{ p.headline | localized }}</p>
-  @if (p.location) {
-    <p class="location">{{ p.location }}</p>
-  }
-  <ul class="links">
-    @if (p.githubUrl) {
-      <li><a [href]="p.githubUrl" target="_blank" rel="noopener">GitHub</a></li>
-    }
-    @if (p.linkedinUrl) {
-      <li><a [href]="p.linkedinUrl" target="_blank" rel="noopener">LinkedIn</a></li>
-    }
-    @if (p.email) {
-      <li><a [href]="'mailto:' + p.email">{{ p.email }}</a></li>
-    }
-    @if (cvUrl) {
-      <li><a class="cv" [href]="cvUrl" target="_blank" rel="noopener" i18n="@@downloadCv">Download CV</a></li>
-    }
-  </ul>
 </section>

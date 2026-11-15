@@ -1,6 +1,8 @@
-<section id="about" aria-labelledby="about-title">
-  <h2 id="about-title" i18n="@@aboutTitle">About me</h2>
-  @for (paragraph of paragraphs(); track $index) {
-    <p>{{ paragraph }}</p>
-  }
+<section id="about" class="section" aria-labelledby="about-title">
+  <h2 id="about-title" class="section__title" i18n="@@aboutTitle">About me</h2>
+  <div class="about__body">
+    @for (paragraph of paragraphs(); track $index) {
+      <p>{{ paragraph }}</p>
+    }
+  </div>
 </section>

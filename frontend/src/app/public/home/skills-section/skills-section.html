@@ -1,11 +1,11 @@
 @if (groups().length > 0) {
-  <section id="skills" aria-labelledby="skills-title">
-    <h2 id="skills-title" i18n="@@skillsTitle">Skills</h2>
-    <div class="groups">
+  <section id="skills" class="section" aria-labelledby="skills-title">
+    <h2 id="skills-title" class="section__title" i18n="@@skillsTitle">Skills</h2>
+    <div class="skills">
       @for (group of groups(); track group.category) {
-        <div class="group">
-          <h3>{{ group.label }}</h3>
-          <ul>
+        <div class="skills__group">
+          <h3 class="skills__category">{{ group.label }}</h3>
+          <ul class="skills__list">
             @for (skill of group.skills; track skill.name) {
               <li>{{ skill.name }}</li>
             }

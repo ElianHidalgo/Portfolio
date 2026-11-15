@@ -1,27 +1,42 @@
-.groups {
+/* One row per category: the category name, then the skills as plain, weighty text. */
+.skills__group {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: var(--space-l);
+  gap: var(--space-xs);
+  padding-block: var(--space-m);
+  border-bottom: 1px solid var(--color-line);
+
+  &:first-child {
+    padding-top: 0;
+  }
+
+  &:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 10rem 1fr;
+    align-items: baseline;
+    gap: var(--space-m);
+  }
 }
 
-h3 {
-  margin: 0 0 var(--space-s);
-  font-size: 1rem;
-  color: var(--color-accent);
+.skills__category {
+  margin: 0;
+  font-size: var(--text-s);
+  font-weight: 500;
+  color: var(--color-muted);
 }
 
-ul {
+.skills__list {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
+  gap: var(--space-xs) var(--space-l);
   margin: 0;
   padding: 0;
   list-style: none;
-}
-
-li {
-  padding: var(--space-xs) var(--space-s);
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  font-size: 0.875rem;
+  font-size: var(--text-l);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
 }
