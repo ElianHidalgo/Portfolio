@@ -2,7 +2,7 @@
 
 Personal portfolio built as a full-stack showcase: a **Spring Boot** API designed as a modular monolith and an **Angular** front end, published in English and Spanish. Content (profile, skills, projects) will be managed from a private admin panel.
 
-> Status: **Part 2 — profile module.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
+> Status: **Part 3 — projects module.** See the [design spec](docs/superpowers/specs/2026-11-14-portafolio-design.md) for the full roadmap.
 
 ## Architecture
 
@@ -28,6 +28,8 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 |---|---|
 | `GET /api/health` | Liveness check → `{"status":"UP", ...}`; also used to wake the backend up |
 | `GET /api/profile` | Public profile and skills; `404` problem detail if no profile exists |
+| `GET /api/projects` | Published projects in display order (summary fields) |
+| `GET /api/projects/{slug}` | One published project with its description; `404` problem detail if missing or unpublished |
 
 Translatable texts are returned in both languages as `{"es": "...", "en": "..."}`; the front end picks the one for the page's language. Errors use the `application/problem+json` format (RFC 9457).
 
