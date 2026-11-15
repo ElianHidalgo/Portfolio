@@ -5,6 +5,12 @@ spring:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/portfolio}
     username: ${DB_USERNAME:portfolio}
     password: ${DB_PASSWORD:portfolio}
+    # Small pool: Neon's free tier limits connections and scales to zero;
+    # no idle connections are kept so the database can sleep too.
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:3}
+      minimum-idle: 0
+      connection-timeout: 20000
   jpa:
     hibernate:
       ddl-auto: validate
@@ -17,6 +23,9 @@ management:
   endpoints:
     web:
       base-path: /api
+      # Only /api/health is public; no index of actuator links at GET /api.
+      discovery:
+        enabled: false
       exposure:
         include: health
 

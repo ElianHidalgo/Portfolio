@@ -32,6 +32,11 @@ class HealthEndpointTests {
     }
 
     @Test
+    void actuatorDiscoveryPageIsNotExposed() throws Exception {
+        mockMvc.perform(get("/api")).andExpect(status().isNotFound());
+    }
+
+    @Test
     void baselineMigrationIsApplied() {
         Integer applied = jdbc.queryForObject(
                 "select count(*) from flyway_schema_history where version = '1' and success",
