@@ -11,6 +11,11 @@ spring:
       maximum-pool-size: ${DB_POOL_SIZE:3}
       minimum-idle: 0
       connection-timeout: 20000
+  # Migrations run as the schema owner; the app itself connects as a data-only role
+  # (see V7). Locally both default to the same user.
+  flyway:
+    user: ${DB_MIGRATION_USERNAME:${DB_USERNAME:portfolio}}
+    password: ${DB_MIGRATION_PASSWORD:${DB_PASSWORD:portfolio}}
   jpa:
     hibernate:
       ddl-auto: validate

@@ -45,7 +45,7 @@ class ProjectsApiTests {
 
     @Test
     void breaksDisplayOrderTiesBySlug() throws Exception {
-        jdbc.update("insert into project (slug, title_es, title_en, summary_es, summary_en, description_es, description_en, display_order) "
+        jdbc.update("insert into projects.project (slug, title_es, title_en, summary_es, summary_en, description_es, description_en, display_order) "
                 + "values ('aaa', 'A', 'A', 'a', 'a', 'a', 'a', 1)");
 
         mockMvc.perform(get("/api/projects")).andExpect(jsonPath("$[0].slug").value("aaa"));
@@ -53,7 +53,7 @@ class ProjectsApiTests {
 
     @Test
     void hidesUnpublishedProjects() throws Exception {
-        jdbc.update("update project set published = false where slug = 'gamevault'");
+        jdbc.update("update projects.project set published = false where slug = 'gamevault'");
 
         mockMvc.perform(get("/api/projects")).andExpect(jsonPath("$.length()").value(2));
         mockMvc.perform(get("/api/projects/gamevault")).andExpect(status().isNotFound());

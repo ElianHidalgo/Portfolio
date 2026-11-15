@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.postgresql.PostgreSQLContainer;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -22,7 +24,7 @@ class HealthEndpointTests {
     MockMvc mockMvc;
 
     @Autowired
-    JdbcTemplate jdbc;
+    PostgreSQLContainer postgres;
 
     @Test
     void healthEndpointIsPublicAndUp() throws Exception {
@@ -38,7 +40,10 @@ class HealthEndpointTests {
 
     @Test
     void baselineMigrationIsApplied() {
-        Integer applied = jdbc.queryForObject(
+        // Flyway's history belongs to the migration (owner) role, not to the app role.
+        var owner = new JdbcTemplate(new SingleConnectionDataSource(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true));
+        Integer applied = owner.queryForObject(
                 "select count(*) from flyway_schema_history where version = '1' and success",
                 Integer.class);
         assertThat(applied).isEqualTo(1);

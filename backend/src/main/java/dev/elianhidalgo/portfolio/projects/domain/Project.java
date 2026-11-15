@@ -9,7 +9,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
-@Table(name = "project")
+@Table(schema = "projects", name = "project")
 public class Project {
 
     @Id

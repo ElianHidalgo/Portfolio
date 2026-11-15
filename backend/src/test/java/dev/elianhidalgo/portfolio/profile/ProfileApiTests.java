@@ -45,7 +45,7 @@ class ProfileApiTests {
 
     @Test
     void returnsSkillsOrderedByDisplayOrderThenName() throws Exception {
-        jdbc.update("insert into skill (name, category, display_order) values ('Kotlin', 'BACKEND', 1)");
+        jdbc.update("insert into profile.skill (name, category, display_order) values ('Kotlin', 'BACKEND', 1)");
 
         mockMvc.perform(get("/api/profile"))
                 .andExpect(jsonPath("$.skills[0:3].name").value(contains("Java", "Kotlin", "Spring Boot")))
@@ -55,7 +55,7 @@ class ProfileApiTests {
 
     @Test
     void returnsNotFoundProblemWhenProfileIsMissing() throws Exception {
-        jdbc.update("delete from profile");
+        jdbc.update("delete from profile.profile");
 
         mockMvc.perform(get("/api/profile"))
                 .andExpect(status().isNotFound())
