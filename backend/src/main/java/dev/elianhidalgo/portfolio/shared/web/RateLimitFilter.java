@@ -30,7 +30,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Without Cloudflare (local runs) the socket address is used.
  */
 @Component
-@Order(Ordered.HIGHEST_PRECEDENCE)
+// Runs right after ApiHeadersFilter, so even a 429 carries the security headers.
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private static final Duration IDLE_EVICTION = Duration.ofMinutes(10);
@@ -68,6 +69,8 @@ public class RateLimitFilter extends OncePerRequestFilter {
         long retryAfterSeconds = Math.max(1, TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()) + 1);
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         response.setHeader("Retry-After", String.valueOf(retryAfterSeconds));
+        // A rejection must never be cached, even on otherwise cacheable public paths.
+        response.setHeader("Cache-Control", "no-store");
         response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
         response.getWriter().write("{\"type\":\"about:blank\",\"title\":\"Too Many Requests\",\"status\":429,"
                 + "\"detail\":\"Too many requests\",\"instance\":\"" + request.getRequestURI().replace("\"", "") + "\"}");
