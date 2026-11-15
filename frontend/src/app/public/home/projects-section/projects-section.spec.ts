@@ -55,7 +55,7 @@ describe('ProjectsSection', () => {
     await respond([project('a'), project('b')]);
 
     const links = Array.from(el().querySelectorAll('#projects h3 a'));
-    expect(links.map((a) => a.getAttribute('href'))).toEqual(['/projects/a', '/projects/b']);
+    expect(links.map((a) => a.getAttribute('href'))).toEqual(['projects/a/', 'projects/b/']);
     expect(links.map((a) => a.textContent?.trim())).toEqual(['Project a', 'Project b']);
   });
 

@@ -2,7 +2,7 @@
   @if (project.hasValue()) {
     @let p = project.value();
     <article class="project">
-      <a class="project__back" routerLink="/" fragment="projects" i18n="@@backToProjects">All projects</a>
+      <a class="project__back" href="./#projects" i18n="@@backToProjects">All projects</a>
 
       <header class="project__header">
         <h1 class="project__title">{{ p.title | localized }}</h1>
@@ -47,7 +47,7 @@
   } @else if (notFound()) {
     <div class="status" role="alert" data-state="not-found">
       <p i18n="@@projectNotFound">This project doesn’t exist.</p>
-      <a class="button" routerLink="/" fragment="projects" i18n="@@projectNotFoundBack">Back to all projects</a>
+      <a class="button" href="./#projects" i18n="@@projectNotFoundBack">Back to all projects</a>
     </div>
   } @else if (project.error()) {
     <div class="status" role="alert" data-state="error">

@@ -1,11 +1,10 @@
 import { Component, LOCALE_ID, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { NavigationEnd, Router, RouterLink } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { filter, map } from 'rxjs';
 
 @Component({
   selector: 'app-site-header',
-  imports: [RouterLink],
   templateUrl: './site-header.html',
   styleUrl: './site-header.scss',
 })
@@ -23,7 +22,11 @@ export class SiteHeader {
   );
 
   /** Same page in the other language: each locale is served under its own prefix (`/es/`, `/en/`). */
-  protected readonly otherLanguageHref = computed(
-    () => `/${this.isSpanish ? 'en' : 'es'}${this.url().split('#')[0]}`,
-  );
+  protected readonly otherLanguageHref = computed(() => {
+    const path = this.url().split(/[?#]/)[0];
+    // Prerendered pages live in folders (projects/<slug>/index.html): link with a trailing
+    // slash so static hosts serve them directly instead of redirecting.
+    const folderPath = path.endsWith('/') ? path : `${path}/`;
+    return `/${this.isSpanish ? 'en' : 'es'}${folderPath}`;
+  });
 }

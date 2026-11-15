@@ -12,6 +12,18 @@ const STATE_MARKER = 'data-state="';
 // Angular writes ngh="…" on hydratable components; without it the browser redraws the page.
 const HYDRATION_MARKER = ' ngh="';
 
+/**
+ * On Cloudflare Pages (CF_PAGES is set by its build), SITE_URL must be the public URL:
+ * otherwise every canonical/hreflang/og link would be published pointing at localhost.
+ */
+export function verifySiteUrl(env) {
+  if (!env.CF_PAGES) return [];
+  const siteUrl = env.SITE_URL ?? '';
+  return !siteUrl || /localhost|127\.0\.0\.1/.test(siteUrl)
+    ? [`SITE_URL must be the public URL of the site (got "${siteUrl}")`]
+    : [];
+}
+
 /** Returns a list of problems; empty means the prerender is complete. */
 export function verifyPrerender(distDir) {
   const problems = [];
@@ -45,7 +57,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   if (process.env.PRERENDER === 'false') {
     console.log('Prerender disabled — skipping verification.');
   } else {
-    const problems = verifyPrerender(fileURLToPath(new URL('../dist/frontend/browser', import.meta.url)));
+    const problems = [
+      ...verifySiteUrl(process.env),
+      ...verifyPrerender(fileURLToPath(new URL('../dist/frontend/browser', import.meta.url))),
+    ];
     if (problems.length > 0) {
       console.error(`Prerender verification failed:\n- ${problems.join('\n- ')}`);
       process.exit(1);

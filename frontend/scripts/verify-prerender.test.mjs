@@ -3,7 +3,14 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { verifyPrerender } from './verify-prerender.mjs';
+import { verifyPrerender, verifySiteUrl } from './verify-prerender.mjs';
+
+test('requires the public SITE_URL when building on Cloudflare Pages', () => {
+  assert.equal(verifySiteUrl({ CF_PAGES: '1' }).length, 1);
+  assert.equal(verifySiteUrl({ CF_PAGES: '1', SITE_URL: 'http://localhost:8080' }).length, 1);
+  assert.deepEqual(verifySiteUrl({ CF_PAGES: '1', SITE_URL: 'https://victor.pages.dev' }), []);
+  assert.deepEqual(verifySiteUrl({}), []);
+});
 
 // `ngh="…"` is the hydration annotation Angular writes when hydration is set up correctly.
 const HOME = '<main ngh="0"><section id="hero"></section><section id="projects"></section></main>';

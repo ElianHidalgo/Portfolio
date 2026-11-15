@@ -73,7 +73,7 @@ describe('ProjectPage', () => {
 
     expect(el().textContent).toContain('This project doesn’t exist.');
     const back = Array.from(el().querySelectorAll('a')).find((a) => a.textContent?.trim() === 'Back to all projects');
-    expect(back?.getAttribute('href')).toBe('/#projects');
+    expect(back?.getAttribute('href')).toBe('./#projects');
   });
 
   it('uses the translated site title when the project does not exist', async () => {

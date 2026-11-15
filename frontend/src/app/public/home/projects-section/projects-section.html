@@ -15,7 +15,7 @@
             />
           }
           <h3 class="project__title">
-            <a [routerLink]="['/projects', project.slug]">{{ project.title | localized }}</a>
+            <a [href]="'projects/' + project.slug + '/'">{{ project.title | localized }}</a>
           </h3>
           <p class="project__summary">{{ project.summary | localized }}</p>
           <ul class="project__tech" translate="no">

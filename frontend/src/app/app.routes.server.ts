@@ -1,15 +1,12 @@
 import { RenderMode, ServerRoute } from '@angular/ssr';
 import { buildEnv } from './core/build-env';
+import { fetchWithRetry } from './core/http/fetch-with-retry';
 
 /** Slugs of every published project, read from the API at build time. */
 async function projectSlugs(): Promise<Array<{ slug: string }>> {
+  // The first build request may wake the sleeping backend; later ones find it awake.
   const url = `${buildEnv.apiUrl}/api/projects`;
-  let response: Response;
-  try {
-    response = await fetch(url);
-  } catch {
-    throw new Error(`Prerender: cannot reach ${url}`);
-  }
+  const response = await fetchWithRetry(url);
   if (!response.ok) {
     throw new Error(`Prerender: ${url} answered ${response.status}`);
   }

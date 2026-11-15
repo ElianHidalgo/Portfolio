@@ -1,7 +1,6 @@
 import { HttpErrorResponse, httpResource } from '@angular/common/http';
 import { Component, LOCALE_ID, computed, effect, inject, input } from '@angular/core';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
 import { ProjectDetail } from '../../core/models/project';
 import { SeoService } from '../../core/seo/seo.service';
 import { Icon } from '../../shared/icon';
@@ -10,7 +9,7 @@ import { splitParagraphs } from '../../shared/paragraphs';
 
 @Component({
   selector: 'app-project-page',
-  imports: [RouterLink, LocalizedPipe, Icon],
+  imports: [LocalizedPipe, Icon],
   templateUrl: './project-page.html',
   styleUrl: './project-page.scss',
 })
