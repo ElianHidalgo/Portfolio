@@ -17,6 +17,7 @@ export class ProjectsSection {
   protected readonly projects = httpResource<ProjectSummary[]>(() => '/api/projects');
 
   constructor() {
-    scrollToFragmentWhenReady(() => this.projects.hasValue(), ['projects']);
+    // Sections at or below this one move once the projects render (or fail), so they wait for it.
+    scrollToFragmentWhenReady(() => !this.projects.isLoading(), ['projects', 'skills']);
   }
 }

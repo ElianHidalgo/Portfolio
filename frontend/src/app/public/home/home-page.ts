@@ -17,6 +17,7 @@ export class HomePage {
   protected readonly profile = httpResource<Profile>(() => '/api/profile');
 
   constructor() {
-    scrollToFragmentWhenReady(() => this.profile.hasValue(), ['about', 'skills']);
+    // 'projects' and 'skills' are handled by ProjectsSection: they shift when the projects render.
+    scrollToFragmentWhenReady(() => this.profile.hasValue(), ['about']);
   }
 }

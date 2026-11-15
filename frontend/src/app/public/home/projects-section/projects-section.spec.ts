@@ -1,7 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ViewportScroller } from '@angular/common';
+import { Router, provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 import { ProjectSummary } from '../../../core/models/project';
 import { ProjectsSection } from './projects-section';
 
@@ -64,6 +66,16 @@ describe('ProjectsSection', () => {
     expect(texts('#projects a')).toContain('Code');
     expect(texts('#projects a')).not.toContain('Live demo');
     expect(el().querySelector('img')).toBeNull();
+  });
+
+  it('scrolls to sections below it only after the projects settle, even on error', async () => {
+    const scrollToAnchor = vi.spyOn(TestBed.inject(ViewportScroller), 'scrollToAnchor');
+    vi.spyOn(TestBed.inject(Router), 'url', 'get').mockReturnValue('/#skills');
+
+    expect(scrollToAnchor).not.toHaveBeenCalled();
+    await respond(null, 500);
+
+    expect(scrollToAnchor).toHaveBeenCalledWith('skills');
   });
 
   it('renders nothing when there are no projects', async () => {
