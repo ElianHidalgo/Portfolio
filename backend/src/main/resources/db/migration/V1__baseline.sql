@@ -1,0 +1,1 @@
+-- Schema baseline. Business tables are added by each module's own migrations.
