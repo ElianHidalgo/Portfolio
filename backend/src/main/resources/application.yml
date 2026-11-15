@@ -36,3 +36,8 @@ management:
 
 server:
   port: ${PORT:8080}
+
+app:
+  rate-limit:
+    # Per client and minute; the Cloudflare build needs ~10 requests in total.
+    requests-per-minute: ${RATE_LIMIT_PER_MINUTE:60}
