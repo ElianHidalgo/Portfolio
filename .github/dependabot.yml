@@ -13,6 +13,12 @@ updates:
     directory: /frontend
     schedule:
       interval: weekly
+    # Major upgrades of the compiler toolchain need a deliberate migration, not a bot PR.
+    ignore:
+      - dependency-name: typescript
+        update-types: [version-update:semver-major]
+      - dependency-name: '@types/node'
+        update-types: [version-update:semver-major]
     groups:
       angular:
         patterns: ['@angular/*', '@angular-devkit/*']
@@ -21,6 +27,11 @@ updates:
 
   - package-ecosystem: docker
     directories: [/backend, /frontend]
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker-compose
+    directory: /
     schedule:
       interval: weekly
 

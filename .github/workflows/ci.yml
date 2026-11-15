@@ -23,6 +23,8 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
@@ -39,6 +41,8 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: '22'
@@ -47,7 +51,20 @@ jobs:
       - run: npm ci
       - run: npm run test:scripts
       - run: npx ng test --watch=false
-      # No API runs in CI, so build client-only; prerendering is verified on Cloudflare Pages.
+      # No API runs in CI, so build client-only; prerendering is verified on Cloudflare's build.
       - run: npm run build
         env:
           PRERENDER: 'false'
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # Blocks pull requests that add dependencies with known high-severity vulnerabilities.
+      - uses: actions/dependency-review-action@v5
+        with:
+          fail-on-severity: high
