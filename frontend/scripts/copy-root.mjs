@@ -61,8 +61,12 @@ const headers = (scriptHashes) => `/*
   Cache-Control: public, max-age=31536000, immutable
 /*.css
   Cache-Control: public, max-age=31536000, immutable
-/*/media/*
-  Cache-Control: public, max-age=31536000, immutable
+${LOCALES.map((locale) => `/${locale}/media/*\n  Cache-Control: public, max-age=31536000, immutable`).join('\n')}
+
+# Client-only shells and 404 pages carry no content of their own: keep them out of search results.
+${[...LOCALES.flatMap((locale) => [`/${locale}/index.csr*`, `/${locale}/404*`]), '/404*']
+  .map((path) => `${path}\n  X-Robots-Tag: noindex`)
+  .join('\n')}
 `;
 
 export function writeRootFiles(outDir, env = process.env) {

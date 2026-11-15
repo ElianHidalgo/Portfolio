@@ -3,7 +3,13 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { verifyPrerender, verifySiteUrl } from './verify-prerender.mjs';
+import { verifyBuild, verifyPrerender, verifySiteUrl } from './verify-prerender.mjs';
+
+test('checks SITE_URL on Cloudflare even when prerendering is off', () => {
+  const problems = verifyBuild({ WORKERS_CI: '1', PRERENDER: 'false' }, '/does-not-matter');
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /SITE_URL/);
+});
 
 test('requires the public SITE_URL when building on Cloudflare (Pages or Workers)', () => {
   assert.equal(verifySiteUrl({ CF_PAGES: '1' }).length, 1);

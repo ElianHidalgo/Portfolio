@@ -26,6 +26,19 @@ describe('fetchWithRetry', () => {
     expect(response.status).toBe(404);
   });
 
+  it('aborts an attempt that hangs and tries again', async () => {
+    let calls = 0;
+    const hang = (_url: string, init?: RequestInit) =>
+      new Promise<Response>((_resolve, reject) => {
+        calls++;
+        init?.signal?.addEventListener('abort', () => reject(new Error('aborted')));
+      });
+    const attempt = fetchWithRetry('http://api.test/x', { attempts: 2, timeoutMs: 10, fetchFn: hang, sleep: noWait });
+
+    await expect(attempt).rejects.toThrow('after 2 attempts');
+    expect(calls).toBe(2);
+  });
+
   it('gives up after the last attempt with a clear message', async () => {
     let calls = 0;
     const attempt = fetchWithRetry('http://api.test/x', {

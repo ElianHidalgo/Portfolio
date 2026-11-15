@@ -61,3 +61,13 @@ test('sets security headers and long caching for hashed assets', () => {
   }
   assert.match(headers, /Cache-Control: public, max-age=31536000, immutable/);
 });
+
+test('caches fonts per locale and keeps client-only shells out of search engines', () => {
+  const headers = build()('_headers');
+  for (const rule of ['/es/media/*', '/en/media/*']) {
+    assert.match(headers, new RegExp(`^${rule.replace(/[*/]/g, '\\$&')}\\n  Cache-Control: public, max-age=31536000, immutable`, 'm'));
+  }
+  for (const rule of ['/es/index.csr*', '/en/index.csr*', '/es/404*', '/en/404*', '/404*']) {
+    assert.match(headers, new RegExp(`^${rule.replace(/[*/.]/g, '\\$&')}\\n  X-Robots-Tag: noindex`, 'm'));
+  }
+});

@@ -52,19 +52,18 @@ export function verifyPrerender(distDir) {
   return problems;
 }
 
+/** All build checks: SITE_URL always (the root page uses it), prerender output when enabled. */
+export function verifyBuild(env, distDir) {
+  const prerendered = env.PRERENDER !== 'false';
+  return [...verifySiteUrl(env), ...(prerendered ? verifyPrerender(distDir) : [])];
+}
+
 // CLI: node scripts/verify-prerender.mjs
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  if (process.env.PRERENDER === 'false') {
-    console.log('Prerender disabled — skipping verification.');
-  } else {
-    const problems = [
-      ...verifySiteUrl(process.env),
-      ...verifyPrerender(fileURLToPath(new URL('../dist/frontend/browser', import.meta.url))),
-    ];
-    if (problems.length > 0) {
-      console.error(`Prerender verification failed:\n- ${problems.join('\n- ')}`);
-      process.exit(1);
-    }
-    console.log('Prerender verified.');
+  const problems = verifyBuild(process.env, fileURLToPath(new URL('../dist/frontend/browser', import.meta.url)));
+  if (problems.length > 0) {
+    console.error(`Build verification failed:\n- ${problems.join('\n- ')}`);
+    process.exit(1);
   }
+  console.log(process.env.PRERENDER === 'false' ? 'Prerender disabled — SITE_URL checked.' : 'Prerender verified.');
 }
