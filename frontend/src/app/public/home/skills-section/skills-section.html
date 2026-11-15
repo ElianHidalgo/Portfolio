@@ -5,7 +5,7 @@
       @for (group of groups(); track group.category) {
         <div class="skills__group">
           <h3 class="skills__category">{{ group.label }}</h3>
-          <ul class="skills__list">
+          <ul class="skills__list" translate="no">
             @for (skill of group.skills; track skill.name) {
               <li>{{ skill.name }}</li>
             }

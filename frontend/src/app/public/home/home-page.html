@@ -21,7 +21,7 @@
     <app-skills-section [profile]="profile.value()" />
   } @else if (profile.error()) {
     <div class="status" role="alert">
-      <p i18n="@@loadError">We couldn't load this section.</p>
+      <p i18n="@@loadError">The profile didn’t load. Try again in a few seconds.</p>
       <button class="button" type="button" (click)="profile.reload()" i18n="@@retry">Try again</button>
     </div>
   } @else {

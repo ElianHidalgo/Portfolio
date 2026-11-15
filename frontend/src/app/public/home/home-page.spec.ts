@@ -100,7 +100,7 @@ describe('HomePage', () => {
 
   it('shows an error with a working retry when the request fails', async () => {
     await respond(null, 500);
-    expect(page().textContent).toContain("We couldn't load this section.");
+    expect(page().textContent).toContain('The profile didn’t load. Try again in a few seconds.');
 
     const retry = Array.from(page().querySelectorAll('button')).find(
       (b) => b.textContent?.trim() === 'Try again',
@@ -114,6 +114,6 @@ describe('HomePage', () => {
 
   it('shows the error state when the profile does not exist', async () => {
     await respond(null, 404);
-    expect(page().textContent).toContain("We couldn't load this section.");
+    expect(page().textContent).toContain('The profile didn’t load. Try again in a few seconds.');
   });
 });
