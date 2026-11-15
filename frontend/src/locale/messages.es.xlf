@@ -7,7 +7,7 @@
         <target>Saltar al contenido</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.html</context>
-          <context context-type="linenumber">1,3</context>
+          <context context-type="linenumber">2,4</context>
         </context-group>
       </trans-unit>
       <trans-unit id="pageTitle" datatype="html">
@@ -15,11 +15,23 @@
         <target>Portafolio</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/app.routes.ts</context>
-          <context context-type="linenumber">6</context>
+          <context context-type="linenumber">7</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/seo/seo.service.ts</context>
+          <context context-type="linenumber">36</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/home-page.ts</context>
+          <context context-type="linenumber">29</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/not-found/not-found-page.ts</context>
+          <context context-type="linenumber">23</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/project/project-page.ts</context>
-          <context context-type="linenumber">38</context>
+          <context context-type="linenumber">36</context>
         </context-group>
       </trans-unit>
       <trans-unit id="builtWith" datatype="html">
@@ -216,6 +228,22 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/skills-section/skills-section.html</context>
           <context context-type="linenumber">3,4</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pageNotFound" datatype="html">
+        <source>This page doesn’t exist.</source>
+        <target>Esta página no existe.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/not-found/not-found-page.ts</context>
+          <context context-type="linenumber">10,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="pageNotFoundBack" datatype="html">
+        <source>Go to the home page</source>
+        <target>Ir al inicio</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/not-found/not-found-page.ts</context>
+          <context context-type="linenumber">11,14</context>
         </context-group>
       </trans-unit>
       <trans-unit id="backToProjects" datatype="html">

@@ -41,6 +41,20 @@ describe('App routes', () => {
     expect(harness.routeNativeElement?.tagName.toLowerCase()).toBe('app-home-page');
   });
 
+  it('any unknown path renders the not-found page with a way home', async () => {
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
+    });
+    const harness = await RouterTestingHarness.create();
+
+    await harness.navigateByUrl('/admin/whatever');
+
+    const page = harness.routeNativeElement!;
+    expect(page.tagName.toLowerCase()).toBe('app-not-found-page');
+    expect(page.querySelector('[data-state="not-found"]')).not.toBeNull();
+    expect(page.querySelector('a')?.getAttribute('href')).toBe('./');
+  });
+
   it("navigating to '/projects/:slug' renders the project page", async () => {
     TestBed.configureTestingModule({
       providers: [provideRouter(routes), provideHttpClient(), provideHttpClientTesting()],
