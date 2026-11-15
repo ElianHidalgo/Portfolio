@@ -43,7 +43,7 @@
 
 ### Task 2: Production credentials split (user + verification)
 
-- [ ] **User (Neon console):** Roles → **New role** `portfolio_app` → copy the generated password (never in chat).
+- [ ] **User (Neon SQL Editor, as `neondb_owner`):** `CREATE ROLE portfolio_app WITH LOGIN PASSWORD '…'; GRANT CONNECT ON DATABASE neondb TO portfolio_app;` — never via the console (console roles join `neon_superuser`). Delete the statement from the editor history afterwards.
 - [ ] **User (Render → Environment):** `DB_USERNAME=portfolio_app`, `DB_PASSWORD=<new>`, `DB_MIGRATION_USERNAME=neondb_owner`, `DB_MIGRATION_PASSWORD=<owner password>`; **Save only** (deploy happens on merge). Health Check Path `/api/health/liveness`.
 - [ ] Merge only after both are confirmed; verify on Render logs `Successfully applied 1 migration` and the API answers.
 

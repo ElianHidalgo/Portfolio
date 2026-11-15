@@ -119,6 +119,8 @@ The Docker image builds with `PRERENDER=false`: no API exists while `docker comp
 
 Visitors only load static files: public links point at prerendered pages and the first load reuses build-time data, so nobody waits for the sleeping API. The Cloudflare build wakes it (retrying for ~3 min).
 
+Database roles: each module owns a schema (`profile`, `projects`). Flyway migrates as the owner (`DB_MIGRATION_USERNAME`/`DB_MIGRATION_PASSWORD`); the app connects as `portfolio_app`, which can read and write data but not create, alter or drop anything. Create that role **with SQL** as the owner — `CREATE ROLE portfolio_app WITH LOGIN PASSWORD '…'; GRANT CONNECT ON DATABASE neondb TO portfolio_app;` — never in the Neon console, whose roles join `neon_superuser`. The API also rate-limits each client (60 requests/minute, keyed on Cloudflare's `CF-Connecting-IP`).
+
 Security: `_headers` sets a CSP whose script allow-list is the SHA-256 of each inline script found in the build (no `'unsafe-inline'` for scripts), plus HSTS, `nosniff`, `X-Frame-Options: DENY`, a referrer policy and a permissions policy. Secrets live only in the Render dashboard. CI runs every test suite on each push; Dependabot proposes weekly updates.
 
 ## Translations
