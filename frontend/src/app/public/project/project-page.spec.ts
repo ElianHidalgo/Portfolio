@@ -86,4 +86,10 @@ describe('ProjectPage', () => {
     await respond(detail());
     expect(TestBed.inject(Title).getTitle()).toBe('GameVault | Portfolio');
   });
+
+  it('uses a trailing-slash canonical URL, matching the prerendered folder', async () => {
+    await respond(detail());
+    const canonical = document.head.querySelector('link[rel="canonical"]')?.getAttribute('href');
+    expect(canonical?.endsWith('/projects/gamevault/')).toBe(true);
+  });
 });

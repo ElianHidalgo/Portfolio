@@ -5,8 +5,9 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { verifyPrerender } from './verify-prerender.mjs';
 
-const HOME = '<section id="hero"></section><section id="projects"></section>';
-const PROJECT = '<h1>GameVault</h1>';
+// `ngh="…"` is the hydration annotation Angular writes when hydration is set up correctly.
+const HOME = '<main ngh="0"><section id="hero"></section><section id="projects"></section></main>';
+const PROJECT = '<main ngh="0"><h1>GameVault</h1></main>';
 
 function dist(files) {
   const root = mkdtempSync(join(tmpdir(), 'prerender-'));
@@ -29,9 +30,22 @@ test('passes a complete prerender', () => {
 });
 
 test('reports a page left in the loading or error state', () => {
-  const problems = verifyPrerender(dist({ ...complete, 'es/index.html': HOME + '<p class="status">Cargando…</p>' }));
+  const problems = verifyPrerender(dist({ ...complete, 'es/index.html': HOME + '<p data-state="loading">Cargando…</p>' }));
   assert.equal(problems.length, 1);
   assert.match(problems[0], /es[\\/]index\.html/);
+});
+
+test('reports a section that failed inside an otherwise complete page', () => {
+  const failedSection = HOME.replace('</section></main>', '<div data-state="error">Los proyectos no cargaron.</div></section></main>');
+  const problems = verifyPrerender(dist({ ...complete, 'en/index.html': failedSection }));
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /en[\\/]index\.html/);
+});
+
+test('reports pages without hydration annotations', () => {
+  const problems = verifyPrerender(dist({ ...complete, 'es/projects/gamevault/index.html': '<h1>GameVault</h1>' }));
+  assert.equal(problems.length, 1);
+  assert.match(problems[0], /hydration/);
 });
 
 test('reports a missing locale and a locale without project pages', () => {

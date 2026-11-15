@@ -46,7 +46,7 @@
 } @else if (projects.error()) {
   <section id="projects" class="section" aria-labelledby="projects-title">
     <h2 id="projects-title" class="section__title" i18n="@@projectsTitle">Projects</h2>
-    <div class="projects__error" role="alert">
+    <div class="projects__error" role="alert" data-state="error">
       <p i18n="@@projectsLoadError">Projects didn’t load.</p>
       <button class="button" type="button" (click)="projects.reload()" i18n="@@retry">Try again</button>
     </div>

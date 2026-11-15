@@ -41,7 +41,8 @@ export class ProjectPage {
         this.seo.setPage({
           title: `${pickLocalized(project.title, this.locale)} | ${siteTitle}`,
           description: pickLocalized(project.summary, this.locale),
-          path: `/projects/${project.slug}`,
+          // Trailing slash: the prerendered page lives at projects/<slug>/index.html.
+          path: `/projects/${project.slug}/`,
           type: 'article',
         });
       } else if (this.project.error()) {

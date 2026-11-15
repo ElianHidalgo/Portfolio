@@ -1,12 +1,16 @@
 // Fails the build when the prerendered site is incomplete: a missing language, no project
-// pages, or a page frozen in its loading/error state (e.g. the API answered badly mid-build).
+// pages, a page or section frozen in its loading/error state (e.g. the API answered badly
+// mid-build), or pages the browser could not hydrate.
 // Publishing nothing is better than publishing a broken page.
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const LOCALES = ['es', 'en'];
-const STATUS_MARKER = 'class="status"';
+// Every loading/error/not-found state in the app carries data-state="…" (whole pages and sections).
+const STATE_MARKER = 'data-state="';
+// Angular writes ngh="…" on hydratable components; without it the browser redraws the page.
+const HYDRATION_MARKER = ' ngh="';
 
 /** Returns a list of problems; empty means the prerender is complete. */
 export function verifyPrerender(distDir) {
@@ -16,7 +20,8 @@ export function verifyPrerender(distDir) {
     for (const marker of required) {
       if (!html.includes(marker)) problems.push(`${file}: missing ${marker}`);
     }
-    if (html.includes(STATUS_MARKER)) problems.push(`${file}: rendered a loading or error state`);
+    if (html.includes(STATE_MARKER)) problems.push(`${file}: rendered a loading or error state`);
+    if (!html.includes(HYDRATION_MARKER)) problems.push(`${file}: has no hydration annotations`);
   };
 
   for (const locale of LOCALES) {

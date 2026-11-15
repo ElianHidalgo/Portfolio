@@ -45,16 +45,16 @@
       </div>
     </article>
   } @else if (notFound()) {
-    <div class="status" role="alert">
+    <div class="status" role="alert" data-state="not-found">
       <p i18n="@@projectNotFound">This project doesn’t exist.</p>
       <a class="button" routerLink="/" fragment="projects" i18n="@@projectNotFoundBack">Back to all projects</a>
     </div>
   } @else if (project.error()) {
-    <div class="status" role="alert">
+    <div class="status" role="alert" data-state="error">
       <p i18n="@@projectLoadError">The project didn’t load. Try again in a few seconds.</p>
       <button class="button" type="button" (click)="project.reload()" i18n="@@retry">Try again</button>
     </div>
   } @else {
-    <p class="status" role="status" i18n="@@projectLoading">Loading project…</p>
+    <p class="status" role="status" data-state="loading" i18n="@@projectLoading">Loading project…</p>
   }
 </main>

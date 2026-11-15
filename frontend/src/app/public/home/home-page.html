@@ -5,11 +5,11 @@
     <app-projects-section />
     <app-skills-section [profile]="profile.value()" />
   } @else if (profile.error()) {
-    <div class="status" role="alert">
+    <div class="status" role="alert" data-state="error">
       <p i18n="@@loadError">The profile didn’t load. Try again in a few seconds.</p>
       <button class="button" type="button" (click)="profile.reload()" i18n="@@retry">Try again</button>
     </div>
   } @else {
-    <p class="status" role="status" i18n="@@profileLoading">Loading profile…</p>
+    <p class="status" role="status" data-state="loading" i18n="@@profileLoading">Loading profile…</p>
   }
 </main>
