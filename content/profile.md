@@ -1,19 +1,18 @@
 # Profile content
 
-Draft written from the CVs (2026-11-15). Review it, edit anything, and tell Claude.
-It will be turned into a database migration (the admin panel that edits this from
-the browser arrives in part 8).
+Approved 2026-11-15 and loaded by migration `V4__owner_profile_content.sql`.
+To change it before the admin panel exists (part 8), edit this file and ask Claude
+for a new migration.
 
 - Write each text in **both languages**. Leave a field empty if you don't want it shown.
 - Everything here becomes **public** (the site and this GitHub repository).
-- Lines marked **TO CONFIRM** need your answer.
 
 ## Basics
 
-- Full name: **TO CONFIRM** — the CVs say "Victor Hidalgo", the site says "Elian Hidalgo"
+- Full name: Victor Hidalgo
 - Location: Quito, Ecuador
 - Public email: victor.hidalgo.escalante@outlook.com
-- LinkedIn URL: **TO CONFIRM** — the CVs still say `linkedin.com/in/[your-username]`
+- LinkedIn URL: https://www.linkedin.com/in/victor-hidalgo-889249303/
 - GitHub URL: https://github.com/ElianHidalgo
 
 ## Headline (one line, under your name)
@@ -78,6 +77,6 @@ Angular, TypeScript and PostgreSQL are not in the CVs but this site is built wit
 
 | What | Location | Status |
 |---|---|---|
-| CV in Spanish | `frontend/public/cv/cv-es.pdf` | Uploaded — **contains your phone number and a placeholder LinkedIn link** |
-| CV in English | `frontend/public/cv/cv-en.pdf` | Uploaded — same as above |
+| CV in Spanish | `frontend/public/cv/cv-es.pdf` | Uploaded (no phone number) |
+| CV in English | `frontend/public/cv/cv-en.pdf` | Uploaded (no phone number) |
 | Profile photo (optional) | `frontend/public/images/avatar.jpg` | Not uploaded — square, ≥ 640×640 px, JPG/WebP, < 300 KB |

@@ -30,15 +30,17 @@ class ProfileApiTests {
     JdbcTemplate jdbc;
 
     @Test
-    void returnsSeededProfileInBothLanguages() throws Exception {
+    void returnsOwnerProfileInBothLanguages() throws Exception {
         mockMvc.perform(get("/api/profile"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.fullName").value("Elian Hidalgo"))
-                .andExpect(jsonPath("$.headline.en").value("Full-stack developer — Java, Spring & Angular"))
-                .andExpect(jsonPath("$.headline.es").value("Desarrollador full-stack — Java, Spring y Angular"))
+                .andExpect(jsonPath("$.fullName").value("Victor Hidalgo"))
+                .andExpect(jsonPath("$.headline.en").value("Software Engineering student focused on backend and DevOps"))
+                .andExpect(jsonPath("$.headline.es").value("Estudiante de Ingeniería de Software enfocado en backend y DevOps"))
+                .andExpect(jsonPath("$.location").value("Quito, Ecuador"))
                 .andExpect(jsonPath("$.githubUrl").value("https://github.com/ElianHidalgo"))
-                .andExpect(jsonPath("$.location").isEmpty())
-                .andExpect(jsonPath("$.cvUrl.es").isEmpty());
+                .andExpect(jsonPath("$.linkedinUrl").value("https://www.linkedin.com/in/victor-hidalgo-889249303/"))
+                .andExpect(jsonPath("$.cvUrl.es").value("cv/cv-es.pdf"))
+                .andExpect(jsonPath("$.cvUrl.en").value("cv/cv-en.pdf"));
     }
 
     @Test
@@ -46,8 +48,8 @@ class ProfileApiTests {
         jdbc.update("insert into skill (name, category, display_order) values ('Kotlin', 'BACKEND', 1)");
 
         mockMvc.perform(get("/api/profile"))
-                .andExpect(jsonPath("$.skills[*].name").value(contains(
-                        "Java", "Kotlin", "Spring Boot", "Angular", "TypeScript", "PostgreSQL", "Docker", "Git")))
+                .andExpect(jsonPath("$.skills[0:3].name").value(contains("Java", "Kotlin", "Spring Boot")))
+                .andExpect(jsonPath("$.skills.length()").value(21))
                 .andExpect(jsonPath("$.skills[0].category").value("BACKEND"));
     }
 
