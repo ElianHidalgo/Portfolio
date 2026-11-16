@@ -1,5 +1,5 @@
 import { ViewportScroller } from '@angular/common';
-import { provideHttpClient, withFetch } from '@angular/common/http';
+import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
   inject,
@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding, withInMemoryScrolling } from '@angular/router';
 import { provideClientHydration, withEventReplay, withI18nSupport } from '@angular/platform-browser';
+import { adminAuthInterceptor } from './admin/auth/admin-auth.interceptor';
 import { routes } from './app.routes';
 
 export const appConfig: ApplicationConfig = {
@@ -20,7 +21,8 @@ export const appConfig: ApplicationConfig = {
       // Header links like "/#projects" scroll to the section, also from another page.
       withInMemoryScrolling({ anchorScrolling: 'enabled', scrollPositionRestoration: 'enabled' }),
     ),
-    provideHttpClient(withFetch()),
+    // The interceptor only touches admin API calls (adds the admin token).
+    provideHttpClient(withFetch(), withInterceptors([adminAuthInterceptor])),
     // Anchor scrolling stops below the sticky header (3.5rem) plus a little air.
     provideAppInitializer(() => inject(ViewportScroller).setOffset([0, 80])),
     // Reuses the prerendered DOM and the build-time HTTP responses (transfer cache):

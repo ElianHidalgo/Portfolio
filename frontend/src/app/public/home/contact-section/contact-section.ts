@@ -11,12 +11,10 @@ import {
 } from '@angular/forms';
 import { finalize } from 'rxjs';
 import { BackendWake } from '../../../core/http/backend-wake';
+import { SLOW_AFTER_MS } from '../../../core/http/cold-start';
 import { ContactApi } from './contact-api';
 
 export type ContactState = 'idle' | 'sending' | 'sent' | 'limited' | 'error';
-
-/** After this long, "sending" also explains that the server is waking up. */
-const SLOW_AFTER_MS = 5_000;
 
 /** Length of the trimmed text: the API trims before validating, so the limits must match. */
 function trimmedLength(min: number, max: number): ValidatorFn {
