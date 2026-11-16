@@ -17,6 +17,6 @@ export class ProjectsSection {
 
   constructor() {
     // Sections at or below this one move once the projects render (or fail), so they wait for it.
-    scrollToFragmentWhenReady(() => !this.projects.isLoading(), ['projects', 'skills']);
+    scrollToFragmentWhenReady(() => !this.projects.isLoading(), ['projects', 'skills', 'contact']);
   }
 }

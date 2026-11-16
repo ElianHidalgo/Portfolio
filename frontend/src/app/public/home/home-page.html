@@ -4,6 +4,7 @@
     <app-about-section [profile]="profile.value()" />
     <app-projects-section />
     <app-skills-section [profile]="profile.value()" />
+    <app-contact-section />
   } @else if (profile.error()) {
     <div class="status" role="alert" data-state="error">
       <p i18n="@@loadError">The profile didn’t load. Try again in a few seconds.</p>

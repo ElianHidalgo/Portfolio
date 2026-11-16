@@ -1,0 +1,95 @@
+<section id="contact" class="section" aria-labelledby="contact-title" [attr.data-form-state]="state()">
+  <h2 id="contact-title" class="section__title" i18n="@@contactTitle">Contact</h2>
+  <div class="contact">
+    <p class="contact__intro" i18n="@@contactIntro">Have a project or a role in mind? Write to me.</p>
+
+    <form class="contact__form" [formGroup]="form" (ngSubmit)="submit()" (focusin)="wakeBackend()" novalidate>
+      <div class="contact__row">
+        <div class="contact__field">
+          <label for="contact-name" i18n="@@contactName">Name</label>
+          <input
+            id="contact-name"
+            name="name"
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            maxlength="100"
+            [attr.aria-invalid]="showError('name')"
+            [attr.aria-describedby]="showError('name') ? 'contact-name-error' : null"
+          />
+          @if (showError('name')) {
+            <p id="contact-name-error" class="contact__error" i18n="@@contactNameError">Enter your name.</p>
+          }
+        </div>
+        <div class="contact__field">
+          <label for="contact-email" i18n="@@contactEmail">Email</label>
+          <input
+            id="contact-email"
+            name="email"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            maxlength="254"
+            [attr.aria-invalid]="showError('email')"
+            [attr.aria-describedby]="showError('email') ? 'contact-email-error' : null"
+          />
+          @if (showError('email')) {
+            <p id="contact-email-error" class="contact__error" i18n="@@contactEmailError">Enter a valid email.</p>
+          }
+        </div>
+      </div>
+
+      <div class="contact__field">
+        <label for="contact-message" i18n="@@contactMessage">Message</label>
+        <textarea
+          id="contact-message"
+          name="message"
+          formControlName="message"
+          rows="6"
+          maxlength="2000"
+          [attr.aria-invalid]="showError('message')"
+          [attr.aria-describedby]="showError('message') ? 'contact-message-error' : null"
+        ></textarea>
+        @if (showError('message')) {
+          <p id="contact-message-error" class="contact__error" i18n="@@contactMessageError">
+            Write between 10 and 2,000 characters.
+          </p>
+        }
+      </div>
+
+      <!-- Honeypot: off-screen (bots skip display:none), unreachable by keyboard and screen readers. -->
+      <div class="contact__trap" aria-hidden="true">
+        <label for="contact-website" i18n="@@contactHoneypot">Leave this field empty</label>
+        <input id="contact-website" name="website" type="text" formControlName="website" tabindex="-1" autocomplete="off" />
+      </div>
+
+      <div class="contact__actions">
+        <button class="button button--primary" type="submit" [disabled]="state() === 'sending'">
+          @if (state() === 'sending') {
+            <ng-container i18n="@@contactSending">Sending…</ng-container>
+          } @else {
+            <ng-container i18n="@@contactSend">Send message</ng-container>
+          }
+        </button>
+        <p class="contact__feedback" role="status">
+          @switch (state()) {
+            @case ('sending') {
+              @if (slow()) {
+                <ng-container i18n="@@contactWaking">The server is waking up; this can take up to a minute.</ng-container>
+              }
+            }
+            @case ('sent') {
+              <span class="contact__feedback--ok" i18n="@@contactSent">Thanks! Your message was sent.</span>
+            }
+            @case ('limited') {
+              <span class="contact__feedback--error" i18n="@@contactLimited">Too many messages for now. Try again later.</span>
+            }
+            @case ('error') {
+              <span class="contact__feedback--error" i18n="@@contactError">The message couldn’t be sent. Try again.</span>
+            }
+          }
+        </p>
+      </div>
+    </form>
+  </div>
+</section>

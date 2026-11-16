@@ -5,13 +5,14 @@ import { SeoService } from '../../core/seo/seo.service';
 import { pickLocalized } from '../../shared/localized.pipe';
 import { scrollToFragmentWhenReady } from '../../shared/fragment-scroll';
 import { AboutSection } from './about-section/about-section';
+import { ContactSection } from './contact-section/contact-section';
 import { HeroSection } from './hero-section/hero-section';
 import { ProjectsSection } from './projects-section/projects-section';
 import { SkillsSection } from './skills-section/skills-section';
 
 @Component({
   selector: 'app-home-page',
-  imports: [HeroSection, AboutSection, ProjectsSection, SkillsSection],
+  imports: [HeroSection, AboutSection, ProjectsSection, SkillsSection, ContactSection],
   templateUrl: './home-page.html',
   styleUrl: './home-page.scss',
 })

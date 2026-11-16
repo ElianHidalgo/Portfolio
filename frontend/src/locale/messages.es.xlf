@@ -23,7 +23,7 @@
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.ts</context>
-          <context context-type="linenumber">29</context>
+          <context context-type="linenumber">30</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/not-found/not-found-page.ts</context>
@@ -79,7 +79,15 @@
         <target>Habilidades</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
-          <context context-type="linenumber">6,8</context>
+          <context context-type="linenumber">6,7</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="navContact" datatype="html">
+        <source>Contact</source>
+        <target>Contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/core/layout/site-header/site-header.html</context>
+          <context context-type="linenumber">7,9</context>
         </context-group>
       </trans-unit>
       <trans-unit id="aboutTitle" datatype="html">
@@ -88,6 +96,126 @@
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/about-section/about-section.html</context>
           <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactTitle" datatype="html">
+        <source>Contact</source>
+        <target>Contacto</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">2,3</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactIntro" datatype="html">
+        <source>Have a project or a role in mind? Write to me.</source>
+        <target>¿Tienes un proyecto o un puesto en mente? Escríbeme.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">4,6</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactName" datatype="html">
+        <source>Name</source>
+        <target>Nombre</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">9,11</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactNameError" datatype="html">
+        <source>Enter your name.</source>
+        <target>Escribe tu nombre.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">21,23</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactEmail" datatype="html">
+        <source>Email</source>
+        <target>Correo electrónico</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">25,27</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactEmailError" datatype="html">
+        <source>Enter a valid email.</source>
+        <target>Escribe un correo válido.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">37,40</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactMessage" datatype="html">
+        <source>Message</source>
+        <target>Mensaje</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">43,45</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactMessageError" datatype="html">
+        <source> Write between 10 and 2,000 characters. </source>
+        <target>Escribe entre 10 y 2000 caracteres.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">55,57</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactHoneypot" datatype="html">
+        <source>Leave this field empty</source>
+        <target>Deja este campo vacío</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">62,63</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactSending" datatype="html">
+        <source>Sending…</source>
+        <target>Enviando…</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">69,70</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactSend" datatype="html">
+        <source>Send message</source>
+        <target>Enviar mensaje</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">71,72</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactWaking" datatype="html">
+        <source>The server is waking up; this can take up to a minute.</source>
+        <target>El servidor está despertando; puede tardar hasta un minuto.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">78,79</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactSent" datatype="html">
+        <source>Thanks! Your message was sent.</source>
+        <target>¡Gracias! Tu mensaje fue enviado.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">82,84</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactLimited" datatype="html">
+        <source>Too many messages for now. Try again later.</source>
+        <target>Demasiados mensajes por ahora. Inténtalo más tarde.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">85,87</context>
+        </context-group>
+      </trans-unit>
+      <trans-unit id="contactError" datatype="html">
+        <source>The message couldn’t be sent. Try again.</source>
+        <target>No se pudo enviar el mensaje. Inténtalo de nuevo.</target>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
+          <context context-type="linenumber">88,90</context>
         </context-group>
       </trans-unit>
       <trans-unit id="downloadCv" datatype="html">
@@ -111,7 +239,7 @@
         <target>El perfil no cargó. Vuelve a intentarlo en unos segundos.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">9,10</context>
+          <context context-type="linenumber">10,11</context>
         </context-group>
       </trans-unit>
       <trans-unit id="retry" datatype="html">
@@ -119,7 +247,7 @@
         <target>Reintentar</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">10,11</context>
+          <context context-type="linenumber">11,12</context>
         </context-group>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/projects-section/projects-section.html</context>
@@ -135,7 +263,7 @@
         <target>Cargando perfil…</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/home-page.html</context>
-          <context context-type="linenumber">13,16</context>
+          <context context-type="linenumber">14,17</context>
         </context-group>
       </trans-unit>
       <trans-unit id="projectsTitle" datatype="html">

@@ -1,0 +1,109 @@
+/* Labels above fields; one column on phones, name and email side by side on wider screens. */
+.contact {
+  display: grid;
+  gap: var(--space-l);
+  max-width: 44rem;
+}
+
+.contact__intro {
+  margin: 0;
+  font-size: var(--text-l);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+.contact__form {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.contact__row {
+  display: grid;
+  gap: var(--space-m);
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.contact__field {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+
+  label {
+    font-size: var(--text-s);
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    font: inherit;
+    color: var(--color-ink);
+    background: transparent;
+    transition: border-color 150ms ease;
+
+    &:hover {
+      border-color: var(--color-muted);
+    }
+
+    &:focus-visible {
+      border-color: var(--color-focus);
+      outline-offset: 0;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: var(--color-error);
+    }
+  }
+
+  textarea {
+    resize: vertical;
+    line-height: 1.5;
+  }
+}
+
+.contact__error {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-error);
+}
+
+/* Off-screen rather than display:none, so bots still find and fill it. */
+.contact__trap {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.contact__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-s) var(--space-m);
+}
+
+.contact__feedback {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.contact__feedback--ok {
+  color: var(--color-accent-strong);
+  font-weight: 600;
+}
+
+.contact__feedback--error {
+  color: var(--color-error);
+  font-weight: 600;
+}

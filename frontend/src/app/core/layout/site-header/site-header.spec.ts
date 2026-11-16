@@ -34,7 +34,8 @@ describe('SiteHeader', () => {
   it('links its sections to the home page', async () => {
     const header = await headerAt('/projects/gamevault');
     const links = Array.from(header.querySelectorAll('nav ul a'));
-    expect(links.map((a) => a.textContent?.trim())).toEqual(['About', 'Projects', 'Skills']);
+    expect(links.map((a) => a.textContent?.trim())).toEqual(['About', 'Projects', 'Skills', 'Contact']);
     expect(links[1].getAttribute('href')).toBe('./#projects');
+    expect(links[3].getAttribute('href')).toBe('./#contact');
   });
 });
