@@ -1,18 +1,14 @@
 package dev.elianhidalgo.portfolio.shared.web;
 
-import io.github.bucket4j.Bandwidth;
-import io.github.bucket4j.Bucket;
-import io.github.bucket4j.ConsumptionProbe;
+import dev.elianhidalgo.portfolio.shared.ClientAddress;
+import dev.elianhidalgo.portfolio.shared.ClientRateLimiter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.OptionalLong;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -22,29 +18,18 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Limits API requests per client (token bucket, in memory — the app runs as one instance).
- *
- * <p>The client is identified by {@code CF-Connecting-IP}: Render sits behind Cloudflare,
- * which sets that header to the real visitor address and overwrites any value a client
- * sends. {@code X-Forwarded-For} is never trusted, since a client can put anything in it.
- * Without Cloudflare (local runs) the socket address is used.
+ * Limits API requests per client (see {@link ClientRateLimiter} and {@link ClientAddress}
+ * for how clients are counted and identified). Health checks are exempt.
  */
 @Component
 // Runs right after ApiHeadersFilter, so even a 429 carries the security headers.
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class RateLimitFilter extends OncePerRequestFilter {
 
-    private static final Duration IDLE_EVICTION = Duration.ofMinutes(10);
-    private static final int SWEEP_EVERY = 1_000;
-
-    private record Client(Bucket bucket, long lastSeenNanos) {}
-
-    private final int requestsPerMinute;
-    private final Map<String, Client> clients = new ConcurrentHashMap<>();
-    private final AtomicInteger requestsSinceSweep = new AtomicInteger();
+    private final ClientRateLimiter limiter;
 
     public RateLimitFilter(@Value("${app.rate-limit.requests-per-minute:60}") int requestsPerMinute) {
-        this.requestsPerMinute = requestsPerMinute;
+        this.limiter = new ClientRateLimiter(requestsPerMinute, Duration.ofMinutes(1));
     }
 
     @Override
@@ -56,47 +41,17 @@ public class RateLimitFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
-        sweepIdleClients();
-        long now = System.nanoTime();
-        Client client = clients.compute(clientKey(request),
-                (key, existing) -> new Client(existing != null ? existing.bucket() : newBucket(), now));
-
-        ConsumptionProbe probe = client.bucket().tryConsumeAndReturnRemaining(1);
-        if (probe.isConsumed()) {
+        OptionalLong retryAfterSeconds = limiter.tryConsume(ClientAddress.of(request));
+        if (retryAfterSeconds.isEmpty()) {
             chain.doFilter(request, response);
             return;
         }
-        long retryAfterSeconds = Math.max(1, TimeUnit.NANOSECONDS.toSeconds(probe.getNanosToWaitForRefill()) + 1);
         response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
-        response.setHeader("Retry-After", String.valueOf(retryAfterSeconds));
+        response.setHeader("Retry-After", String.valueOf(retryAfterSeconds.getAsLong()));
         // A rejection must never be cached, even on otherwise cacheable public paths.
         response.setHeader("Cache-Control", "no-store");
         response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
         response.getWriter().write("{\"type\":\"about:blank\",\"title\":\"Too Many Requests\",\"status\":429,"
                 + "\"detail\":\"Too many requests\",\"instance\":\"" + request.getRequestURI().replace("\"", "") + "\"}");
-    }
-
-    private static String clientKey(HttpServletRequest request) {
-        String cloudflareClientIp = request.getHeader("CF-Connecting-IP");
-        return cloudflareClientIp != null && !cloudflareClientIp.isBlank() ? cloudflareClientIp : request.getRemoteAddr();
-    }
-
-    private Bucket newBucket() {
-        return Bucket.builder()
-                .addLimit(Bandwidth.builder()
-                        .capacity(requestsPerMinute)
-                        .refillGreedy(requestsPerMinute, Duration.ofMinutes(1))
-                        .build())
-                .build();
-    }
-
-    /** Bounded memory: forget clients idle for 10 minutes (checked every 1,000 requests). */
-    private void sweepIdleClients() {
-        if (requestsSinceSweep.incrementAndGet() < SWEEP_EVERY) {
-            return;
-        }
-        requestsSinceSweep.set(0);
-        long cutoff = System.nanoTime() - IDLE_EVICTION.toNanos();
-        clients.values().removeIf(client -> client.lastSeenNanos() < cutoff);
     }
 }
