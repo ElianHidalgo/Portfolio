@@ -42,6 +42,11 @@ server:
       max: 20
 
 app:
+  contact:
+    # Messages one client may send per hour, and messages stored per rolling 24 hours (all clients):
+    # the cap keeps a spam wave from filling the free database.
+    per-client-per-hour: ${CONTACT_PER_CLIENT_PER_HOUR:5}
+    daily-cap: ${CONTACT_DAILY_CAP:50}
   cors:
     # Exact origins of the public site, comma-separated (Render: CORS_ALLOWED_ORIGINS).
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
