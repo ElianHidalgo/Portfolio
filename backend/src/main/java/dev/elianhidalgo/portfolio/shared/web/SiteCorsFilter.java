@@ -33,7 +33,7 @@ public class SiteCorsFilter extends CorsFilter {
         var config = new CorsConfiguration();
         config.setAllowedOrigins(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST"));
-        config.setAllowedHeaders(List.of("Content-Type"));
+        config.setAllowedHeaders(List.of("Content-Type", "Authorization"));
         config.setAllowCredentials(false);
         config.setMaxAge(Duration.ofHours(1));
         var source = new UrlBasedCorsConfigurationSource();
