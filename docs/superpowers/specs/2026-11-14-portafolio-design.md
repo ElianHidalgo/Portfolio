@@ -1,7 +1,7 @@
 # Portafolio web — Diseño
 
 Fecha: 2026-11-14
-Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos; revisión 5, 2026-11-15: módulo `contact` con límites anti-spam, CORS al origen exacto del sitio y ping de despertar al acercarse al formulario)
+Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos; revisión 5, 2026-11-15: módulo `contact` con límites anti-spam, CORS al origen exacto del sitio y ping de despertar al acercarse al formulario; revisión 6, 2026-11-15: autenticación — el entorno manda sobre la contraseña del admin, JWT HS256 con emisor, límite de intentos de login, cabecera `Authorization` en CORS y páginas propias del panel)
 
 ## 1. Intención y porqué
 
@@ -126,7 +126,7 @@ Paquete raíz `dev.<usuario>.portfolio` (usuario de GitHub pendiente; se define 
 | `projects` | Proyectos: título ES/EN, slug, resumen ES/EN, descripción ES/EN, tecnologías (tags), URL repo, URL demo, URL imagen, destacado, orden, publicado | `GET /api/projects` (solo publicados), `GET /api/projects/{slug}` | CRUD `/api/admin/projects` |
 | `contact` | Mensajes del formulario: nombre, email, mensaje, idioma de la página, fecha, leído | `POST /api/contact` | `GET /api/admin/messages`, `PATCH .../{id}/read`, `DELETE .../{id}` |
 | `publishing` | Disparar la reconstrucción del sitio público (llamada HTTP al deploy hook de Workers Builds) y guardar la fecha de la última publicación | — | `POST /api/admin/publish`, `GET /api/admin/publish/status` |
-| `auth` | Login del admin, emisión y validación de JWT, configuración de Spring Security | `POST /api/auth/login` | — |
+| `auth` | Login del admin, emisión y validación de JWT, configuración de Spring Security | `POST /api/auth/login` | `GET /api/admin/session` |
 | `shared` | Manejo global de errores (`ProblemDetail`), CORS, config común | `GET /api/health` (ping de "despertar") | — |
 
 Cada módulo es dueño de su **esquema** de base de datos (`profile`, `projects`, `contact`); la app se conecta con un rol de solo datos (`portfolio_app`) y Flyway migra con el rol dueño.
@@ -143,9 +143,9 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
 - Una migración de datos semilla con un perfil y un proyecto de ejemplo (en ambos idiomas) para que el sitio no arranque vacío.
 
 ### 5.5 Autenticación y seguridad
-- Un único admin. Usuario y contraseña vienen de variables de entorno (`ADMIN_USERNAME`, `ADMIN_PASSWORD`); al arrancar, si no existe, se crea con la contraseña hasheada (BCrypt).
-- `POST /api/auth/login` devuelve un JWT firmado (secreto en `JWT_SECRET`), expiración 2 horas.
-- Spring Security stateless: `/api/admin/**` requiere token válido; el resto de `/api/**` es público.
+- Un único admin. Usuario y contraseña vienen de variables de entorno (`ADMIN_USERNAME`, `ADMIN_PASSWORD`); en cada arranque la cuenta se ajusta a ellas (se crea si no existe y se vuelve a hashear con BCrypt si la contraseña cambió), así que rotar la contraseña solo requiere cambiarla en Render. Usuario de 3 a 50 caracteres; contraseña de 12 caracteres como mínimo y 72 bytes como máximo (límite de BCrypt); si no cumplen, no hay admin y se registra un aviso sin los valores.
+- `POST /api/auth/login` devuelve un JWT HS256 firmado (secreto en `JWT_SECRET`: base64 de al menos 32 bytes; sin él la app no arranca), emisor `portfolio-api`, expiración 2 horas. Cualquier fallo responde igual (401, mismo tiempo de BCrypt aunque el usuario no exista); 5 intentos por cliente cada 15 minutos.
+- Spring Security stateless (sin sesiones ni cookies, por eso CSRF no aplica): `/api/admin/**` requiere token válido; el resto de `/api/**` es público. Los 401 son problem JSON con `WWW-Authenticate: Bearer`. CORS permite la cabecera `Authorization`.
 - **CORS**: orígenes exactos permitidos desde la variable `CORS_ALLOWED_ORIGINS` (el dominio `*.workers.dev` del sitio en producción y `http://localhost:4200` en desarrollo); sin comodines ni credenciales.
 - **Límites de la API**: 60 peticiones por minuto por cliente (identificado por `CF-Connecting-IP`, nunca `X-Forwarded-For`) y cuerpos POST de 16 KiB como máximo.
 - `POST /api/contact` con validación de entrada y límite de tamaño; anti-spam básico: campo honeypot oculto (respuesta idéntica, no se guarda), 5 mensajes por cliente y hora, y un tope de 50 mensajes guardados por 24 h para no llenar la base gratuita.
@@ -170,7 +170,7 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
   - `/` — página mínima que redirige a `/es/` o `/en/` según el idioma del navegador (español por defecto).
   - Selector de idioma en el encabezado que lleva a la misma página en el otro idioma.
   - Etiquetas `lang` y `hreflang` correctas para accesibilidad y SEO.
-- **Panel admin** (`/admin/login` y `/admin/**`), **solo en español**, **cargado de forma lazy** y renderizado en el navegador (no se pre-genera); lo sirve el `404.html` de cada idioma (versión cliente) en Cloudflare Workers.
+- **Panel admin** (`/admin/login` y `/admin/**`), **solo en español**, **cargado de forma lazy** y renderizado en el navegador (no se pre-genera); lo sirven páginas propias (`es/admin/index.html` y `es/admin/login/index.html`, copias del shell cliente con `<meta name="api-origin">`) para responder 200 en vez del 404, con `X-Robots-Tag: noindex`. La versión en inglés no tiene panel.
   - Formularios con campos ES y EN lado a lado.
   - Botón **"Publicar"** que llama a `POST /api/admin/publish` y muestra la fecha de la última publicación.
   - Aviso visible de que el panel puede tardar unos segundos al entrar (el backend despierta).

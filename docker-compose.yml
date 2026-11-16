@@ -25,6 +25,10 @@ services:
       DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-portfolio}
       DB_USERNAME: ${DB_USERNAME:-portfolio}
       DB_PASSWORD: ${DB_PASSWORD:-portfolio}
+      # Local development only: production values live in the Render dashboard.
+      JWT_SECRET: ${JWT_SECRET:-bG9jYWwtZGV2ZWxvcG1lbnQtb25seS1qd3Qtc2VjcmV0LW5vdC1mb3ItcHJvZCEh}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-local-admin-password}
     depends_on:
       db:
         condition: service_healthy
