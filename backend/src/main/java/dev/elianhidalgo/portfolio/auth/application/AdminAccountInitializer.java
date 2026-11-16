@@ -14,8 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Keeps the admin account in line with the environment at every startup: the env is the
  * source of truth, so rotating the password only takes a change in Render and a redeploy.
- * Invalid or missing credentials leave no admin (the public site keeps working) and are
- * reported without ever logging the values.
+ * Invalid or missing credentials remove any existing admin (the public site keeps working)
+ * and are reported without ever logging the values.
  */
 @Component
 public class AdminAccountInitializer implements ApplicationRunner {
@@ -42,13 +42,17 @@ public class AdminAccountInitializer implements ApplicationRunner {
 
     @Transactional
     public void sync(AdminCredentials credentials) {
+        // No usable credentials means no admin at all: an account left over from earlier values
+        // (possibly a leaked password) must stop working.
         if (credentials.isBlank()) {
+            accounts.deleteAllInBatch();
             log.info("No admin configured (ADMIN_USERNAME and ADMIN_PASSWORD are empty): the admin area is disabled");
             return;
         }
         var problem = credentials.problem();
         if (problem.isPresent()) {
-            log.warn("Admin account not updated: {}", problem.get());
+            accounts.deleteAllInBatch();
+            log.warn("Admin area disabled: {}", problem.get());
             return;
         }
         accounts.deleteByUsernameNot(credentials.username());

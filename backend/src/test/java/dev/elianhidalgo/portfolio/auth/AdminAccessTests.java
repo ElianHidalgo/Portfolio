@@ -99,6 +99,15 @@ class AdminAccessTests {
     }
 
     @Test
+    void publicEndpointsIgnoreABrokenBearerToken() throws Exception {
+        mockMvc.perform(get("/api/profile").header("Authorization", "Bearer not-a-jwt"))
+                .andExpect(status().isOk());
+        mockMvc.perform(post("/api/contact").header("Authorization", "Bearer not-a-jwt")
+                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void preflightAllowsTheAuthorizationHeader() throws Exception {
         mockMvc.perform(options("/api/admin/session").header("Origin", "http://localhost:4200")
                         .header("Access-Control-Request-Method", "GET")

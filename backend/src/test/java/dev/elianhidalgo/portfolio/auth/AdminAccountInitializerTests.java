@@ -112,6 +112,17 @@ class AdminAccountInitializerTests {
     }
 
     @Test
+    void invalidOrEmptyCredentialsDisableAnExistingAdmin() {
+        // A leaked password must not keep working after the env is cleared or set to an invalid value.
+        initializer.sync(new AdminCredentials("admin", "Tiny1"));
+        assertThat(accounts()).isEmpty();
+
+        initializer.sync(CONFIGURED);
+        initializer.sync(new AdminCredentials("", ""));
+        assertThat(accounts()).isEmpty();
+    }
+
+    @Test
     void springDoesNotCreateItsOwnDefaultUser() {
         // Otherwise Spring Boot adds an in-memory "user" and logs its generated password.
         assertThat(context.getBeansOfType(UserDetailsService.class)).isEmpty();

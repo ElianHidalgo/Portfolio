@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -29,6 +31,15 @@ class SecurityConfig {
         return decoder;
     }
 
+    /**
+     * Reads bearer tokens only on admin paths: a stale or broken token sent to a public
+     * endpoint is ignored instead of turning a public answer into a 401.
+     */
+    static BearerTokenResolver adminPathsOnly() {
+        var standard = new DefaultBearerTokenResolver();
+        return request -> request.getRequestURI().startsWith("/api/admin/") ? standard.resolve(request) : null;
+    }
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         var problems = new ProblemAuthenticationHandlers();
@@ -43,6 +54,7 @@ class SecurityConfig {
                         .requestMatchers("/api/admin/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(resourceServer -> resourceServer
+                        .bearerTokenResolver(adminPathsOnly())
                         .jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(problems)
                         .accessDeniedHandler(problems))
