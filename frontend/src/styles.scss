@@ -216,3 +216,69 @@ a {
     scroll-behavior: auto !important;
   }
 }
+
+/* Admin forms (login now, editing in part 8): labels above fields, same look as the contact form. */
+.admin-form {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.admin-form__field {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+
+  label {
+    font-size: var(--text-s);
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    font: inherit;
+    color: var(--color-ink);
+    background: transparent;
+    transition: border-color 150ms ease;
+
+    &:hover {
+      border-color: var(--color-muted);
+    }
+
+    &:focus-visible {
+      border-color: var(--color-focus);
+      outline-offset: 0;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: var(--color-error);
+    }
+  }
+}
+
+.admin-form__error {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-error);
+}
+
+.admin-form__feedback {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.admin-form__feedback--error {
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.admin-form > .button {
+  justify-content: center;
+}

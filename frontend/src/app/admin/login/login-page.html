@@ -1,0 +1,64 @@
+<main id="content" class="admin-login">
+  <h1 class="admin-login__title">Iniciar sesión</h1>
+  @if (expired) {
+    <p class="admin-login__notice" role="status">Tu sesión expiró. Vuelve a iniciar sesión.</p>
+  }
+  <p class="admin-login__hint">El panel puede tardar hasta dos minutos en responder la primera vez.</p>
+
+  <form class="admin-form" [formGroup]="form" (ngSubmit)="submit()" [attr.data-form-state]="state()" novalidate>
+    <div class="admin-form__field">
+      <label for="login-username">Usuario</label>
+      <input
+        id="login-username"
+        name="username"
+        type="text"
+        formControlName="username"
+        autocomplete="username"
+        autocapitalize="none"
+        spellcheck="false"
+        [attr.aria-invalid]="showError('username')"
+        [attr.aria-describedby]="showError('username') ? 'login-username-error' : null"
+      />
+      @if (showError('username')) {
+        <p id="login-username-error" class="admin-form__error">Escribe tu usuario.</p>
+      }
+    </div>
+    <div class="admin-form__field">
+      <label for="login-password">Contraseña</label>
+      <input
+        id="login-password"
+        name="password"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+        [attr.aria-invalid]="showError('password')"
+        [attr.aria-describedby]="showError('password') ? 'login-password-error' : null"
+      />
+      @if (showError('password')) {
+        <p id="login-password-error" class="admin-form__error">Escribe tu contraseña.</p>
+      }
+    </div>
+
+    <button class="button button--primary" type="submit" [disabled]="state() === 'sending'">
+      {{ state() === 'sending' ? 'Entrando…' : 'Entrar' }}
+    </button>
+    <p class="admin-form__feedback" role="status">
+      @switch (state()) {
+        @case ('sending') {
+          @if (slow()) {
+            El servidor está despertando; puede tardar hasta dos minutos.
+          }
+        }
+        @case ('invalid') {
+          <span class="admin-form__feedback--error">Usuario o contraseña incorrectos.</span>
+        }
+        @case ('limited') {
+          <span class="admin-form__feedback--error">Demasiados intentos. Espera unos minutos.</span>
+        }
+        @case ('error') {
+          <span class="admin-form__feedback--error">No se pudo conectar. Inténtalo de nuevo.</span>
+        }
+      }
+    </p>
+  </form>
+</main>

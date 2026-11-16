@@ -1,6 +1,8 @@
-import { DOCUMENT } from '@angular/common';
+import { DOCUMENT, Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { SiteFooter } from './core/layout/site-footer/site-footer';
 import { SiteHeader } from './core/layout/site-header/site-header';
 
@@ -13,6 +15,15 @@ import { SiteHeader } from './core/layout/site-header/site-header';
 export class App {
   private readonly document = inject(DOCUMENT);
 
+  /** The admin area brings its own frame, so the public header and footer step aside. */
+  protected readonly isAdmin = toSignal(
+    inject(Router).events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => isAdminUrl(event.urlAfterRedirects)),
+    ),
+    { initialValue: isAdminUrl(inject(Location).path()) },
+  );
+
   /** Moves keyboard focus to the page's main content without navigating. */
   protected skipToContent(event: Event): void {
     event.preventDefault();
@@ -22,4 +33,8 @@ export class App {
       main.focus();
     }
   }
+}
+
+function isAdminUrl(url: string): boolean {
+  return url === '/admin' || url.startsWith('/admin/') || url.startsWith('/admin?');
 }

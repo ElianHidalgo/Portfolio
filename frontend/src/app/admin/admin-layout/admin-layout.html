@@ -1,0 +1,12 @@
+<header class="admin-header">
+  <div class="admin-header__inner">
+    <p class="admin-header__brand">Panel</p>
+    <nav class="admin-header__actions" aria-label="Administración">
+      <a href="/es/">Ver sitio</a>
+      <button class="button" type="button" (click)="logout()">Cerrar sesión</button>
+    </nav>
+  </div>
+</header>
+<main id="content" class="admin-main">
+  <router-outlet />
+</main>

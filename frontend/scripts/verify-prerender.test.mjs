@@ -34,7 +34,11 @@ function dist(files) {
   return root;
 }
 
+const ADMIN_SHELL = '<head><meta name="api-origin" content="https://api.example"></head>';
+
 const complete = {
+  'es/admin/index.html': ADMIN_SHELL,
+  'es/admin/login/index.html': ADMIN_SHELL,
   'es/index.html': HOME,
   'en/index.html': HOME,
   'es/projects/gamevault/index.html': PROJECT,
@@ -65,7 +69,7 @@ test('reports pages without hydration annotations', () => {
 });
 
 test('reports a missing locale and a locale without project pages', () => {
-  const problems = verifyPrerender(dist({ 'es/index.html': HOME }));
+  const problems = verifyPrerender(dist({ 'es/index.html': HOME, 'es/admin/index.html': ADMIN_SHELL, 'es/admin/login/index.html': ADMIN_SHELL }));
   assert.equal(problems.length, 2);
   assert.ok(problems.some((p) => p.includes('en')));
   assert.ok(problems.some((p) => p.includes('project')));
@@ -76,4 +80,12 @@ test('reports a home page without the contact section or the API origin', () => 
   const problems = verifyPrerender(dist({ ...complete, 'es/index.html': home }));
   assert.equal(problems.length, 2);
   assert.ok(problems.every((p) => /es[\\/]index\.html/.test(p)));
+});
+
+test('reports missing admin shells', () => {
+  const { 'es/admin/login/index.html': _missing, ...withoutLogin } = complete;
+  const problems = verifyPrerender(dist({ ...withoutLogin, 'es/admin/index.html': '<head></head>' }));
+  assert.equal(problems.length, 2);
+  assert.ok(problems.some((p) => /admin[\\/]login/.test(p)));
+  assert.ok(problems.some((p) => /api-origin/.test(p)));
 });

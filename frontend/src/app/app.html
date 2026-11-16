@@ -1,5 +1,9 @@
 <!-- href="#content" would resolve against <base href> and reload the home page from other routes. -->
 <a class="skip-link" href="#content" (click)="skipToContent($event)" i18n="@@skipToContent">Skip to content</a>
-<app-site-header />
+@if (!isAdmin()) {
+  <app-site-header />
+}
 <router-outlet />
-<app-site-footer />
+@if (!isAdmin()) {
+  <app-site-footer />
+}

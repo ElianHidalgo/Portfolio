@@ -45,6 +45,16 @@ export function verifyPrerender(distDir) {
     // The contact form needs its section and the API origin it posts to.
     check(home, ['id="hero"', 'id="projects"', 'id="contact"', 'name="api-origin"']);
 
+    if (locale === 'es') {
+      // The admin area is served by these client-only shells (written by copy-root.mjs).
+      for (const shell of [join('es', 'admin', 'index.html'), join('es', 'admin', 'login', 'index.html')]) {
+        if (!existsSync(join(distDir, shell))) problems.push(`${shell} is missing (admin shell)`);
+        else if (!readFileSync(join(distDir, shell), 'utf8').includes('name="api-origin"')) {
+          problems.push(`${shell}: missing name="api-origin"`);
+        }
+      }
+    }
+
     const projectsDir = join(distDir, locale, 'projects');
     const slugs = existsSync(projectsDir) ? readdirSync(projectsDir) : [];
     if (slugs.length === 0) problems.push(`${locale}: no project pages were prerendered`);

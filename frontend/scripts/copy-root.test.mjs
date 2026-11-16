@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
@@ -75,4 +75,19 @@ test('caches fonts per locale and keeps client-only shells out of search engines
 test('lets the browser call the API origin, and nothing else, from the pages', () => {
   assert.match(build({ API_URL: 'https://api.example/' })('_headers'), /connect-src 'self' https:\/\/api\.example;/);
   assert.match(build()('_headers'), /connect-src 'self' http:\/\/localhost:8080;/);
+});
+
+test('writes admin shells with the API origin and keeps them out of search results', () => {
+  const out = mkdtempSync(join(tmpdir(), 'root-'));
+  for (const locale of ['es', 'en']) {
+    mkdirSync(join(out, locale));
+    writeFileSync(join(out, locale, 'index.csr.html'), `<html lang="${locale}"><head><title>x</title></head><body></body></html>`);
+  }
+  writeRootFiles(out, { API_URL: 'https://api.example/' });
+
+  for (const shell of ['es/admin/index.html', 'es/admin/login/index.html', 'es/404.html', 'en/404.html']) {
+    assert.match(readFileSync(join(out, shell), 'utf8'), /<meta name="api-origin" content="https:\/\/api\.example"><\/head>/, shell);
+  }
+  assert.equal(existsSync(join(out, 'en', 'admin')), false, 'the admin area is Spanish only');
+  assert.match(readFileSync(join(out, '_headers'), 'utf8'), /^\/es\/admin\*\n  X-Robots-Tag: noindex/m);
 });

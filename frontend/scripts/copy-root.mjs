@@ -3,12 +3,15 @@
 //   shipped code is the tested code.
 // - 404.html pages: Cloudflare (assets with not_found_handling "404-page") serves the
 //   nearest 404.html only when no file matches, so prerendered pages always win. Each
-//   locale's 404 is its client-only shell, which shows "not found" (and, later, the admin
-//   area); the root 404 is the language picker.
+//   locale's 404 is its client-only shell, which shows "not found"; the root 404 is the
+//   language picker.
+// - es/admin/ and es/admin/login/: the client-only shell again, so the (Spanish-only) admin
+//   area answers 200 instead of the 404 page. Every shell written here carries
+//   <meta name="api-origin"> when API_URL is set, so the browser can reach the API from it.
 // - _headers: security and cache headers (Cloudflare syntax; ignored by nginx).
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { pickLocale } from './pick-locale.mjs';
 
@@ -65,7 +68,7 @@ const headers = (scriptHashes, apiOrigin) => `/*
 ${LOCALES.map((locale) => `/${locale}/media/*\n  Cache-Control: public, max-age=31536000, immutable`).join('\n')}
 
 # Client-only shells and 404 pages carry no content of their own: keep them out of search results.
-${[...LOCALES.flatMap((locale) => [`/${locale}/index.csr*`, `/${locale}/404*`]), '/404*']
+${[...LOCALES.flatMap((locale) => [`/${locale}/index.csr*`, `/${locale}/404*`]), '/404*', '/es/admin*']
   .map((path) => `${path}\n  X-Robots-Tag: noindex`)
   .join('\n')}
 `;
@@ -77,9 +80,21 @@ export function writeRootFiles(outDir, env = process.env) {
 
   writeFileSync(join(outDir, 'index.html'), html);
   writeFileSync(join(outDir, '404.html'), html);
+  const shellApiOrigin = env.API_URL ? new URL(env.API_URL).origin : null;
+  const writeShell = (shell, target) => {
+    const html = readFileSync(shell, 'utf8');
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, shellApiOrigin
+      ? html.replace('</head>', `<meta name="api-origin" content="${shellApiOrigin}"></head>`)
+      : html);
+  };
   for (const locale of LOCALES) {
     const shell = join(outDir, locale, 'index.csr.html');
-    if (existsSync(shell)) copyFileSync(shell, join(outDir, locale, '404.html'));
+    if (!existsSync(shell)) continue;
+    writeShell(shell, join(outDir, locale, '404.html'));
+    if (locale === 'es') {
+      for (const page of ['admin', 'admin/login']) writeShell(shell, join(outDir, locale, page, 'index.html'));
+    }
   }
   // Last: the hashes must cover every page, including the root page written above.
   const apiOrigin = new URL(env.API_URL || 'http://localhost:8080').origin;
@@ -89,5 +104,5 @@ export function writeRootFiles(outDir, env = process.env) {
 // CLI: node scripts/copy-root.mjs
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   writeRootFiles(fileURLToPath(new URL('../dist/frontend/browser', import.meta.url)));
-  console.log('Root files written (index.html, 404 pages, _headers).');
+  console.log('Root files written (index.html, 404 pages, admin shells, _headers).');
 }

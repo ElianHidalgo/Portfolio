@@ -1,0 +1,30 @@
+/* A single centred card: nothing else competes with the sign-in. */
+.admin-login {
+  display: grid;
+  align-content: center;
+  gap: var(--space-m);
+  width: 100%;
+  max-width: 24rem;
+  min-height: 100svh;
+  margin: 0 auto;
+  padding: var(--space-l) var(--gutter);
+}
+
+.admin-login__title {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.admin-login__hint,
+.admin-login__notice {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.admin-login__notice {
+  font-weight: 600;
+  color: var(--color-ink);
+}
