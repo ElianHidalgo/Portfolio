@@ -37,10 +37,10 @@ class DatabasePrivilegesTests {
                 postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true));
         List<String> tables = owner.queryForList(
                 "select table_schema || '.' || table_name from information_schema.tables "
-                        + "where table_schema in ('public', 'profile', 'projects') and table_type = 'BASE TABLE' "
+                        + "where table_schema in ('public', 'profile', 'projects', 'contact') and table_type = 'BASE TABLE' "
                         + "order by 1", String.class);
 
-        assertThat(tables).containsExactly(
+        assertThat(tables).containsExactly("contact.message",
                 "profile.profile", "profile.skill", "projects.project", "public.flyway_schema_history");
     }
 
@@ -64,6 +64,19 @@ class DatabasePrivilegesTests {
             assertThat(statement.executeUpdate(
                     "update projects.project set title_en = title_en where slug = 'gamevault'")).isEqualTo(1);
             connection.rollback();
+        }
+    }
+
+    @Test
+    void runtimeRoleCanStoreMessagesButNotAlterTheContactSchema() throws SQLException {
+        try (Connection connection = asAppRole(); Statement statement = connection.createStatement()) {
+            connection.setAutoCommit(false);
+            assertThat(statement.executeUpdate("insert into contact.message(name, email, body, locale) "
+                    + "values ('a', 'a@b.co', 'hello there', 'es')")).isEqualTo(1);
+            connection.rollback();
+            assertThatThrownBy(() -> statement.execute("create table contact.injected(id int)"))
+                    .isInstanceOf(SQLException.class)
+                    .extracting(e -> ((SQLException) e).getSQLState()).isEqualTo(INSUFFICIENT_PRIVILEGE);
         }
     }
 }
