@@ -34,6 +34,7 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 | `GET /api/profile` | Public profile and skills; `404` problem detail if no profile exists |
 | `GET /api/projects` | Published projects in display order (summary fields) |
 | `GET /api/projects/{slug}` | One published project with its description; `404` problem detail if missing or unpublished |
+| `POST /api/contact` | Stores a contact message `{name, email, message, locale, website}` → `202`; `400` if invalid, `429` past 5 messages per client per hour or 50 stored per 24 h; `website` is a honeypot (filled → `202`, nothing stored) |
 
 Translatable texts are returned in both languages as `{"es": "...", "en": "..."}`; the front end picks the one for the page's language. Errors use the `application/problem+json` format (RFC 9457).
 
@@ -82,7 +83,7 @@ Copy `.env.example` to `.env` to override any default.
 | `DB_PORT` | `5432` | Host port for PostgreSQL — change it if a local PostgreSQL already uses 5432 |
 | `APP_PORT` | `8080` | Host port for the app (nginx) |
 
-The backend reads `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `PORT` (default `8080`).
+The backend reads `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` and `PORT` (default `8080`), plus `CORS_ALLOWED_ORIGINS` (exact site origins, comma-separated; default `http://localhost:4200`), `CONTACT_PER_CLIENT_PER_HOUR` (default `5`) and `CONTACT_DAILY_CAP` (default `50`).
 
 ## Run tests
 
@@ -114,12 +115,12 @@ The Docker image builds with `PRERENDER=false`: no API exists while `docker comp
 | Piece | Service (free tier, no card) | Notes |
 |---|---|---|
 | Public site | Cloudflare Workers static assets (`frontend/wrangler.jsonc`) | Static prerendered HTML only (no Worker script); build `npm run build`, deploy `npx wrangler deploy`, root `frontend`; build env `API_URL`, `SITE_URL`, `NODE_VERSION`; unknown paths get the nearest `404.html` (each language's client shell) with a real 404 |
-| API | Render web service (Docker, `backend/`) | 512 MB / 0.1 CPU, sleeps after 15 min (~2 min to wake); health check `/api/health`; env `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` |
+| API | Render web service (Docker, `backend/`) | 512 MB / 0.1 CPU, sleeps after 15 min (~2 min to wake); health check `/api/health/liveness`; env `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `DB_MIGRATION_USERNAME`, `DB_MIGRATION_PASSWORD`, `CORS_ALLOWED_ORIGINS` (the site's exact origin) |
 | Database | Neon PostgreSQL (AWS us-east-1) | Direct (non-pooler) host, `sslmode=require` |
 
-Visitors only load static files: public links point at prerendered pages and the first load reuses build-time data, so nobody waits for the sleeping API. The Cloudflare build wakes it (retrying for ~3 min).
+Visitors only load static files: public links point at prerendered pages and the first load reuses build-time data, so nobody waits for the sleeping API. The Cloudflare build wakes it (retrying for ~3 min). The only browser calls go to the contact form: a `no-cors` ping to `/api/health/liveness` when the section comes near the viewport wakes the API before the visitor presses Send, and the CSP `connect-src` allows exactly the `API_URL` origin.
 
-Database roles: each module owns a schema (`profile`, `projects`). Flyway migrates as the owner (`DB_MIGRATION_USERNAME`/`DB_MIGRATION_PASSWORD`); the app connects as `portfolio_app`, which can read and write data but not create, alter or drop anything. Create that role **with SQL** as the owner — `CREATE ROLE portfolio_app WITH LOGIN PASSWORD '…'; GRANT CONNECT ON DATABASE neondb TO portfolio_app;` — never in the Neon console, whose roles join `neon_superuser`. The API also rate-limits each client (60 requests/minute, keyed on Cloudflare's `CF-Connecting-IP`).
+Database roles: each module owns a schema (`profile`, `projects`, `contact`). Flyway migrates as the owner (`DB_MIGRATION_USERNAME`/`DB_MIGRATION_PASSWORD`); the app connects as `portfolio_app`, which can read and write data but not create, alter or drop anything. Create that role **with SQL** as the owner — `CREATE ROLE portfolio_app WITH LOGIN PASSWORD '…'; GRANT CONNECT ON DATABASE neondb TO portfolio_app;` — never in the Neon console, whose roles join `neon_superuser`. The API also rate-limits each client (60 requests/minute, keyed on Cloudflare's `CF-Connecting-IP`), refuses POST bodies over 16 KiB, and allows CORS only from `CORS_ALLOWED_ORIGINS`.
 
 Security: `_headers` sets a CSP whose script allow-list is the SHA-256 of each inline script found in the build (no `'unsafe-inline'` for scripts), plus HSTS, `nosniff`, `X-Frame-Options: DENY`, a referrer policy and a permissions policy. Secrets live only in the Render dashboard. CI runs every test suite on each push; Dependabot proposes weekly updates.
 

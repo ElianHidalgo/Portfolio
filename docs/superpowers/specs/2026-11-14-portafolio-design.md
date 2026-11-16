@@ -1,7 +1,7 @@
 # Portafolio web — Diseño
 
 Fecha: 2026-11-14
-Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos)
+Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos; revisión 5, 2026-11-15: módulo `contact` con límites anti-spam, CORS al origen exacto del sitio y ping de despertar al acercarse al formulario)
 
 ## 1. Intención y porqué
 
@@ -86,7 +86,7 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 | B. Spring compilado a nativo (GraalVM) | Arranque < 1 s | Builds lentos, problemas con librerías; complejidad para aprender |
 | C. Cambiar de stack (p. ej. Cloudflare Workers + D1) | Instantáneo y gratis | Elimina Spring: contradice el propósito 3 |
 
-**Elegido por el usuario: A, con el backend en Render.** Inicialmente se eligió Cloud Run (arranque más rápido), pero Google Cloud le exigió al usuario un prepago de 50 USD, incompatible con el coste cero. Con la página pre-generada, el arranque lento de Render solo afecta al build, al formulario de contacto (mitigado con un ping al cargar la página) y al panel admin.
+**Elegido por el usuario: A, con el backend en Render.** Inicialmente se eligió Cloud Run (arranque más rápido), pero Google Cloud le exigió al usuario un prepago de 50 USD, incompatible con el coste cero. Con la página pre-generada, el arranque lento de Render solo afecta al build, al formulario de contacto (mitigado con un ping al acercarse a la sección de contacto) y al panel admin.
 
 ## 5. Arquitectura
 
@@ -96,7 +96,7 @@ El contenido (perfil, skills, proyectos) se administra desde un **panel privado*
 Visitante ──► Cloudflare Workers (HTML pre-generado /es y /en)   ← instantáneo
                  │
                  ├─ formulario de contacto ─► Render (Spring) ─► Neon (PostgreSQL)
-                 └─ "ping" al cargar la página para despertar el backend
+                 └─ "ping" al acercarse al formulario para despertar el backend
 
 Admin ──► /admin (Angular, renderizado en el navegador) ─► Render ─► Neon
             └─ botón "Publicar" ─► backend llama al deploy hook de Cloudflare (Workers Builds)
@@ -129,6 +129,8 @@ Paquete raíz `dev.<usuario>.portfolio` (usuario de GitHub pendiente; se define 
 | `auth` | Login del admin, emisión y validación de JWT, configuración de Spring Security | `POST /api/auth/login` | — |
 | `shared` | Manejo global de errores (`ProblemDetail`), CORS, config común | `GET /api/health` (ping de "despertar") | — |
 
+Cada módulo es dueño de su **esquema** de base de datos (`profile`, `projects`, `contact`); la app se conecta con un rol de solo datos (`portfolio_app`) y Flyway migra con el rol dueño.
+
 Capas dentro de cada módulo: `web` (controllers + DTOs), `application` (servicios), `domain`/`persistence` (entidades JPA + repositorios). Los controllers nunca exponen entidades JPA, solo DTOs (records).
 
 La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary": {"es": "...", "en": "..."}}`); el frontend elige según la versión que se está generando.
@@ -144,8 +146,9 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
 - Un único admin. Usuario y contraseña vienen de variables de entorno (`ADMIN_USERNAME`, `ADMIN_PASSWORD`); al arrancar, si no existe, se crea con la contraseña hasheada (BCrypt).
 - `POST /api/auth/login` devuelve un JWT firmado (secreto en `JWT_SECRET`), expiración 2 horas.
 - Spring Security stateless: `/api/admin/**` requiere token válido; el resto de `/api/**` es público.
-- **CORS**: orígenes permitidos desde la variable `CORS_ALLOWED_ORIGINS` (dominio `*.pages.dev` del sitio y `http://localhost:4200` en desarrollo).
-- `POST /api/contact` con validación de entrada y límite de tamaño; anti-spam básico: campo honeypot oculto.
+- **CORS**: orígenes exactos permitidos desde la variable `CORS_ALLOWED_ORIGINS` (el dominio `*.workers.dev` del sitio en producción y `http://localhost:4200` en desarrollo); sin comodines ni credenciales.
+- **Límites de la API**: 60 peticiones por minuto por cliente (identificado por `CF-Connecting-IP`, nunca `X-Forwarded-For`) y cuerpos POST de 16 KiB como máximo.
+- `POST /api/contact` con validación de entrada y límite de tamaño; anti-spam básico: campo honeypot oculto (respuesta idéntica, no se guarda), 5 mensajes por cliente y hora, y un tope de 50 mensajes guardados por 24 h para no llenar la base gratuita.
 - Ningún secreto en el repositorio: `.env` en `.gitignore`; en Render, variables de entorno configuradas en el servicio.
 
 ### 5.6 API y calidad
@@ -171,7 +174,7 @@ La API pública devuelve **ambos idiomas** en cada respuesta (p. ej. `{"summary"
   - Formularios con campos ES y EN lado a lado.
   - Botón **"Publicar"** que llama a `POST /api/admin/publish` y muestra la fecha de la última publicación.
   - Aviso visible de que el panel puede tardar unos segundos al entrar (el backend despierta).
-- **Contacto**: al cargar la página pública se lanza en segundo plano `GET /api/health` para despertar el backend; el formulario muestra un estado "enviando" claro y maneja errores.
+- **Contacto**: cuando la sección de contacto se acerca a la pantalla (o al enfocar el formulario) se lanza en segundo plano `GET /api/health/liveness` para despertar el backend (no toca la base de datos; solo quien llega al formulario lo despierta); el navegador conoce el origen de la API por `<meta name="api-origin">` escrito en el build y la CSP `connect-src` solo lo permite a él; el formulario muestra un estado "enviando" claro y maneja errores.
 - Estructura por funcionalidad: `public/`, `admin/`, `core/` (servicios API, interceptor JWT, guard), `shared/` (componentes reutilizables).
 - Interceptor que añade `Authorization: Bearer` a las peticiones admin; guard que redirige a login si no hay token o expiró; token guardado en `sessionStorage`.
 - Estilos: SCSS propio con variables CSS (sin librería de componentes), diseño responsive.
