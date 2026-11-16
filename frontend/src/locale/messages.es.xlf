@@ -119,7 +119,7 @@
         <target>Nombre</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
-          <context context-type="linenumber">9,11</context>
+          <context context-type="linenumber">9,10</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactNameError" datatype="html">
@@ -135,7 +135,7 @@
         <target>Correo electrónico</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
-          <context context-type="linenumber">25,27</context>
+          <context context-type="linenumber">25,26</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactEmailError" datatype="html">
@@ -143,7 +143,7 @@
         <target>Escribe un correo válido.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
-          <context context-type="linenumber">37,40</context>
+          <context context-type="linenumber">37,39</context>
         </context-group>
       </trans-unit>
       <trans-unit id="contactMessage" datatype="html">
@@ -187,8 +187,8 @@
         </context-group>
       </trans-unit>
       <trans-unit id="contactWaking" datatype="html">
-        <source>The server is waking up; this can take up to a minute.</source>
-        <target>El servidor está despertando; puede tardar hasta un minuto.</target>
+        <source>The server is waking up; this can take up to two minutes.</source>
+        <target>El servidor está despertando; puede tardar hasta dos minutos.</target>
         <context-group purpose="location">
           <context context-type="sourcefile">src/app/public/home/contact-section/contact-section.html</context>
           <context context-type="linenumber">78,79</context>

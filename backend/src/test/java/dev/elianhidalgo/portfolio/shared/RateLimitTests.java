@@ -1,6 +1,7 @@
 package dev.elianhidalgo.portfolio.shared;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -66,5 +67,25 @@ class RateLimitTests {
         for (int i = 0; i < 10; i++) {
             mockMvc.perform(from("203.0.113.5", "/api/health")).andExpect(status().isOk());
         }
+    }
+
+    @Test
+    void rejectionCarriesCorsHeaderForTheSite() throws Exception {
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(from("203.0.113.40", "/api/projects"));
+        }
+        mockMvc.perform(from("203.0.113.40", "/api/projects").header("Origin", "http://localhost:4200"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:4200"));
+    }
+
+    @Test
+    void preflightsDoNotSpendTheClientsRequests() throws Exception {
+        for (int i = 0; i < 10; i++) {
+            mockMvc.perform(options("/api/contact").header("CF-Connecting-IP", "203.0.113.41")
+                            .header("Origin", "http://localhost:4200").header("Access-Control-Request-Method", "POST"))
+                    .andExpect(status().isOk());
+        }
+        mockMvc.perform(from("203.0.113.41", "/api/projects")).andExpect(status().isOk());
     }
 }

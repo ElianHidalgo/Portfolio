@@ -71,4 +71,14 @@ class CorsAndRequestSizeTests {
                 .andExpect(status().isLengthRequired())
                 .andExpect(jsonPath("$.detail").value("Content-Length required"));
     }
+
+    @Test
+    void rejectionsFromFiltersStayReadableByTheSite() throws Exception {
+        // Without CORS headers the browser hides the status, and the form cannot tell the visitor why.
+        mockMvc.perform(post("/api/contact").header("Origin", SITE)
+                        .contentType(APPLICATION_JSON).content("x".repeat(16_385)))
+                .andExpect(status().isContentTooLarge())
+                .andExpect(header().string("Access-Control-Allow-Origin", SITE))
+                .andExpect(header().string("X-Content-Type-Options", "nosniff"));
+    }
 }

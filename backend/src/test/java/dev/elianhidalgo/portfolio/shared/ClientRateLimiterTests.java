@@ -3,6 +3,7 @@ package dev.elianhidalgo.portfolio.shared;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicLong;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
@@ -36,5 +37,19 @@ class ClientRateLimiterTests {
 
         request.addHeader("CF-Connecting-IP", "203.0.113.7");
         assertThat(ClientAddress.of(request)).isEqualTo("203.0.113.7");
+    }
+
+    @Test
+    void idleClientIsNotForgottenBeforeItsBucketRefills() {
+        var nanos = new AtomicLong();
+        var limiter = new ClientRateLimiter(1, Duration.ofHours(1), nanos::get);
+        limiter.tryConsume("a");
+
+        nanos.addAndGet(Duration.ofMinutes(11).toNanos());
+        for (int i = 0; i < 1_000; i++) {
+            limiter.tryConsume("other-" + i); // enough calls to trigger an idle sweep
+        }
+
+        assertThat(limiter.tryConsume("a")).isPresent();
     }
 }

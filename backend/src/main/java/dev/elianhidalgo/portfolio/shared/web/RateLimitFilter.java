@@ -22,8 +22,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * for how clients are counted and identified). Health checks are exempt.
  */
 @Component
-// Runs right after ApiHeadersFilter, so even a 429 carries the security headers.
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+// Runs after ApiHeadersFilter and SiteCorsFilter, so even a 429 carries the security and CORS headers.
+@Order(Ordered.HIGHEST_PRECEDENCE + 2)
 public class RateLimitFilter extends OncePerRequestFilter {
 
     private final ClientRateLimiter limiter;

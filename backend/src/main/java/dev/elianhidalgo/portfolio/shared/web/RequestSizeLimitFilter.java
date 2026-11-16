@@ -17,8 +17,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
  * Refusing before the body is read keeps a 512 MB instance safe from oversized payloads.
  */
 @Component
-// After the headers and rate-limit filters: a rejection still carries the security headers.
-@Order(Ordered.HIGHEST_PRECEDENCE + 2)
+// After the headers, CORS and rate-limit filters: a rejection still carries the security and CORS headers.
+@Order(Ordered.HIGHEST_PRECEDENCE + 3)
 public class RequestSizeLimitFilter extends OncePerRequestFilter {
 
     static final long MAX_BODY_BYTES = 16_384;

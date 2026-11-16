@@ -115,9 +115,15 @@ describe('ContactSection', () => {
 
     vi.advanceTimersByTime(5_000);
     fixture.detectChanges();
-    expect(el().textContent).toContain('The server is waking up; this can take up to a minute.');
+    expect(el().textContent).toContain('The server is waking up; this can take up to two minutes.');
 
+    // Render can take ~2 minutes to wake: the request must still be alive at 90 s.
     vi.advanceTimersByTime(85_000);
+    fixture.detectChanges();
+    expect(request.cancelled).toBe(false);
+    expect(section().dataset['formState']).toBe('sending');
+
+    vi.advanceTimersByTime(40_000);
     fixture.detectChanges();
     expect(request.cancelled).toBe(true);
     expect(section().dataset['formState']).toBe('error');
