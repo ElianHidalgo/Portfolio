@@ -15,6 +15,10 @@ public class TestcontainersConfiguration {
 
 	public static final String APP_ROLE = "portfolio_app";
 	public static final String APP_PASSWORD = "test";
+	public static final String ADMIN_USERNAME = "admin";
+	public static final String ADMIN_PASSWORD = "test-admin-password";
+	/** 48 fixed bytes, base64: test-only signing key for JWTs. */
+	public static final String JWT_SECRET = "dGVzdC1vbmx5LWp3dC1zZWNyZXQtd2l0aC1hdC1sZWFzdC0zMi1ieXRlcy0xMjM0";
 
 	@Bean
 	PostgreSQLContainer postgresContainer() {
@@ -30,6 +34,9 @@ public class TestcontainersConfiguration {
 			registry.add("spring.datasource.password", () -> APP_PASSWORD);
 			registry.add("spring.flyway.user", postgres::getUsername);
 			registry.add("spring.flyway.password", postgres::getPassword);
+			registry.add("app.auth.admin.username", () -> ADMIN_USERNAME);
+			registry.add("app.auth.admin.password", () -> ADMIN_PASSWORD);
+			registry.add("app.auth.jwt-secret", () -> JWT_SECRET);
 		};
 	}
 

@@ -42,6 +42,11 @@ server:
       max: 20
 
 app:
+  auth:
+    # The single admin, kept in line with these values at startup (Render env only; never in the repo).
+    admin:
+      username: ${ADMIN_USERNAME:}
+      password: ${ADMIN_PASSWORD:}
   contact:
     # Messages one client may send per hour, and messages stored per rolling 24 hours (all clients):
     # the cap keeps a spam wave from filling the free database.
