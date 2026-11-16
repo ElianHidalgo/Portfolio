@@ -45,6 +45,10 @@ app:
   auth:
     # Base64, at least 32 bytes; signs admin tokens. Required: the app refuses to start without it.
     jwt-secret: ${JWT_SECRET:}
+    # Login attempts allowed per client within the window (ISO-8601 duration).
+    login:
+      attempts: ${LOGIN_ATTEMPTS:5}
+      window: ${LOGIN_WINDOW:PT15M}
     # The single admin, kept in line with these values at startup (Render env only; never in the repo).
     admin:
       username: ${ADMIN_USERNAME:}
