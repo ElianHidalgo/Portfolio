@@ -21,7 +21,8 @@ test('requires the public SITE_URL when building on Cloudflare (Pages or Workers
 });
 
 // `ngh="…"` is the hydration annotation Angular writes when hydration is set up correctly.
-const HOME = '<main ngh="0"><section id="hero"></section><section id="projects"></section></main>';
+const HOME = '<meta name="api-origin" content="https://api.example">'
+  + '<main ngh="0"><section id="hero"></section><section id="projects"></section><section id="contact"></section></main>';
 const PROJECT = '<main ngh="0"><h1>GameVault</h1></main>';
 
 function dist(files) {
@@ -51,7 +52,7 @@ test('reports a page left in the loading or error state', () => {
 });
 
 test('reports a section that failed inside an otherwise complete page', () => {
-  const failedSection = HOME.replace('</section></main>', '<div data-state="error">Los proyectos no cargaron.</div></section></main>');
+  const failedSection = HOME.replace('</section><section id="contact">', '<div data-state="error">Los proyectos no cargaron.</div></section><section id="contact">');
   const problems = verifyPrerender(dist({ ...complete, 'en/index.html': failedSection }));
   assert.equal(problems.length, 1);
   assert.match(problems[0], /en[\\/]index\.html/);
@@ -68,4 +69,11 @@ test('reports a missing locale and a locale without project pages', () => {
   assert.equal(problems.length, 2);
   assert.ok(problems.some((p) => p.includes('en')));
   assert.ok(problems.some((p) => p.includes('project')));
+});
+
+test('reports a home page without the contact section or the API origin', () => {
+  const home = '<main ngh="0"><section id="hero"></section><section id="projects"></section></main>';
+  const problems = verifyPrerender(dist({ ...complete, 'es/index.html': home }));
+  assert.equal(problems.length, 2);
+  assert.ok(problems.every((p) => /es[\\/]index\.html/.test(p)));
 });

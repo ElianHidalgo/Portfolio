@@ -71,3 +71,8 @@ test('caches fonts per locale and keeps client-only shells out of search engines
     assert.match(headers, new RegExp(`^${rule.replace(/[*/.]/g, '\\$&')}\\n  X-Robots-Tag: noindex`, 'm'));
   }
 });
+
+test('lets the browser call the API origin, and nothing else, from the pages', () => {
+  assert.match(build({ API_URL: 'https://api.example/' })('_headers'), /connect-src 'self' https:\/\/api\.example;/);
+  assert.match(build()('_headers'), /connect-src 'self' http:\/\/localhost:8080;/);
+});

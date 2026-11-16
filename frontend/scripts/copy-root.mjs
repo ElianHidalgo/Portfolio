@@ -34,22 +34,23 @@ function inlineScriptHashes(outDir) {
 // Scripts: only our own files plus the exact inline scripts Angular generated (by hash) —
 // no 'unsafe-inline'. Styles: Angular injects component styles at runtime, so inline
 // styles are allowed (much lower risk than scripts).
-const contentSecurityPolicy = (scriptHashes) =>
+const contentSecurityPolicy = (scriptHashes, apiOrigin) =>
   [
     "default-src 'self'",
     `script-src 'self' ${scriptHashes.join(' ')}`.trim(),
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "font-src 'self'",
-    "connect-src 'self'",
+    // The browser calls the API itself only for the contact form (and its wake-up ping).
+    `connect-src 'self' ${apiOrigin}`,
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
   ].join('; ');
 
-const headers = (scriptHashes) => `/*
-  Content-Security-Policy: ${contentSecurityPolicy(scriptHashes)}
+const headers = (scriptHashes, apiOrigin) => `/*
+  Content-Security-Policy: ${contentSecurityPolicy(scriptHashes, apiOrigin)}
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
@@ -81,7 +82,8 @@ export function writeRootFiles(outDir, env = process.env) {
     if (existsSync(shell)) copyFileSync(shell, join(outDir, locale, '404.html'));
   }
   // Last: the hashes must cover every page, including the root page written above.
-  writeFileSync(join(outDir, '_headers'), headers(inlineScriptHashes(outDir)));
+  const apiOrigin = new URL(env.API_URL || 'http://localhost:8080').origin;
+  writeFileSync(join(outDir, '_headers'), headers(inlineScriptHashes(outDir), apiOrigin));
 }
 
 // CLI: node scripts/copy-root.mjs

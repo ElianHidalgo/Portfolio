@@ -42,7 +42,8 @@ export function verifyPrerender(distDir) {
       problems.push(`${home} is missing (locale "${locale}" was not built)`);
       continue;
     }
-    check(home, ['id="hero"', 'id="projects"']);
+    // The contact form needs its section and the API origin it posts to.
+    check(home, ['id="hero"', 'id="projects"', 'id="contact"', 'name="api-origin"']);
 
     const projectsDir = join(distDir, locale, 'projects');
     const slugs = existsSync(projectsDir) ? readdirSync(projectsDir) : [];
