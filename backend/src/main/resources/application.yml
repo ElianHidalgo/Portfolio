@@ -42,6 +42,9 @@ server:
       max: 20
 
 app:
+  cors:
+    # Exact origins of the public site, comma-separated (Render: CORS_ALLOWED_ORIGINS).
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
   rate-limit:
     # Per client and minute; the Cloudflare build needs ~10 requests in total.
     requests-per-minute: ${RATE_LIMIT_PER_MINUTE:60}
