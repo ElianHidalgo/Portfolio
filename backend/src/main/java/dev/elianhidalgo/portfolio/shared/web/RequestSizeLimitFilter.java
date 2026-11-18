@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Bounds what a client may upload: a POST to the API must declare its size, and at most 16 KiB.
+ * Bounds what a client may upload: a POST body must declare its size (no chunked uploads), and at most 16 KiB.
  * Refusing before the body is read keeps a 512 MB instance safe from oversized payloads.
  */
 @Component
@@ -32,7 +32,9 @@ public class RequestSizeLimitFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         long length = request.getContentLengthLong();
-        if (length < 0) {
+        // Without Content-Length, only a chunked upload has a body (of unknown size); a request
+        // with neither header has an empty body (RFC 9112), e.g. "Publicar".
+        if (length < 0 && request.getHeader("Transfer-Encoding") != null) {
             reject(response, HttpStatus.LENGTH_REQUIRED, "Content-Length required", request);
         } else if (length > MAX_BODY_BYTES) {
             reject(response, HttpStatus.CONTENT_TOO_LARGE, "Request body too large", request);

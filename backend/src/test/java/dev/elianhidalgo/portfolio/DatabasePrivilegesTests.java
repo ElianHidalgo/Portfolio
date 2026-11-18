@@ -37,11 +37,11 @@ class DatabasePrivilegesTests {
                 postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true));
         List<String> tables = owner.queryForList(
                 "select table_schema || '.' || table_name from information_schema.tables "
-                        + "where table_schema in ('public', 'profile', 'projects', 'contact', 'auth') and table_type = 'BASE TABLE' "
+                        + "where table_schema in ('public', 'profile', 'projects', 'contact', 'auth', 'publishing') and table_type = 'BASE TABLE' "
                         + "order by 1", String.class);
 
         assertThat(tables).containsExactly("auth.admin_user", "contact.message",
-                "profile.profile", "profile.skill", "projects.project", "public.flyway_schema_history");
+                "profile.profile", "profile.skill", "projects.project", "public.flyway_schema_history", "publishing.publication");
     }
 
     @Test

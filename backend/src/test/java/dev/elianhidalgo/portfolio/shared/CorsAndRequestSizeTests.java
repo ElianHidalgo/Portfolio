@@ -66,10 +66,17 @@ class CorsAndRequestSizeTests {
 
     @Test
     void requiresContentLengthOnPost() throws Exception {
-        // No body set: MockMvc reports Content-Length -1, as for a chunked upload of unknown size.
-        mockMvc.perform(post("/api/contact").contentType(APPLICATION_JSON))
+        // A chunked upload: its size is unknown until it has been read.
+        mockMvc.perform(post("/api/contact").contentType(APPLICATION_JSON).header("Transfer-Encoding", "chunked"))
                 .andExpect(status().isLengthRequired())
                 .andExpect(jsonPath("$.detail").value("Content-Length required"));
+    }
+
+    @Test
+    void aPostWithoutBodyIsNotABodyOfUnknownSize() throws Exception {
+        // No Content-Length and no Transfer-Encoding means an empty body (RFC 9112), e.g. "Publicar".
+        mockMvc.perform(post("/api/contact").contentType(APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
