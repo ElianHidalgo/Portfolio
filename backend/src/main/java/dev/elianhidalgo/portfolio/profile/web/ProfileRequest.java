@@ -1,6 +1,8 @@
 package dev.elianhidalgo.portfolio.profile.web;
 
 import dev.elianhidalgo.portfolio.profile.domain.ProfileChanges;
+import dev.elianhidalgo.portfolio.shared.SafeLink;
+import dev.elianhidalgo.portfolio.shared.TextRules;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,22 +16,19 @@ import jakarta.validation.constraints.Size;
  * refused (PostgreSQL rejects NUL); the about text may contain tabs and line breaks.
  */
 public record ProfileRequest(
-        @NotBlank @Size(max = 100) @Pattern(regexp = ProfileRequest.NO_CONTROL) String fullName,
+        @NotBlank @Size(max = 100) @Pattern(regexp = TextRules.NO_CONTROL) String fullName,
         @NotNull @Valid Headline headline,
         @NotNull @Valid About about,
-        @Size(max = 100) @Pattern(regexp = ProfileRequest.NO_CONTROL) String location,
+        @Size(max = 100) @Pattern(regexp = TextRules.NO_CONTROL) String location,
         @Email @Size(max = 254) String email,
         @Size(max = 500) @SafeLink String githubUrl,
         @Size(max = 500) @SafeLink String linkedinUrl,
         @Size(max = 500) @SafeLink(allowPath = true) String avatarUrl,
         @Valid CvUrl cvUrl) {
 
-    static final String NO_CONTROL = "[^\\p{Cntrl}]*";
-    static final String NO_CONTROL_EXCEPT_WHITESPACE = "[^\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]*";
-
     public record Headline(
-            @NotBlank @Size(max = 160) @Pattern(regexp = ProfileRequest.NO_CONTROL) String es,
-            @NotBlank @Size(max = 160) @Pattern(regexp = ProfileRequest.NO_CONTROL) String en) {
+            @NotBlank @Size(max = 160) @Pattern(regexp = TextRules.NO_CONTROL) String es,
+            @NotBlank @Size(max = 160) @Pattern(regexp = TextRules.NO_CONTROL) String en) {
 
         public Headline {
             es = strip(es);
@@ -38,8 +37,8 @@ public record ProfileRequest(
     }
 
     public record About(
-            @NotBlank @Size(max = 2500) @Pattern(regexp = ProfileRequest.NO_CONTROL_EXCEPT_WHITESPACE) String es,
-            @NotBlank @Size(max = 2500) @Pattern(regexp = ProfileRequest.NO_CONTROL_EXCEPT_WHITESPACE) String en) {
+            @NotBlank @Size(max = 2500) @Pattern(regexp = TextRules.NO_CONTROL_EXCEPT_WHITESPACE) String es,
+            @NotBlank @Size(max = 2500) @Pattern(regexp = TextRules.NO_CONTROL_EXCEPT_WHITESPACE) String en) {
 
         public About {
             es = strip(es);

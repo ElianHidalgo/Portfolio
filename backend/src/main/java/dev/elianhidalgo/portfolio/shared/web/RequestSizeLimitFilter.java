@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
- * Bounds what a client may upload: a POST, PUT or PATCH body must declare its size (no chunked uploads), and at most 16 KiB.
+ * Bounds what a client may upload: a POST, PUT or PATCH body must declare its size (no chunked uploads), and at most 16 KiB (64 KiB under /api/admin/, where project descriptions are long).
  * Refusing before the body is read keeps a 512 MB instance safe from oversized payloads.
  */
 @Component
@@ -23,6 +23,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 public class RequestSizeLimitFilter extends OncePerRequestFilter {
 
     static final long MAX_BODY_BYTES = 16_384;
+    static final long MAX_ADMIN_BODY_BYTES = 65_536;
 
     private static final Set<String> BODY_METHODS = Set.of("POST", "PUT", "PATCH");
 
@@ -39,11 +40,15 @@ public class RequestSizeLimitFilter extends OncePerRequestFilter {
         // with neither header has an empty body (RFC 9112), e.g. "Publicar".
         if (length < 0 && request.getHeader("Transfer-Encoding") != null) {
             reject(response, HttpStatus.LENGTH_REQUIRED, "Content-Length required", request);
-        } else if (length > MAX_BODY_BYTES) {
+        } else if (length > limitFor(request)) {
             reject(response, HttpStatus.CONTENT_TOO_LARGE, "Request body too large", request);
         } else {
             chain.doFilter(request, response);
         }
+    }
+
+    private static long limitFor(HttpServletRequest request) {
+        return request.getRequestURI().startsWith("/api/admin/") ? MAX_ADMIN_BODY_BYTES : MAX_BODY_BYTES;
     }
 
     private static void reject(HttpServletResponse response, HttpStatus status, String detail, HttpServletRequest request)

@@ -3,6 +3,7 @@ package dev.elianhidalgo.portfolio.profile.web;
 import dev.elianhidalgo.portfolio.profile.application.SkillEditor;
 import dev.elianhidalgo.portfolio.profile.domain.Skill;
 import dev.elianhidalgo.portfolio.profile.domain.SkillCategory;
+import dev.elianhidalgo.portfolio.shared.TextRules;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 class AdminSkillsController {
 
     record SkillRequest(
-            @NotBlank @Size(max = 60) @Pattern(regexp = ProfileRequest.NO_CONTROL) String name,
+            @NotBlank @Size(max = 60) @Pattern(regexp = TextRules.NO_CONTROL) String name,
             @NotNull SkillCategory category) {
 
         SkillRequest {

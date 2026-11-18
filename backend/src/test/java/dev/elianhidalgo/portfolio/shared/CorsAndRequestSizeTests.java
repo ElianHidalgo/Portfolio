@@ -102,11 +102,26 @@ class CorsAndRequestSizeTests {
 
     @Test
     void putAndPatchBodiesAreLimited() throws Exception {
-        mockMvc.perform(put("/api/admin/profile").contentType(APPLICATION_JSON).content("x".repeat(17 * 1024)))
+        mockMvc.perform(put("/api/admin/profile").contentType(APPLICATION_JSON).content("x".repeat(65 * 1024 + 1)))
                 .andExpect(status().isContentTooLarge())
                 .andExpect(jsonPath("$.detail").value("Request body too large"));
         mockMvc.perform(patch("/api/admin/messages/1/read").contentType(APPLICATION_JSON)
                         .header("Transfer-Encoding", "chunked"))
                 .andExpect(status().isLengthRequired());
+    }
+
+    @Test
+    void adminBodiesMayReach64KiB() throws Exception {
+        // Project descriptions are long; the filter lets them through (the token check then answers 401).
+        mockMvc.perform(put("/api/admin/projects/1").contentType(APPLICATION_JSON).content("x".repeat(40 * 1024)))
+                .andExpect(status().is(org.hamcrest.Matchers.not(413)));
+        mockMvc.perform(put("/api/admin/projects/1").contentType(APPLICATION_JSON).content("x".repeat(65 * 1024)))
+                .andExpect(status().isContentTooLarge());
+    }
+
+    @Test
+    void publicBodiesStayAt16KiB() throws Exception {
+        mockMvc.perform(post("/api/contact").contentType(APPLICATION_JSON).content("x".repeat(17 * 1024)))
+                .andExpect(status().isContentTooLarge());
     }
 }

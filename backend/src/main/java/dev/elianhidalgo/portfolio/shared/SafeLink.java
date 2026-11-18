@@ -1,4 +1,4 @@
-package dev.elianhidalgo.portfolio.profile.web;
+package dev.elianhidalgo.portfolio.shared;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.ConstraintValidator;
@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
 @Constraint(validatedBy = SafeLink.Validator.class)
 @Target({ElementType.FIELD, ElementType.RECORD_COMPONENT, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-@interface SafeLink {
+public @interface SafeLink {
 
     String message() default "must be an https link or a relative path";
 
@@ -32,7 +32,7 @@ import java.util.regex.Pattern;
 
     Class<? extends Payload>[] payload() default {};
 
-    class Validator implements ConstraintValidator<SafeLink, String> {
+    final class Validator implements ConstraintValidator<SafeLink, String> {
 
         private static final Pattern PATH = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._/-]*");
 
