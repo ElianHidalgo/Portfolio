@@ -1,7 +1,7 @@
 # Portafolio web — Diseño
 
 Fecha: 2026-11-14
-Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos; revisión 5, 2026-11-15: módulo `contact` con límites anti-spam, CORS al origen exacto del sitio y ping de despertar al acercarse al formulario; revisión 6, 2026-11-15: autenticación — el entorno manda sobre la contraseña del admin, JWT HS256 con emisor, límite de intentos de login, cabecera `Authorization` en CORS y páginas propias del panel; revisión 7, 2026-11-18: la parte 8 se divide en 8a bandeja + "Publicar", 8b editor de perfil y skills, 8c editor de proyectos)
+Estado: **aprobado** el 2026-11-15 (revisión 4, 2026-11-15: backend en Render en lugar de Cloud Run por un prepago de 50 USD; frontend en Cloudflare Workers con archivos estáticos en lugar de Pages; esquema por módulo y rol de BD de solo datos; revisión 5, 2026-11-15: módulo `contact` con límites anti-spam, CORS al origen exacto del sitio y ping de despertar al acercarse al formulario; revisión 6, 2026-11-15: autenticación — el entorno manda sobre la contraseña del admin, JWT HS256 con emisor, límite de intentos de login, cabecera `Authorization` en CORS y páginas propias del panel; revisión 7, 2026-11-18: la parte 8 se divide en 8a bandeja + "Publicar", 8b editor de perfil y skills, 8c editor de proyectos; revisión 8, 2026-11-18: 8b hecha — editor solo de texto y enlaces, sin subida de archivos por decisión del dueño)
 
 ## 1. Intención y porqué
 
@@ -207,7 +207,7 @@ Cada parte deja algo funcionando y entendible:
 7. **Módulo `auth`** + login y guard en Angular.
 8. **Panel admin**, en tres entregas publicables por separado:
    - **8a**: bandeja de mensajes (paginada, más nuevos primero, leído/no leído, borrar) y botón "Publicar" (módulo `publishing`: deploy hook de Workers Builds en `CLOUDFLARE_DEPLOY_HOOK_URL`, como mínimo un minuto entre publicaciones, 503 si no está configurado, 502 si Cloudflare falla; el historial guarda la fecha de cada publicación).
-   - **8b**: editor bilingüe de perfil y skills.
+   - **8b** (hecha): editor bilingüe de perfil y skills, solo texto y enlaces. `GET`/`PUT /api/admin/profile` y `POST`/`PUT`/`DELETE /api/admin/skills` más `PUT /api/admin/skills/order`; GitHub y LinkedIn deben ser `https`; avatar y CV son `https` o una ruta relativa sin `..`; `409` si el nombre de una skill se repite. Sin subida de archivos ni almacenamiento nuevo, por decisión del dueño (2026-11-18): el CV y el avatar siguen en `frontend/public/`. Los cambios llegan al sitio público tras pulsar Publicar.
    - **8c**: editor bilingüe de proyectos.
 9. **Pulido**: diseño visual, accesibilidad, Swagger, README, test de Modulith completo.
 

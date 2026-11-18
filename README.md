@@ -36,10 +36,17 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 | `GET /api/projects/{slug}` | One published project with its description; `404` problem detail if missing or unpublished |
 | `POST /api/auth/login` | `{username, password}` → `200 {token, expiresAt}` (JWT, 2 h); `401` for any wrong credentials (same answer for unknown users); `429` after 5 attempts per client in 15 min |
 | `GET /api/admin/session` | Requires `Authorization: Bearer <token>`; `{username, expiresAt}`. Every `/api/admin/**` endpoint answers `401` problem JSON without a valid token |
-| `GET /api/admin/messages?before| `GET /api/admin/messages?page&size` | Admin inbox, newest first: `{items, total, unread}` (size 1–50) |size` | Admin inbox, newest first: `{items, total, unread}`; `before` is the id of the oldest message already shown (a cursor, so deletions do not shift pages); size 1–50 |
+| `GET /api/admin/messages?before&size` | Admin inbox, newest first: `{items, total, unread}`; `before` is the id of the oldest message already shown (a cursor, so deletions do not shift pages); size 1–50 |
 | `PATCH /api/admin/messages/{id}/read` · `DELETE /api/admin/messages/{id}` | Mark a message read/unread (`{"read": true}`) · delete it; `404` if it does not exist |
 | `POST /api/admin/publish` · `GET /api/admin/publish/status` | "Publicar": rebuilds the public site through the Cloudflare deploy hook → `202 {configured, lastRequestedAt}`; `429` within a minute of the last one, `503` when no hook is configured, `502` when Cloudflare fails |
+| `GET /api/admin/profile` · `PUT /api/admin/profile` | Read/replace the profile, same shape as the public `GET /api/profile`. `githubUrl`/`linkedinUrl` must be `https`; `avatarUrl` and `cvUrl.*` are `https` or a relative path (`^[A-Za-z0-9][A-Za-z0-9._/-]*$`, no `..`); blank optional fields become `null`; texts are trimmed; `about` ≤ 2500 characters; `400` if invalid |
+| `POST /api/admin/skills` · `PUT /api/admin/skills/{id}` · `DELETE /api/admin/skills/{id}` | Add a skill (`201`, placed last) · edit it · delete it (`204`); `409` for a duplicate name (case-insensitive), `404` if unknown |
+| `PUT /api/admin/skills/order` | Reorder skills with `{"ids": [every id]}`; `400` on a partial or stale list |
 | `POST /api/contact` | Stores a contact message `{name, email, message, locale, website}` → `202`; `400` if invalid, `429` past 5 messages per client per hour or 50 stored per 24 h; `website` is a honeypot (filled → `202`, nothing stored) |
+
+### Changing the CV or avatar
+
+The admin panel (`/es/admin/perfil/`) edits text and links only; it does not upload files. To change the CV or avatar, replace the file in `frontend/public/` and keep the same path, or set the field to an `https://` link. Profile and skills edits reach the public site after pressing "Publicar".
 
 Translatable texts are returned in both languages as `{"es": "...", "en": "..."}`; the front end picks the one for the page's language. Errors use the `application/problem+json` format (RFC 9457).
 
