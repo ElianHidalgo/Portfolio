@@ -25,8 +25,8 @@ public record ProjectRequest(
         @NotNull @Size(max = 20) List<String> technologies,
         @Size(max = 500) @SafeLink String repoUrl,
         @Size(max = 500) @SafeLink String demoUrl,
-        boolean featured,
-        boolean published) {
+        @NotNull Boolean featured,
+        @NotNull Boolean published) {
 
     static final String SLUG = "[a-z0-9]+(-[a-z0-9]+)*";
 
@@ -69,8 +69,8 @@ public record ProjectRequest(
             @NotNull @Size(max = 20) List<String> technologies,
             @Size(max = 500) @SafeLink String repoUrl,
             @Size(max = 500) @SafeLink String demoUrl,
-            boolean featured,
-            boolean published) {
+            @NotNull Boolean featured,
+            @NotNull Boolean published) {
 
         public Create {
             technologies = stripAll(technologies);

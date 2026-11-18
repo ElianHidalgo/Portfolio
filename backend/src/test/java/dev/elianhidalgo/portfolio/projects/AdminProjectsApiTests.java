@@ -289,6 +289,26 @@ class AdminProjectsApiTests {
     }
 
     @Test
+    void rejectsMissingFlags() throws Exception {
+        long id = idOf("portfolio");
+        String noPublished = body(Map.of()).replace(",\"published\":false", "");
+        String noFeatured = body(Map.of()).replace(",\"featured\":false", "");
+        assertThat(noPublished).doesNotContain("published");
+
+        send(put("/api/admin/projects/" + id), noPublished)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(containsString("published")));
+        send(put("/api/admin/projects/" + id), body("published", "null")).andExpect(status().isBadRequest());
+        send(post("/api/admin/projects"), noFeatured)
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(containsString("featured")));
+
+        assertThat(owner.queryForObject("select published from projects.project where id = ?", Boolean.class, id))
+                .isTrue();
+        assertThat(owner.queryForObject("select count(*) from projects.project", Integer.class)).isEqualTo(3);
+    }
+
+    @Test
     void keepsAtLeastOnePublishedProject() throws Exception {
         long portfolio = idOf("portfolio");
         long gamevault = idOf("gamevault");
