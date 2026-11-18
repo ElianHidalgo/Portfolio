@@ -1,0 +1,72 @@
+<h1 class="admin-page__title">Skills</h1>
+<p class="skills__notice">Los cambios se verán en el sitio cuando pulses <strong>Publicar</strong> en Inicio.</p>
+
+@if (loadFailed()) {
+  <p class="admin-form__feedback admin-form__feedback--error" role="alert">No se pudieron cargar las skills. Recarga la página.</p>
+} @else if (!loaded()) {
+  <p class="admin-form__feedback">Cargando…</p>
+} @else {
+  <form class="skills__add admin-form" (submit)="$event.preventDefault(); add()">
+    <div class="admin-form__field">
+      <label for="new-skill-name">Nombre</label>
+      <input id="new-skill-name" maxlength="60" autocomplete="off" [value]="newName()" (input)="newName.set($any($event.target).value)" />
+    </div>
+    <div class="admin-form__field">
+      <label for="new-skill-category">Categoría</label>
+      <select id="new-skill-category" [value]="newCategory()" (change)="newCategory.set($any($event.target).value)">
+        @for (category of categories; track category.value) {
+          <option [value]="category.value" [selected]="category.value === newCategory()">{{ category.label }}</option>
+        }
+      </select>
+    </div>
+    <button class="button button--primary" type="submit" [disabled]="adding() || newName().trim() === ''">Agregar</button>
+  </form>
+
+  <p class="admin-form__feedback" role="status">
+    @if (failure()) {
+      <span class="admin-form__feedback--error">{{ failure() }}</span>
+    }
+    @if (notice()) {
+      <span>{{ notice() }}</span>
+    }
+  </p>
+
+  @for (group of groups(); track group.category) {
+    <section class="skills__group">
+      <h2 class="skills__heading">{{ group.label }}</h2>
+      @if (group.skills.length === 0) {
+        <p class="skills__empty">Sin skills en esta categoría.</p>
+      } @else {
+        <ul class="skills__list">
+          @for (skill of group.skills; track skill.id) {
+            <li class="skills__row">
+              <input
+                class="skills__name"
+                [attr.aria-label]="'Nombre de ' + skill.name"
+                maxlength="60"
+                autocomplete="off"
+                [value]="draft(skill).name"
+                (input)="edit(skill, { name: $any($event.target).value })"
+              />
+              <select
+                class="skills__category"
+                [attr.aria-label]="'Categoría de ' + skill.name"
+                (change)="edit(skill, { category: $any($event.target).value })"
+              >
+                @for (category of categories; track category.value) {
+                  <option [value]="category.value" [selected]="category.value === draft(skill).category">{{ category.label }}</option>
+                }
+              </select>
+              <div class="skills__actions">
+                <button class="button" type="button" [attr.aria-label]="'Subir ' + skill.name" [disabled]="busyId() !== null || isFirst(skill)" (click)="move(skill, -1)">↑</button>
+                <button class="button" type="button" [attr.aria-label]="'Bajar ' + skill.name" [disabled]="busyId() !== null || isLast(skill)" (click)="move(skill, 1)">↓</button>
+                <button class="button button--primary" type="button" [disabled]="busyId() !== null || !changed(skill)" (click)="save(skill)">Guardar</button>
+                <button class="button" type="button" [disabled]="busyId() !== null" (click)="remove(skill)">Eliminar</button>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+}
