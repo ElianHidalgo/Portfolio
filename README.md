@@ -36,7 +36,7 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 | `GET /api/projects/{slug}` | One published project with its description; `404` problem detail if missing or unpublished |
 | `POST /api/auth/login` | `{username, password}` → `200 {token, expiresAt}` (JWT, 2 h); `401` for any wrong credentials (same answer for unknown users); `429` after 5 attempts per client in 15 min |
 | `GET /api/admin/session` | Requires `Authorization: Bearer <token>`; `{username, expiresAt}`. Every `/api/admin/**` endpoint answers `401` problem JSON without a valid token |
-| `GET /api/admin/messages?page&size` | Admin inbox, newest first: `{items, total, unread}` (size 1–50) |
+| `GET /api/admin/messages?before| `GET /api/admin/messages?page&size` | Admin inbox, newest first: `{items, total, unread}` (size 1–50) |size` | Admin inbox, newest first: `{items, total, unread}`; `before` is the id of the oldest message already shown (a cursor, so deletions do not shift pages); size 1–50 |
 | `PATCH /api/admin/messages/{id}/read` · `DELETE /api/admin/messages/{id}` | Mark a message read/unread (`{"read": true}`) · delete it; `404` if it does not exist |
 | `POST /api/admin/publish` · `GET /api/admin/publish/status` | "Publicar": rebuilds the public site through the Cloudflare deploy hook → `202 {configured, lastRequestedAt}`; `429` within a minute of the last one, `503` when no hook is configured, `502` when Cloudflare fails |
 | `POST /api/contact` | Stores a contact message `{name, email, message, locale, website}` → `202`; `400` if invalid, `429` past 5 messages per client per hour or 50 stored per 24 h; `website` is a honeypot (filled → `202`, nothing stored) |

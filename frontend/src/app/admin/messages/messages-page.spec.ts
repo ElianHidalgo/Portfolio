@@ -43,7 +43,7 @@ describe('MessagesPage', () => {
     fixture = TestBed.createComponent(MessagesPage);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne(`${API}?page=0&size=20`).flush({ items: firstPage, total, unread: firstPage.filter((m) => !m.read).length });
+    http.expectOne(`${API}?size=20`).flush({ items: firstPage, total, unread: firstPage.filter((m) => !m.read).length });
     await render();
   }
 
@@ -111,10 +111,62 @@ describe('MessagesPage', () => {
 
     const more = Array.from(el().querySelectorAll('button')).find((b) => b.textContent?.includes('Cargar más'))!;
     more.click();
-    http.expectOne(`${API}?page=1&size=20`).flush({ items: [message(1)], total: 3, unread: 3 });
+    http.expectOne(`${API}?before=2&size=20`).flush({ items: [message(1)], total: 3, unread: 3 });
     await render();
 
     expect(items().length).toBe(3);
     expect(Array.from(el().querySelectorAll('button')).some((b) => b.textContent?.includes('Cargar más'))).toBe(false);
+  });
+
+  it('keeps paging right after a delete', async () => {
+    await open([message(3), message(2)], 3);
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    button(items()[0], 'Eliminar').click();
+    http.expectOne(`${API}/3`).flush(null, { status: 204, statusText: 'No Content' });
+    await render();
+
+    Array.from(el().querySelectorAll('button')).find((b) => b.textContent?.includes('Cargar más'))!.click();
+    http.expectOne(`${API}?before=2&size=20`).flush({ items: [message(1)], total: 2, unread: 2 });
+    await render();
+
+    expect(items().map((i) => i.querySelector('.inbox__name')?.textContent?.trim())).toEqual(['Person 2', 'Person 1']);
+    expect(Array.from(el().querySelectorAll('button')).some((b) => b.textContent?.includes('Cargar más'))).toBe(false);
+  });
+
+  it('tells the admin when an action fails', async () => {
+    await open([message(1)]);
+
+    button(items()[0], 'Marcar como leído').click();
+    http.expectOne(`${API}/1/read`).flush({}, { status: 500, statusText: 'Error' });
+    await render();
+    expect(el().querySelector('[role="alert"]')?.textContent).toContain('No se pudo actualizar el mensaje. Inténtalo de nuevo.');
+    expect(items()[0].textContent).toContain('Nuevo');
+
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    button(items()[0], 'Eliminar').click();
+    http.expectOne(`${API}/1`).flush({}, { status: 500, statusText: 'Error' });
+    await render();
+    expect(items().length).toBe(1);
+    expect(el().querySelector('[role="alert"]')?.textContent).toContain('No se pudo actualizar el mensaje.');
+  });
+
+  it("disables an item's buttons while its action runs", async () => {
+    await open([message(1)]);
+
+    button(items()[0], 'Marcar como leído').click();
+    await render();
+    expect(button(items()[0], 'Eliminar').disabled).toBe(true);
+
+    http.expectOne(`${API}/1/read`).flush(null, { status: 204, statusText: 'No Content' });
+    await render();
+    expect(button(items()[0], 'Eliminar').disabled).toBe(false);
+  });
+
+  it('builds a reply link a visitor cannot use to add recipients', async () => {
+    await open([message(1, { email: 'a?bcc=x%40evil.com&body=hi@ex.com' })]);
+
+    const href = items()[0].querySelector('a[href^="mailto:"]')!.getAttribute('href')!;
+    expect(href).toBe('mailto:a%3Fbcc%3Dx%2540evil.com%26body%3Dhi@ex.com');
+    expect(href).not.toMatch(/[?&]/);
   });
 });

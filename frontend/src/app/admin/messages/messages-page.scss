@@ -85,3 +85,9 @@
   margin: 0 0 var(--space-l);
   color: var(--color-muted);
 }
+
+.inbox__alert {
+  margin: 0 0 var(--space-m);
+  font-weight: 600;
+  color: var(--color-error);
+}

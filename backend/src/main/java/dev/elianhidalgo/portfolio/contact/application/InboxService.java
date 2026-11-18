@@ -2,7 +2,7 @@ package dev.elianhidalgo.portfolio.contact.application;
 
 import dev.elianhidalgo.portfolio.contact.domain.ContactMessage;
 import dev.elianhidalgo.portfolio.contact.domain.ContactMessageRepository;
-import org.springframework.data.domain.Page;
+import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,11 +19,20 @@ public class InboxService {
         this.messages = messages;
     }
 
-    /** Newest first; the page size is kept between 1 and {@value #MAX_PAGE_SIZE}. */
+    /**
+     * Newest first, starting after the cursor {@code before} (an id; null for the first page).
+     * A cursor, unlike a page number, stays correct when messages are deleted or arrive while
+     * the admin is reading. The size is kept between 1 and {@value #MAX_PAGE_SIZE}.
+     */
     @Transactional(readOnly = true)
-    public Page<ContactMessage> page(int page, int size) {
-        int safeSize = Math.min(Math.max(size, 1), MAX_PAGE_SIZE);
-        return messages.findAllByOrderByCreatedAtDescIdDesc(PageRequest.of(Math.max(page, 0), safeSize));
+    public List<ContactMessage> page(Long before, int size) {
+        var limit = PageRequest.ofSize(Math.min(Math.max(size, 1), MAX_PAGE_SIZE));
+        return before == null ? messages.findAllByOrderByIdDesc(limit) : messages.findByIdLessThanOrderByIdDesc(before, limit);
+    }
+
+    @Transactional(readOnly = true)
+    public long total() {
+        return messages.count();
     }
 
     @Transactional(readOnly = true)

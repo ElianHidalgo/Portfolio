@@ -23,7 +23,7 @@ export class AdminHomePage {
   protected readonly formatDate = formatAdminDate;
 
   constructor() {
-    this.api.messages(0, 1).subscribe({ next: (page) => this.unread.set(page.unread), error: () => undefined });
+    this.api.messages(undefined, 1).subscribe({ next: (page) => this.unread.set(page.unread), error: () => undefined });
     this.api.publishStatus().subscribe({
       next: (status) => this.lastPublished.set(status.lastRequestedAt),
       error: () => this.lastPublished.set(null),

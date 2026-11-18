@@ -7,7 +7,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.time.Instant;
 import java.util.List;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -48,10 +47,9 @@ class AdminMessagesController {
     }
 
     @GetMapping
-    MessagePageResponse list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
-        Page<ContactMessage> messages = inbox.page(page, size);
-        return new MessagePageResponse(messages.map(MessageResponse::of).getContent(), messages.getTotalElements(),
-                inbox.unreadCount());
+    MessagePageResponse list(@RequestParam(required = false) Long before, @RequestParam(defaultValue = "20") int size) {
+        List<MessageResponse> items = inbox.page(before, size).stream().map(MessageResponse::of).toList();
+        return new MessagePageResponse(items, inbox.total(), inbox.unreadCount());
     }
 
     @PatchMapping("/{id}/read")

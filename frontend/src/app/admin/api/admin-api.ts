@@ -11,8 +11,11 @@ export class AdminApi {
   private readonly http = inject(HttpClient);
   private readonly base = `${inject(API_ORIGIN)}/api/admin`;
 
-  messages(page: number, size = 20): Observable<MessagePage> {
-    const params = new HttpParams().set('page', page).set('size', size);
+  /** Newest first; `before` is the id of the oldest message already shown (none: first page). */
+  messages(before?: number, size = 20): Observable<MessagePage> {
+    let params = new HttpParams();
+    if (before !== undefined) params = params.set('before', before);
+    params = params.set('size', size);
     return this.http.get<MessagePage>(`${this.base}/messages`, { params });
   }
 

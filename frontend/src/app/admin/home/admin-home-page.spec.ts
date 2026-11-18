@@ -34,7 +34,7 @@ describe('AdminHomePage', () => {
     fixture = TestBed.createComponent(AdminHomePage);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne(`${API}/messages?page=0&size=1`).flush({ items: [], total: 5, unread: 2 });
+    http.expectOne(`${API}/messages?size=1`).flush({ items: [], total: 5, unread: 2 });
     http.expectOne(`${API}/publish/status`).flush({ configured: true, lastRequestedAt: PUBLISHED });
     await render();
   });
@@ -92,7 +92,7 @@ describe('AdminHomePage', () => {
     fixture = TestBed.createComponent(AdminHomePage);
     http = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
-    http.expectOne(`${API}/messages?page=0&size=1`).flush({ items: [], total: 0, unread: 0 });
+    http.expectOne(`${API}/messages?size=1`).flush({ items: [], total: 0, unread: 0 });
     http.expectOne(`${API}/publish/status`).flush({ configured: true, lastRequestedAt: null });
     await render();
 

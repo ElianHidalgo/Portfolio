@@ -85,12 +85,26 @@ class AdminMessagesApiTests {
     }
 
     @Test
-    void pagesAndClampsSize() throws Exception {
+    void pagesWithACursorAndClampsSize() throws Exception {
         mockMvc.perform(asAdmin(get("/api/admin/messages").param("size", "500")))
                 .andExpect(jsonPath("$.items.length()", lessThanOrEqualTo(50)));
-        mockMvc.perform(asAdmin(get("/api/admin/messages").param("page", "1").param("size", "2")))
+        // A cursor ("older than this id") stays correct when messages are deleted or arrive meanwhile.
+        mockMvc.perform(asAdmin(get("/api/admin/messages").param("before", String.valueOf(idOf("Mid"))).param("size", "2")))
                 .andExpect(jsonPath("$.items.length()").value(1))
-                .andExpect(jsonPath("$.items[0].name").value("Old"));
+                .andExpect(jsonPath("$.items[0].name").value("Old"))
+                .andExpect(jsonPath("$.total").value(3));
+        owner.update("delete from contact.message where name = 'Old'");
+        mockMvc.perform(asAdmin(get("/api/admin/messages").param("before", String.valueOf(idOf("Mid")))))
+                .andExpect(jsonPath("$.items.length()").value(0));
+    }
+
+    @Test
+    void rejectsAMissingOrInvalidReadFlag() throws Exception {
+        for (String body : new String[] {"{}", "{\"read\":\"x\"}"}) {
+            mockMvc.perform(asAdmin(patch("/api/admin/messages/" + idOf("New") + "/read"))
+                            .contentType(MediaType.APPLICATION_JSON).content(body))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
     @Test
