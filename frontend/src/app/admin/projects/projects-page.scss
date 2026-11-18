@@ -1,0 +1,78 @@
+.admin-page__title {
+  margin-bottom: var(--space-s);
+}
+
+.projects__notice {
+  margin: 0 0 var(--space-l);
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.projects__new {
+  margin: 0 0 var(--space-s);
+}
+
+.projects__empty {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.projects__list {
+  display: grid;
+  gap: var(--space-s);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.projects__row {
+  display: grid;
+  gap: var(--space-s);
+  padding: var(--space-s);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+
+  @media (min-width: 40rem) {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+.projects__info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-s);
+  min-width: 0;
+}
+
+.projects__title {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.projects__slug {
+  font-size: var(--text-s);
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.projects__badge {
+  font-size: var(--text-s);
+
+  &--hidden {
+    color: var(--color-muted);
+  }
+}
+
+.projects__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+/* Spans the whole row so the message sits right under the buttons. */
+.projects__error {
+  grid-column: 1 / -1;
+}

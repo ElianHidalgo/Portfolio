@@ -43,3 +43,25 @@ export interface AdminSkill {
   category: SkillCategory;
   displayOrder: number;
 }
+
+/** Body of `PUT /api/admin/projects/{id}`; empty optional fields are sent as null. */
+export interface ProjectUpdate {
+  title: LocalizedText;
+  summary: LocalizedText;
+  description: LocalizedText;
+  technologies: string[];
+  repoUrl: string | null;
+  demoUrl: string | null;
+  imageUrl: string | null;
+  featured: boolean;
+  published: boolean;
+}
+
+/** Body of `POST /api/admin/projects`: the update fields plus the slug (fixed once created). */
+export type ProjectCreate = ProjectUpdate & { slug: string };
+
+/** A project as the admin projects API returns it (every field, drafts included). */
+export type AdminProject = ProjectCreate & {
+  id: number;
+  displayOrder: number;
+};

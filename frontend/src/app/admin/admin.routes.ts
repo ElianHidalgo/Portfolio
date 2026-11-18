@@ -5,6 +5,7 @@ import { AdminHomePage } from './home/admin-home-page';
 import { LoginPage } from './login/login-page';
 import { MessagesPage } from './messages/messages-page';
 import { ProfilePage } from './profile/profile-page';
+import { ProjectsPage } from './projects/projects-page';
 import { SkillsPage } from './skills/skills-page';
 import { unsavedChangesGuard } from './unsaved-changes.guard';
 
@@ -19,6 +20,7 @@ const adminRoutes: Routes = [
       { path: '', component: AdminHomePage, title: 'Panel | Portafolio' },
       { path: 'perfil', component: ProfilePage, title: 'Perfil | Portafolio', canDeactivate: [unsavedChangesGuard] },
       { path: 'skills', component: SkillsPage, title: 'Skills | Portafolio' },
+      { path: 'proyectos', component: ProjectsPage, title: 'Proyectos | Portafolio' },
       { path: 'mensajes', component: MessagesPage, title: 'Mensajes | Portafolio' },
     ],
   },

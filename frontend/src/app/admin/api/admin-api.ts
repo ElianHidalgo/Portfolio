@@ -4,7 +4,7 @@ import { Observable, map, timeout } from 'rxjs';
 import { API_ORIGIN } from '../../core/http/api-origin';
 import { COLD_START_TIMEOUT_MS } from '../../core/http/cold-start';
 import { Profile, SkillCategory } from '../../core/models/profile';
-import { AdminSkill, MessagePage, ProfileUpdate, PublishStatus } from './admin-models';
+import { AdminProject, AdminSkill, MessagePage, ProfileUpdate, ProjectCreate, ProjectUpdate, PublishStatus } from './admin-models';
 
 /** The admin API. The interceptor adds the admin token to every call made here. */
 @Injectable({ providedIn: 'root' })
@@ -59,5 +59,29 @@ export class AdminApi {
 
   reorderSkills(ids: number[]): Observable<AdminSkill[]> {
     return this.http.put<AdminSkill[]>(`${this.base}/skills/order`, { ids });
+  }
+
+  projects(): Observable<AdminProject[]> {
+    return this.http.get<AdminProject[]>(`${this.base}/projects`);
+  }
+
+  project(id: number): Observable<AdminProject> {
+    return this.http.get<AdminProject>(`${this.base}/projects/${id}`);
+  }
+
+  createProject(body: ProjectCreate): Observable<AdminProject> {
+    return this.http.post<AdminProject>(`${this.base}/projects`, body);
+  }
+
+  updateProject(id: number, body: ProjectUpdate): Observable<AdminProject> {
+    return this.http.put<AdminProject>(`${this.base}/projects/${id}`, body);
+  }
+
+  deleteProject(id: number): Observable<void> {
+    return this.http.delete(`${this.base}/projects/${id}`).pipe(map(() => undefined));
+  }
+
+  reorderProjects(ids: number[]): Observable<AdminProject[]> {
+    return this.http.put<AdminProject[]>(`${this.base}/projects/order`, { ids });
   }
 }

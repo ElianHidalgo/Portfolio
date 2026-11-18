@@ -1,0 +1,41 @@
+<h1 class="admin-page__title">Proyectos</h1>
+<p class="projects__notice">Los cambios se verán en el sitio cuando pulses <strong>Publicar</strong> en Inicio.</p>
+
+@if (loadFailed()) {
+  <p class="admin-form__feedback admin-form__feedback--error" role="alert">No se pudieron cargar los proyectos. Recarga la página.</p>
+} @else if (!loaded()) {
+  <p class="admin-form__feedback">Cargando…</p>
+} @else {
+  <p class="projects__new"><a class="button button--primary" routerLink="editar/">Nuevo proyecto</a></p>
+
+  <p class="admin-form__feedback" role="status">
+    @if (notice()) {
+      <span>{{ notice() }}</span>
+    }
+  </p>
+
+  @if (projects().length === 0) {
+    <p class="projects__empty">Todavía no hay proyectos.</p>
+  } @else {
+    <ul class="projects__list">
+      @for (project of projects(); track project.id) {
+        <li class="projects__row">
+          <div class="projects__info">
+            <span class="projects__title">{{ project.title.es }}</span>
+            <span class="projects__slug">{{ project.slug }}</span>
+            <span class="projects__badge" [class.projects__badge--hidden]="!project.published">{{ project.published ? 'Publicado' : 'Oculto' }}</span>
+          </div>
+          <div class="projects__actions">
+            <button class="button" type="button" [attr.aria-label]="'Subir ' + project.title.es" [disabled]="busyId() !== null || isFirst(project)" (click)="move(project, -1)">↑</button>
+            <button class="button" type="button" [attr.aria-label]="'Bajar ' + project.title.es" [disabled]="busyId() !== null || isLast(project)" (click)="move(project, 1)">↓</button>
+            <a class="button" routerLink="editar/" [queryParams]="{ id: project.id }" [attr.aria-label]="'Editar ' + project.title.es">Editar</a>
+            <button class="button" type="button" [attr.aria-label]="'Eliminar ' + project.title.es" [attr.aria-describedby]="failureFor(project.id) ? 'project-error-' + project.id : null" [disabled]="busyId() !== null" (click)="remove(project)">Eliminar</button>
+          </div>
+          @if (failureFor(project.id)) {
+            <p [id]="'project-error-' + project.id" class="admin-form__error projects__error" role="alert">{{ failureFor(project.id) }}</p>
+          }
+        </li>
+      }
+    </ul>
+  }
+}

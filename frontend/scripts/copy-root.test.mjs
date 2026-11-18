@@ -85,7 +85,7 @@ test('writes admin shells with the API origin and keeps them out of search resul
   }
   writeRootFiles(out, { API_URL: 'https://api.example/' });
 
-  for (const shell of ['es/admin/index.html', 'es/admin/login/index.html', 'es/admin/mensajes/index.html', 'es/admin/perfil/index.html', 'es/admin/skills/index.html', 'es/404.html', 'en/404.html']) {
+  for (const shell of ['es/admin/index.html', 'es/admin/login/index.html', 'es/admin/mensajes/index.html', 'es/admin/perfil/index.html', 'es/admin/skills/index.html', 'es/admin/proyectos/index.html', 'es/admin/proyectos/editar/index.html', 'es/404.html', 'en/404.html']) {
     assert.match(readFileSync(join(out, shell), 'utf8'), /<meta name="api-origin" content="https:\/\/api\.example"><\/head>/, shell);
   }
   assert.equal(existsSync(join(out, 'en', 'admin')), false, 'the admin area is Spanish only');
