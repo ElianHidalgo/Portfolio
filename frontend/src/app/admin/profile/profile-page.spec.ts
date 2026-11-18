@@ -89,6 +89,13 @@ describe('ProfilePage', () => {
     expect(el().textContent).toContain('Debe empezar con https://');
   });
 
+  it('blocks whitespace-only required fields before sending', async () => {
+    await type('fullName', '   ');
+    submit().click();
+    await render();
+    http.expectNone(API);
+  });
+
   it('blocks path traversal in the cv path', async () => {
     await type('cvUrl-en', '../secret.pdf');
     submit().click();

@@ -38,7 +38,11 @@ public class SkillEditor {
             throw new DuplicateSkillNameException();
         }
         skill.rename(name);
-        skill.moveTo(category);
+        if (skill.getCategory() != category) {
+            int last = skills.findFirstByOrderByDisplayOrderDesc().map(Skill::getDisplayOrder).orElse(0);
+            skill.moveTo(category);
+            skill.placeAt(last + 1);
+        }
         return flush(skill);
     }
 

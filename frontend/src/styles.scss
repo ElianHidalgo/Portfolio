@@ -292,3 +292,304 @@ a {
 .admin-form > .button {
   justify-content: center;
 }
+/*
+ * Design tokens.
+ * Cool green-tinted paper, deep green ink and a single leaf-green accent (a nod to Spring,
+ * the backbone of the stack). Typography does the heavy lifting; colour stays quiet.
+ */
+:root {
+  --color-paper: #f4f6f3;
+  --color-ink: #142019;
+  --color-muted: #56625b;
+  --color-line: #d5dcd6;
+  --color-accent: #2f7a3b;
+  --color-accent-strong: #24622e;
+  --color-on-accent: #ffffff;
+  --color-focus: #2f7a3b;
+  --color-error: #b3261e;
+
+  --font-sans: 'Schibsted Grotesk Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Type scale (major third) */
+  --text-s: 0.875rem;
+  --text-m: 1.125rem;
+  --text-l: 1.375rem;
+  --text-xl: clamp(1.375rem, 1.1rem + 1vw, 1.75rem);
+  --text-display: clamp(3.5rem, 1rem + 11vw, 9.5rem);
+
+  --content-width: 76rem;
+  --gutter: clamp(16px, 4vw, 3rem);
+
+  --space-xs: 0.375rem;
+  --space-s: 0.75rem;
+  --space-m: 1.25rem;
+  --space-l: 2rem;
+  --space-xl: clamp(3rem, 2rem + 4vw, 6rem);
+
+  --radius: 8px;
+
+  color-scheme: light;
+}
+
+@mixin dark-tokens {
+  --color-paper: #0f1612;
+  --color-ink: #e6ece7;
+  --color-muted: #9aa59e;
+  --color-line: #26322b;
+  --color-accent: #7cc47f;
+  --color-accent-strong: #9bd69d;
+  --color-on-accent: #0f1612;
+  --color-focus: #9bd69d;
+  --color-error: #f2a7a0;
+
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    @include dark-tokens;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Keeps anchor targets and focused elements clear of the sticky header. */
+  scroll-padding-top: 4.5rem;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  touch-action: manipulation;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-m);
+  line-height: 1.6;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  overflow-wrap: break-word;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+a {
+  color: var(--color-accent);
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+
+  &:hover {
+    color: var(--color-accent-strong);
+    text-decoration-thickness: 2px;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Buttons and button-styled links share one shape. */
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  max-width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-xs) var(--space-m);
+  overflow-wrap: anywhere;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: var(--text-s);
+  font-weight: 600;
+  color: var(--color-ink);
+  text-decoration: none;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+
+  &:hover {
+    color: var(--color-paper);
+    background: var(--color-ink);
+    text-decoration: none;
+  }
+
+  /* Unavailable: faded and muted, whatever the variant; hover does nothing. */
+  &:disabled,
+  &:disabled:hover {
+    border-color: var(--color-line);
+    color: var(--color-muted);
+    background: transparent;
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  &--primary {
+    border-color: var(--color-accent);
+    color: var(--color-on-accent);
+    background: var(--color-accent);
+
+    &:hover {
+      border-color: var(--color-accent-strong);
+      color: var(--color-on-accent);
+      background: var(--color-accent-strong);
+    }
+  }
+}
+
+/* Main content of each routed page: grows so the footer stays at the bottom. */
+.page {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--space-xl);
+}
+
+/* Loading, error and not-found states. */
+.status {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-m);
+  min-height: 60svh;
+  margin: 0;
+  color: var(--color-muted);
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+/* Content sections: title in a narrow left column, content on the right. */
+.section {
+  display: grid;
+  gap: var(--space-m);
+  padding-block: var(--space-xl);
+  border-top: 1px solid var(--color-line);
+
+  @media (min-width: 48rem) {
+    grid-template-columns: minmax(10rem, 1fr) 3fr;
+    gap: var(--space-l);
+  }
+}
+
+.section__title {
+  margin: 0;
+  font-size: var(--text-m);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Admin forms (login now, editing in part 8): labels above fields, same look as the contact form. */
+.admin-form {
+  display: grid;
+  gap: var(--space-m);
+}
+
+.admin-form__field {
+  display: grid;
+  gap: var(--space-xs);
+  min-width: 0;
+
+  label {
+    font-size: var(--text-s);
+    font-weight: 500;
+    color: var(--color-muted);
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: var(--space-s);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    font: inherit;
+    color: var(--color-ink);
+    background: transparent;
+    transition: border-color 150ms ease;
+
+    &:hover {
+      border-color: var(--color-muted);
+    }
+
+    &:focus-visible {
+      border-color: var(--color-focus);
+      outline-offset: 0;
+    }
+
+    &[aria-invalid='true'] {
+      border-color: var(--color-error);
+    }
+  }
+}
+
+.admin-form__error {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-error);
+}
+
+.admin-form__feedback {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.admin-form__feedback--error {
+  font-weight: 600;
+  color: var(--color-error);
+}
+
+.admin-form > .button {
+  justify-content: center;
+}
+
+.admin-page__title {
+  margin: 0 0 var(--space-l);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}

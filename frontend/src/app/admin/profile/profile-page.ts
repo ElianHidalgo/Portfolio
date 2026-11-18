@@ -33,10 +33,14 @@ const linkOrPath: ValidatorFn = (control: AbstractControl): ValidationErrors | n
   return isHttps(value) ? null : { path: true };
 };
 
+/** Required, and not just whitespace (the server trims, so it would reject it). */
+const notBlank: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
+  String(control.value ?? '').trim() === '' ? { required: true } : null;
+
 const text = (max: number, required = false, ...extra: ValidatorFn[]) =>
   new FormControl('', {
     nonNullable: true,
-    validators: [...(required ? [Validators.required] : []), Validators.maxLength(max), ...extra],
+    validators: [...(required ? [notBlank] : []), Validators.maxLength(max), ...extra],
   });
 
 /** Edits the profile (name, headline, about, contact and links) in both site languages. */

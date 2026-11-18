@@ -39,19 +39,22 @@ class AdminProfileApiTests {
     @Autowired
     PostgreSQLContainer postgres;
 
+    private SingleConnectionDataSource ownerConnection;
     private JdbcTemplate owner;
     private ProfileSnapshot seeded;
 
     @BeforeEach
     void captureSeededProfile() {
-        owner = new JdbcTemplate(new SingleConnectionDataSource(
-                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true));
+        ownerConnection = new SingleConnectionDataSource(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true);
+        owner = new JdbcTemplate(ownerConnection);
         seeded = new ProfileSnapshot(owner);
     }
 
     @AfterEach
     void restoreSeededProfile() {
         seeded.restore();
+        ownerConnection.destroy();
     }
 
     private static final String VALID = """
@@ -140,6 +143,7 @@ class AdminProfileApiTests {
         putProfile(VALID.replace("https://www.linkedin.com/in/ana", "http://www.linkedin.com/in/ana"))
                 .andExpect(status().isBadRequest());
         putProfile(VALID.replace("\"avatar.png\"", "\"javascript:alert(1)\"")).andExpect(status().isBadRequest());
+        putProfile(VALID.replace("\"avatar.png\"", "\"data:image/svg+xml,<svg/>\"")).andExpect(status().isBadRequest());
     }
 
     @Test

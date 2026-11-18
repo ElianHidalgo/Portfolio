@@ -41,19 +41,22 @@ class AdminSkillsApiTests {
     @Autowired
     PostgreSQLContainer postgres;
 
+    private SingleConnectionDataSource ownerConnection;
     private JdbcTemplate owner;
     private ProfileSnapshot seeded;
 
     @BeforeEach
     void captureSeededSkills() {
-        owner = new JdbcTemplate(new SingleConnectionDataSource(
-                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true));
+        ownerConnection = new SingleConnectionDataSource(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword(), true);
+        owner = new JdbcTemplate(ownerConnection);
         seeded = new ProfileSnapshot(owner);
     }
 
     @AfterEach
     void restoreSeededSkills() {
         seeded.restore();
+        ownerConnection.destroy();
     }
 
     private static MockHttpServletRequestBuilder asAdmin(MockHttpServletRequestBuilder request) {
@@ -104,6 +107,32 @@ class AdminSkillsApiTests {
         mockMvc.perform(get("/api/profile"))
                 .andExpect(jsonPath("$.skills[?(@.id == " + id + ")].name").value("Java 21"))
                 .andExpect(jsonPath("$.skills[?(@.id == " + id + ")].category").value("TOOLS"));
+    }
+
+    @Test
+    void changingCategoryPlacesTheSkillLastInItsNewGroup() throws Exception {
+        long id = idOf("Java");
+        int max = owner.queryForObject("select max(display_order) from profile.skill", Integer.class);
+
+        send(put("/api/admin/skills/" + id), "{\"name\":\"Java\",\"category\":\"TOOLS\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.displayOrder").value(max + 1));
+
+        assertThat(owner.queryForObject("select display_order from profile.skill where id = ?", Integer.class, id))
+                .isEqualTo(max + 1);
+        mockMvc.perform(get("/api/profile"))
+                .andExpect(jsonPath("$.skills[?(@.category == 'TOOLS')].id").value(
+                        org.hamcrest.Matchers.hasItem((int) id)))
+                .andExpect(jsonPath("$.skills[-1:].id").value(org.hamcrest.Matchers.contains((int) id)));
+    }
+
+    @Test
+    void keepingTheCategoryKeepsTheOrder() throws Exception {
+        long id = idOf("Java");
+        int before = owner.queryForObject("select display_order from profile.skill where id = ?", Integer.class, id);
+
+        send(put("/api/admin/skills/" + id), "{\"name\":\"Java 21\",\"category\":\"BACKEND\"}")
+                .andExpect(jsonPath("$.displayOrder").value(before));
     }
 
     @Test

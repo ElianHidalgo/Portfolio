@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
 
     class Validator implements ConstraintValidator<SafeLink, String> {
 
-        private static final Pattern PATH = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._~/-]*");
+        private static final Pattern PATH = Pattern.compile("[A-Za-z0-9][A-Za-z0-9._/-]*");
 
         private boolean allowPath;
 
