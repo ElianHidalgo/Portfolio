@@ -67,7 +67,7 @@ describe('ProjectEditPage', () => {
         provideHttpClientTesting(),
         provideRouter([]),
         { provide: API_ORIGIN, useValue: 'https://api.example' },
-        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(id ? { id } : {}) } } },
+        { provide: ActivatedRoute, useValue: { snapshot: { queryParamMap: convertToParamMap(id !== null ? { id } : {}) } } },
       ],
     });
     router = TestBed.inject(Router);
@@ -178,6 +178,17 @@ describe('ProjectEditPage', () => {
     await render();
     expect(text()).toContain('Proyecto no encontrado.');
     expect(Array.from(el().querySelectorAll('a')).some((a) => a.textContent?.trim() === 'Volver a proyectos')).toBe(true);
+  });
+
+  it('explainsAnInvalidId', async () => {
+    for (const bad of ['abc', '']) {
+      TestBed.resetTestingModule();
+      await open(bad);
+      await render();
+      expect(text()).toContain('Proyecto no encontrado.');
+      expect(text()).not.toContain('Nuevo proyecto');
+      http.verify();
+    }
   });
 
   it('confirmsBeforeLeaving', async () => {

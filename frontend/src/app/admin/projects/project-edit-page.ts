@@ -1,9 +1,10 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AdminApi } from '../api/admin-api';
 import { AdminProject, ProjectUpdate } from '../api/admin-models';
+import { httpsLink, text } from '../form-validators';
 import { HasUnsavedChanges } from '../unsaved-changes.guard';
 
 const TITLE_MAX = 120;
@@ -23,20 +24,6 @@ export function parseTechnologies(value: string): string[] {
     .filter((entry) => entry !== '');
 }
 
-const httpsLink: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const value = String(control.value ?? '').trim();
-  if (value === '') return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' && url.hostname !== '' ? null : { link: true };
-  } catch {
-    return { link: true };
-  }
-};
-
-const notBlank: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
-  String(control.value ?? '').trim() === '' ? { required: true } : null;
-
 const slugPattern: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
   SLUG.test(String(control.value ?? '').trim()) ? null : { slug: true };
 
@@ -53,12 +40,6 @@ const technologyList: ValidatorFn = (control: AbstractControl): ValidationErrors
   }
   return null;
 };
-
-const text = (max: number, required = false, ...extra: ValidatorFn[]) =>
-  new FormControl('', {
-    nonNullable: true,
-    validators: [...(required ? [notBlank] : []), Validators.maxLength(max), ...extra],
-  });
 
 /** Creates a project, or edits the one named by the `id` query parameter, in both site languages. */
 @Component({
@@ -104,15 +85,20 @@ export class ProjectEditPage implements HasUnsavedChanges {
 
   constructor() {
     const raw = inject(ActivatedRoute).snapshot.queryParamMap.get('id');
-    const id = raw === null ? NaN : Number(raw);
-    this.id = Number.isInteger(id) ? id : null;
-    this.creating = this.id === null;
-    if (this.id === null) {
+    const id = raw !== null && /^[1-9]\d*$/.test(raw) ? Number(raw) : null;
+    this.id = id;
+    this.creating = raw === null;
+    if (raw === null) {
       this.loaded.set(true);
       return;
     }
+    if (id === null) {
+      // A mistyped edit link must not turn into a create form.
+      this.loadFailed.set('missing');
+      return;
+    }
     this.form.controls.slug.disable();
-    this.api.project(this.id).subscribe({
+    this.api.project(id).subscribe({
       next: (project) => {
         this.fill(project);
         this.loaded.set(true);

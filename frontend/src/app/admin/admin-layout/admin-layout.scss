@@ -29,8 +29,15 @@
 
 .admin-header__sections {
   display: flex;
-  gap: var(--space-m);
+  flex-wrap: wrap;
+  gap: 0 var(--space-m);
   font-weight: 600;
+
+  /* Five sections do not fit one line on a phone: tighter gaps, and wrapping as a last resort. */
+  @media (max-width: 30rem) {
+    gap: 0 var(--space-s);
+    font-size: var(--text-s);
+  }
 
   a {
     color: var(--color-muted);

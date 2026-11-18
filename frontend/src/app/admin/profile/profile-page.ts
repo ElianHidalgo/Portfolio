@@ -1,29 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, HostListener, inject, signal } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { Profile } from '../../core/models/profile';
 import { AdminApi } from '../api/admin-api';
 import { ProfileUpdate } from '../api/admin-models';
+import { httpsLink, isHttps, text } from '../form-validators';
 import { HasUnsavedChanges } from '../unsaved-changes.guard';
 
 const HEADLINE_MAX = 160;
 const ABOUT_MAX = 2500;
 const PATH = /^[A-Za-z0-9][A-Za-z0-9._/-]*$/;
-
-function isHttps(value: string): boolean {
-  try {
-    const url = new URL(value);
-    return url.protocol === 'https:' && url.hostname !== '';
-  } catch {
-    return false;
-  }
-}
-
-/** An https link; empty is fine. */
-const httpsLink: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const value = String(control.value ?? '').trim();
-  return value === '' || isHttps(value) ? null : { link: true };
-};
 
 /** An https link or a site-relative path without ".."; empty is fine. */
 const linkOrPath: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -32,16 +18,6 @@ const linkOrPath: ValidatorFn = (control: AbstractControl): ValidationErrors | n
   if (PATH.test(value)) return value.includes('..') ? { path: true } : null;
   return isHttps(value) ? null : { path: true };
 };
-
-/** Required, and not just whitespace (the server trims, so it would reject it). */
-const notBlank: ValidatorFn = (control: AbstractControl): ValidationErrors | null =>
-  String(control.value ?? '').trim() === '' ? { required: true } : null;
-
-const text = (max: number, required = false, ...extra: ValidatorFn[]) =>
-  new FormControl('', {
-    nonNullable: true,
-    validators: [...(required ? [notBlank] : []), Validators.maxLength(max), ...extra],
-  });
 
 /** Edits the profile (name, headline, about, contact and links) in both site languages. */
 @Component({
