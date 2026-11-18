@@ -4,6 +4,8 @@ import { adminGuard } from './auth/admin.guard';
 import { AdminHomePage } from './home/admin-home-page';
 import { LoginPage } from './login/login-page';
 import { MessagesPage } from './messages/messages-page';
+import { ProfilePage } from './profile/profile-page';
+import { unsavedChangesGuard } from './unsaved-changes.guard';
 
 /** The admin area (Spanish only, rendered in the browser, loaded on demand). */
 const adminRoutes: Routes = [
@@ -14,6 +16,7 @@ const adminRoutes: Routes = [
     canActivate: [adminGuard],
     children: [
       { path: '', component: AdminHomePage, title: 'Panel | Portafolio' },
+      { path: 'perfil', component: ProfilePage, title: 'Perfil | Portafolio', canDeactivate: [unsavedChangesGuard] },
       { path: 'mensajes', component: MessagesPage, title: 'Mensajes | Portafolio' },
     ],
   },

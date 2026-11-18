@@ -5,7 +5,7 @@
 //   nearest 404.html only when no file matches, so prerendered pages always win. Each
 //   locale's 404 is its client-only shell, which shows "not found"; the root 404 is the
 //   language picker.
-// - es/admin/ and es/admin/login/: the client-only shell again, so the (Spanish-only) admin
+// - es/admin/ and its pages (login, mensajes, perfil, skills): the client-only shell again, so the (Spanish-only) admin
 //   area answers 200 instead of the 404 page. Every shell written here carries
 //   <meta name="api-origin"> when API_URL is set, so the browser can reach the API from it.
 // - _headers: security and cache headers (Cloudflare syntax; ignored by nginx).
@@ -93,7 +93,7 @@ export function writeRootFiles(outDir, env = process.env) {
     if (!existsSync(shell)) continue;
     writeShell(shell, join(outDir, locale, '404.html'));
     if (locale === 'es') {
-      for (const page of ['admin', 'admin/login', 'admin/mensajes']) writeShell(shell, join(outDir, locale, page, 'index.html'));
+      for (const page of ['admin', 'admin/login', 'admin/mensajes', 'admin/perfil', 'admin/skills']) writeShell(shell, join(outDir, locale, page, 'index.html'));
     }
   }
   // Last: the hashes must cover every page, including the root page written above.

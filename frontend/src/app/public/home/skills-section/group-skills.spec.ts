@@ -3,10 +3,10 @@ import { groupSkills } from './group-skills';
 describe('groupSkills', () => {
   it('groups skills in the fixed category order and omits empty groups', () => {
     const groups = groupSkills([
-      { name: 'Docker', category: 'DEVOPS' },
-      { name: 'Java', category: 'BACKEND' },
-      { name: 'Angular', category: 'FRONTEND' },
-      { name: 'Spring Boot', category: 'BACKEND' },
+      { id: 1, name: 'Docker', category: 'DEVOPS' },
+      { id: 2, name: 'Java', category: 'BACKEND' },
+      { id: 3, name: 'Angular', category: 'FRONTEND' },
+      { id: 4, name: 'Spring Boot', category: 'BACKEND' },
     ]);
 
     expect(groups.map((g) => g.category)).toEqual(['BACKEND', 'FRONTEND', 'DEVOPS']);

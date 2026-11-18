@@ -13,6 +13,7 @@ export interface OptionalLocalizedText {
 export type SkillCategory = 'BACKEND' | 'FRONTEND' | 'DATABASE' | 'DEVOPS' | 'TOOLS';
 
 export interface Skill {
+  id: number;
   name: string;
   category: SkillCategory;
 }

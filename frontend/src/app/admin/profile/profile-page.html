@@ -1,0 +1,139 @@
+<h1 class="admin-page__title">Perfil</h1>
+<p class="profile__notice">Los cambios se verán en el sitio cuando pulses <strong>Publicar</strong> en Inicio.</p>
+
+@if (loadFailed()) {
+  <p class="admin-form__feedback admin-form__feedback--error" role="alert">No se pudo cargar el perfil. Recarga la página.</p>
+} @else if (!loaded()) {
+  <p class="admin-form__feedback">Cargando…</p>
+} @else {
+  <form class="admin-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    <div class="admin-form__field">
+      <label for="fullName">Nombre completo</label>
+      <input id="fullName" formControlName="fullName" autocomplete="off" [attr.aria-invalid]="invalid('fullName')" />
+      @if (invalid('fullName')) {
+        <p class="admin-form__error">Obligatorio, máximo 100 caracteres.</p>
+      }
+    </div>
+
+    <div class="profile__pair">
+      <div class="admin-form__field">
+        <label for="headline-es">Titular (español)</label>
+        <input id="headline-es" formControlName="headlineEs" [attr.aria-invalid]="invalid('headlineEs')" />
+        <p class="profile__counter">{{ length('headlineEs') }} / {{ headlineMax }}</p>
+        @if (invalid('headlineEs')) {
+          <p class="admin-form__error">Obligatorio, máximo {{ headlineMax }} caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="headline-en">Titular (inglés)</label>
+        <input id="headline-en" formControlName="headlineEn" [attr.aria-invalid]="invalid('headlineEn')" />
+        <p class="profile__counter">{{ length('headlineEn') }} / {{ headlineMax }}</p>
+        @if (invalid('headlineEn')) {
+          <p class="admin-form__error">Obligatorio, máximo {{ headlineMax }} caracteres.</p>
+        }
+      </div>
+    </div>
+
+    <div class="profile__pair">
+      <div class="admin-form__field">
+        <label for="about-es">Sobre mí (español)</label>
+        <textarea id="about-es" formControlName="aboutEs" rows="8" [attr.aria-invalid]="invalid('aboutEs')"></textarea>
+        <p class="profile__counter">{{ length('aboutEs') }} / {{ aboutMax }}</p>
+        @if (invalid('aboutEs')) {
+          <p class="admin-form__error">Obligatorio, máximo {{ aboutMax }} caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="about-en">Sobre mí (inglés)</label>
+        <textarea id="about-en" formControlName="aboutEn" rows="8" [attr.aria-invalid]="invalid('aboutEn')"></textarea>
+        <p class="profile__counter">{{ length('aboutEn') }} / {{ aboutMax }}</p>
+        @if (invalid('aboutEn')) {
+          <p class="admin-form__error">Obligatorio, máximo {{ aboutMax }} caracteres.</p>
+        }
+      </div>
+    </div>
+
+    <div class="profile__pair">
+      <div class="admin-form__field">
+        <label for="location">Ubicación</label>
+        <input id="location" formControlName="location" [attr.aria-invalid]="invalid('location')" />
+        @if (invalid('location')) {
+          <p class="admin-form__error">Máximo 100 caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="email">Correo</label>
+        <input id="email" type="email" formControlName="email" [attr.aria-invalid]="invalid('email')" />
+        @if (invalid('email')) {
+          <p class="admin-form__error">Correo no válido (máximo 254 caracteres).</p>
+        }
+      </div>
+    </div>
+
+    <div class="profile__pair">
+      <div class="admin-form__field">
+        <label for="githubUrl">GitHub</label>
+        <input id="githubUrl" formControlName="githubUrl" [attr.aria-invalid]="invalid('githubUrl')" />
+        @if (invalid('githubUrl')) {
+          <p class="admin-form__error">Debe empezar con https://</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="linkedinUrl">LinkedIn</label>
+        <input id="linkedinUrl" formControlName="linkedinUrl" [attr.aria-invalid]="invalid('linkedinUrl')" />
+        @if (invalid('linkedinUrl')) {
+          <p class="admin-form__error">Debe empezar con https://</p>
+        }
+      </div>
+    </div>
+
+    <div class="admin-form__field">
+      <label for="avatarUrl">Foto de perfil</label>
+      <input id="avatarUrl" formControlName="avatarUrl" [attr.aria-invalid]="invalid('avatarUrl')" />
+      @if (invalid('avatarUrl')) {
+        <p class="admin-form__error">Ruta dentro del sitio (p. ej. cv/cv-es.pdf) o enlace https://</p>
+      }
+    </div>
+
+    <div class="profile__pair">
+      <div class="admin-form__field">
+        <label for="cvUrl-es">CV (español)</label>
+        <input id="cvUrl-es" formControlName="cvUrlEs" [attr.aria-invalid]="invalid('cvUrlEs')" />
+        @if (invalid('cvUrlEs')) {
+          <p class="admin-form__error">Ruta dentro del sitio (p. ej. cv/cv-es.pdf) o enlace https://</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="cvUrl-en">CV (inglés)</label>
+        <input id="cvUrl-en" formControlName="cvUrlEn" [attr.aria-invalid]="invalid('cvUrlEn')" />
+        @if (invalid('cvUrlEn')) {
+          <p class="admin-form__error">Ruta dentro del sitio (p. ej. cv/cv-es.pdf) o enlace https://</p>
+        }
+      </div>
+    </div>
+
+    <p class="admin-form__feedback" role="status">
+      @switch (status()) {
+        @case ('saved') {
+          <span class="profile__ok">Perfil guardado.</span>
+        }
+        @case ('invalid') {
+          <span class="admin-form__feedback--error">Revisa los campos marcados.</span>
+          @if (serverDetail()) {
+            <span> {{ serverDetail() }}</span>
+          }
+        }
+        @case ('tooLarge') {
+          <span class="admin-form__feedback--error">El texto es demasiado largo.</span>
+        }
+        @case ('error') {
+          <span class="admin-form__feedback--error">No se pudo guardar. Inténtalo de nuevo.</span>
+        }
+      }
+    </p>
+
+    <button class="button button--primary" type="submit" [disabled]="sending()">
+      {{ sending() ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </form>
+}

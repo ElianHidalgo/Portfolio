@@ -3,7 +3,8 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map, timeout } from 'rxjs';
 import { API_ORIGIN } from '../../core/http/api-origin';
 import { COLD_START_TIMEOUT_MS } from '../../core/http/cold-start';
-import { MessagePage, PublishStatus } from './admin-models';
+import { Profile, SkillCategory } from '../../core/models/profile';
+import { AdminSkill, MessagePage, ProfileUpdate, PublishStatus } from './admin-models';
 
 /** The admin API. The interceptor adds the admin token to every call made here. */
 @Injectable({ providedIn: 'root' })
@@ -34,5 +35,29 @@ export class AdminApi {
   /** The backend calls Cloudflare synchronously and may be waking up: allow a cold start. */
   publish(): Observable<PublishStatus> {
     return this.http.post<PublishStatus>(`${this.base}/publish`, null).pipe(timeout(COLD_START_TIMEOUT_MS));
+  }
+
+  profile(): Observable<Profile> {
+    return this.http.get<Profile>(`${this.base}/profile`);
+  }
+
+  saveProfile(body: ProfileUpdate): Observable<Profile> {
+    return this.http.put<Profile>(`${this.base}/profile`, body);
+  }
+
+  createSkill(name: string, category: SkillCategory): Observable<AdminSkill> {
+    return this.http.post<AdminSkill>(`${this.base}/skills`, { name, category });
+  }
+
+  updateSkill(id: number, name: string, category: SkillCategory): Observable<AdminSkill> {
+    return this.http.put<AdminSkill>(`${this.base}/skills/${id}`, { name, category });
+  }
+
+  deleteSkill(id: number): Observable<void> {
+    return this.http.delete(`${this.base}/skills/${id}`).pipe(map(() => undefined));
+  }
+
+  reorderSkills(ids: number[]): Observable<AdminSkill[]> {
+    return this.http.put<AdminSkill[]>(`${this.base}/skills/order`, { ids });
   }
 }

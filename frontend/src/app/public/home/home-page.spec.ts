@@ -23,7 +23,7 @@ function sampleProfile(overrides: Partial<Profile> = {}): Profile {
     linkedinUrl: 'https://linkedin.com/in/ada',
     avatarUrl: 'https://example.com/ada.png',
     cvUrl: { es: 'https://example.com/cv-es.pdf', en: 'https://example.com/cv-en.pdf' },
-    skills: [{ name: 'Java', category: 'BACKEND' }],
+    skills: [{ id: 1, name: 'Java', category: 'BACKEND' }],
     ...overrides,
   };
 }
@@ -92,8 +92,8 @@ describe('HomePage', () => {
     await respond(
       sampleProfile({
         skills: [
-          { name: 'Java', category: 'BACKEND' },
-          { name: 'Docker', category: 'DEVOPS' },
+          { id: 1, name: 'Java', category: 'BACKEND' },
+          { id: 2, name: 'Docker', category: 'DEVOPS' },
         ],
       }),
     );
