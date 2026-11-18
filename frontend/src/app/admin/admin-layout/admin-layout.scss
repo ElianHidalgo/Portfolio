@@ -18,9 +18,26 @@
   min-height: 3.5rem;
 }
 
-.admin-header__brand {
-  margin: 0;
+.admin-header__sections {
+  display: flex;
+  gap: var(--space-m);
   font-weight: 600;
+
+  a {
+    color: var(--color-muted);
+    text-decoration: none;
+    padding-block: var(--space-xs);
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--color-ink);
+    }
+
+    &.is-active {
+      color: var(--color-ink);
+      border-bottom-color: var(--color-accent);
+    }
+  }
 }
 
 .admin-header__actions {

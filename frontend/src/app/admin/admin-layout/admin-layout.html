@@ -1,10 +1,13 @@
 <header class="admin-header">
   <div class="admin-header__inner">
-    <p class="admin-header__brand">Panel</p>
-    <nav class="admin-header__actions" aria-label="Administración">
+    <nav class="admin-header__sections" aria-label="Secciones del panel">
+      <a routerLink="/admin" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }" ariaCurrentWhenActive="page">Inicio</a>
+      <a routerLink="/admin/mensajes" routerLinkActive="is-active" ariaCurrentWhenActive="page">Mensajes</a>
+    </nav>
+    <div class="admin-header__actions">
       <a href="/es/">Ver sitio</a>
       <button class="button" type="button" (click)="logout()">Cerrar sesión</button>
-    </nav>
+    </div>
   </div>
 </header>
 <main id="content" class="admin-main">

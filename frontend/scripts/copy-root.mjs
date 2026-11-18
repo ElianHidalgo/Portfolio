@@ -93,7 +93,7 @@ export function writeRootFiles(outDir, env = process.env) {
     if (!existsSync(shell)) continue;
     writeShell(shell, join(outDir, locale, '404.html'));
     if (locale === 'es') {
-      for (const page of ['admin', 'admin/login']) writeShell(shell, join(outDir, locale, page, 'index.html'));
+      for (const page of ['admin', 'admin/login', 'admin/mensajes']) writeShell(shell, join(outDir, locale, page, 'index.html'));
     }
   }
   // Last: the hashes must cover every page, including the root page written above.
