@@ -37,6 +37,7 @@
 
 .project-edit__checks {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: var(--space-m);
 }

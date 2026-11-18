@@ -14,7 +14,8 @@ const TECHNOLOGIES_MAX = 20;
 const TECHNOLOGY_MAX = 40;
 const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
-const CREATED_NOTICE = 'Proyecto creado. Está oculto hasta que marques Publicado.';
+const CREATED_HIDDEN_NOTICE = 'Proyecto creado. Está oculto hasta que marques Publicado.';
+const CREATED_PUBLISHED_NOTICE = 'Proyecto creado y publicado. Se verá en el sitio cuando pulses Publicar en Inicio.';
 
 /** Splits a comma separated list, trims every entry and drops the empty ones. */
 export function parseTechnologies(value: string): string[] {
@@ -52,8 +53,6 @@ export class ProjectEditPage implements HasUnsavedChanges {
   private readonly api = inject(AdminApi);
   private readonly router = inject(Router);
   private readonly id: number | null;
-  /** The stored image link: the form has no field for it, so it is sent back unchanged. */
-  private imageUrl: string | null = null;
 
   protected readonly titleMax = TITLE_MAX;
   protected readonly summaryMax = SUMMARY_MAX;
@@ -157,7 +156,7 @@ export class ProjectEditPage implements HasUnsavedChanges {
         if (this.id === null) {
           // Pristine first, so the unsaved-changes guard does not ask while leaving.
           this.form.markAsPristine();
-          void this.router.navigateByUrl('/admin/proyectos', { state: { notice: CREATED_NOTICE } });
+          void this.router.navigateByUrl('/admin/proyectos', { state: { notice: project.published ? CREATED_PUBLISHED_NOTICE : CREATED_HIDDEN_NOTICE } });
         } else {
           this.fill(project);
           this.status.set('saved');
@@ -169,6 +168,9 @@ export class ProjectEditPage implements HasUnsavedChanges {
         if (failure?.status === 409) {
           this.conflict.set(true);
           this.status.set('idle');
+        } else if (failure?.status === 404 && this.id !== null) {
+          // Deleted in another tab.
+          this.loadFailed.set('missing');
         } else if (failure?.status === 400) {
           const detail = failure.error?.detail;
           this.serverDetail.set(typeof detail === 'string' ? detail : '');
@@ -183,7 +185,6 @@ export class ProjectEditPage implements HasUnsavedChanges {
   /** Puts a project into the form and marks it as saved (pristine). */
   private fill(project: AdminProject): void {
     this.slug.set(project.slug);
-    this.imageUrl = project.imageUrl;
     this.form.reset({
       slug: project.slug,
       titleEs: project.title.es,
@@ -210,7 +211,6 @@ export class ProjectEditPage implements HasUnsavedChanges {
       technologies: parseTechnologies(v.technologies),
       repoUrl: optional(v.repoUrl),
       demoUrl: optional(v.demoUrl),
-      imageUrl: this.imageUrl,
       featured: v.featured,
       published: v.published,
     };

@@ -1,7 +1,7 @@
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { Router, provideRouter } from '@angular/router';
 import { vi } from 'vitest';
 import { API_ORIGIN } from '../../core/http/api-origin';
 import { AdminProject } from '../api/admin-models';
@@ -149,5 +149,28 @@ describe('ProjectsPage (empty)', () => {
     await fixture.whenStable();
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Todavía no hay proyectos.');
     http.verify();
+  });
+});
+
+describe('ProjectsPage notice', () => {
+  it('shows the notice handed over by the edit page', async () => {
+    TestBed.configureTestingModule({
+      imports: [ProjectsPage],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: API_ORIGIN, useValue: 'https://api.example' },
+      ],
+    });
+    const notice = 'Proyecto creado. Está oculto hasta que marques Publicado.';
+    vi.spyOn(TestBed.inject(Router), 'getCurrentNavigation').mockReturnValue({ extras: { state: { notice } } } as never);
+    const fixture = TestBed.createComponent(ProjectsPage);
+    const http = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+    http.expectOne(`${API}/projects`).flush([project(1)]);
+    fixture.detectChanges();
+    await fixture.whenStable();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(notice);
   });
 });

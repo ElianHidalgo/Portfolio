@@ -109,10 +109,26 @@ describe('ProjectEditPage', () => {
     expect(req.request.body.slug).toBe('demo-project');
     expect(req.request.body.published).toBe(false);
     expect(req.request.body.technologies).toEqual(['Java', 'Angular']);
-    req.flush({ ...PROJECT, id: 9 }, { status: 201, statusText: 'Created' });
+    req.flush({ ...PROJECT, id: 9, published: false }, { status: 201, statusText: 'Created' });
     await render();
     expect(navigate).toHaveBeenCalledWith('/admin/proyectos', {
       state: { notice: 'Proyecto creado. Está oculto hasta que marques Publicado.' },
+    });
+  });
+
+  it('says a project created as published will go online', async () => {
+    await open(null);
+    await render();
+    const navigate = vi.spyOn(router, 'navigateByUrl').mockResolvedValue(true);
+    await fillNew();
+    await check('published', true);
+    submit().click();
+    const req = http.expectOne(API);
+    expect(req.request.body.published).toBe(true);
+    req.flush({ ...PROJECT, id: 9, published: true }, { status: 201, statusText: 'Created' });
+    await render();
+    expect(navigate).toHaveBeenCalledWith('/admin/proyectos', {
+      state: { notice: 'Proyecto creado y publicado. Se verá en el sitio cuando pulses Publicar en Inicio.' },
     });
   });
 
@@ -156,7 +172,7 @@ describe('ProjectEditPage', () => {
     expect(req.request.method).toBe('PUT');
     expect(req.request.body.slug).toBeUndefined();
     expect(req.request.body.title.en).toBe('New title');
-    expect(req.request.body.imageUrl).toBe('media/p.png');
+    expect('imageUrl' in req.request.body).toBe(false);
     req.flush({ ...PROJECT, title: { es: 'Título', en: 'New title' } });
     await render();
     expect(text()).toContain('Proyecto guardado.');
@@ -177,6 +193,16 @@ describe('ProjectEditPage', () => {
     http.expectOne(`${API}/99`).flush({}, { status: 404, statusText: 'Not Found' });
     await render();
     expect(text()).toContain('Proyecto no encontrado.');
+    expect(Array.from(el().querySelectorAll('a')).some((a) => a.textContent?.trim() === 'Volver a proyectos')).toBe(true);
+  });
+
+  it('explainsAProjectDeletedWhileEditing', async () => {
+    await openExisting();
+    submit().click();
+    http.expectOne(`${API}/1`).flush({}, { status: 404, statusText: 'Not Found' });
+    await render();
+    expect(text()).toContain('Proyecto no encontrado.');
+    expect(text()).not.toContain('No se pudo guardar');
     expect(Array.from(el().querySelectorAll('a')).some((a) => a.textContent?.trim() === 'Volver a proyectos')).toBe(true);
   });
 

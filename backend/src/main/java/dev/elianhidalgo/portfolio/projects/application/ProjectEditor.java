@@ -49,9 +49,10 @@ public class ProjectEditor {
 
     @Transactional
     public Project update(long id, ProjectChanges changes) {
+        var published = projects.findAllByPublishedTrue();
         var project = projects.findById(id).orElseThrow(ProjectNotFoundException::new);
         if (project.isPublished() && !changes.published()) {
-            requireAnotherPublished(project);
+            requireAnotherPublished(published, project);
         }
         project.update(changes);
         return projects.saveAndFlush(project);
@@ -59,9 +60,10 @@ public class ProjectEditor {
 
     @Transactional
     public void delete(long id) {
+        var published = projects.findAllByPublishedTrue();
         var project = projects.findById(id).orElseThrow(ProjectNotFoundException::new);
         if (project.isPublished()) {
-            requireAnotherPublished(project);
+            requireAnotherPublished(published, project);
         }
         projects.delete(project);
     }
@@ -79,9 +81,9 @@ public class ProjectEditor {
         return ids.stream().map(byId::get).toList();
     }
 
-    /** Locks the published rows first, so concurrent requests cannot both remove the last visible one. */
-    private void requireAnotherPublished(Project project) {
-        boolean another = projects.findAllByPublishedTrue().stream()
+    /** The caller locks the published rows before reading its target, so concurrent requests cannot both remove the last visible one. */
+    private void requireAnotherPublished(List<Project> published, Project project) {
+        boolean another = published.stream()
                 .anyMatch(other -> !other.getId().equals(project.getId()));
         if (!another) {
             throw new LastPublishedProjectException();

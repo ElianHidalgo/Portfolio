@@ -52,7 +52,6 @@ export interface ProjectUpdate {
   technologies: string[];
   repoUrl: string | null;
   demoUrl: string | null;
-  imageUrl: string | null;
   featured: boolean;
   published: boolean;
 }
@@ -63,5 +62,6 @@ export type ProjectCreate = ProjectUpdate & { slug: string };
 /** A project as the admin projects API returns it (every field, drafts included). */
 export type AdminProject = ProjectCreate & {
   id: number;
+  imageUrl: string | null;
   displayOrder: number;
 };
