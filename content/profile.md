@@ -25,7 +25,7 @@ for a new migration.
 
 ### ES
 
-Estudio Ingeniería de Software en la Universidad de las Américas (UDLA), en Quito, y busco una pasantía en desarrollo backend o DevOps.
+Estudio Ingeniería de Software en la Universidad de las Américas (UDLA), en Quito, y busco una pasantía en desarrollo backend, DevOps o infraestructura.
 
 Entre mayo y noviembre de 2026 hice mi pasantía en la UDLA: automaticé procesos con RPA —uno de los bots redujo un 75 % el tiempo de procesamiento manual—, di soporte N2 sobre el ERP Banner y escribí consultas en SQL Server y PL/SQL.
 
@@ -33,7 +33,7 @@ Fuera del trabajo construyo proyectos propios con Java, Spring Boot y .NET. Este
 
 ### EN
 
-I'm a Software Engineering student at Universidad de las Américas (UDLA) in Quito, looking for an internship in backend development or DevOps.
+I'm a Software Engineering student at Universidad de las Américas (UDLA) in Quito, looking for an internship in backend development, DevOps or infrastructure.
 
 From May to November 2026 I interned at UDLA, where I automated processes with RPA — one of the bots cut manual processing time by 75% — provided Level 2 support on the Banner ERP, and wrote SQL Server and PL/SQL queries.
 

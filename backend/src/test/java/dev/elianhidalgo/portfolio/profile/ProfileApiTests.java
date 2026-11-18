@@ -51,9 +51,11 @@ class ProfileApiTests {
         // The UDLA internship ended on 2026-11-12 (May–November 2026).
         mockMvc.perform(get("/api/profile"))
                 .andExpect(jsonPath("$.about.es", allOf(
+                        containsString("busco una pasantía en desarrollo backend, DevOps o infraestructura"),
                         containsString("Entre mayo y noviembre de 2026 hice mi pasantía en la UDLA"),
                         not(containsString("pasantía actual")))))
                 .andExpect(jsonPath("$.about.en", allOf(
+                        containsString("looking for an internship in backend development, DevOps or infrastructure"),
                         containsString("From May to November 2026 I interned at UDLA"),
                         not(containsString("current internship")))));
     }
