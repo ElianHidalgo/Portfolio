@@ -1,0 +1,40 @@
+<h1 class="admin-page__title">Mensajes</h1>
+
+@if (!loading() && !failed() && items().length === 0) {
+  <p class="inbox__empty">No hay mensajes.</p>
+}
+
+<ul class="inbox">
+  @for (message of items(); track message.id) {
+    <li class="inbox__item" [class.is-unread]="!message.read">
+      <div class="inbox__head">
+        <p class="inbox__name">{{ message.name }}</p>
+        @if (!message.read) {
+          <span class="inbox__badge">Nuevo</span>
+        }
+        <p class="inbox__meta">
+          {{ formatDate(message.createdAt) }} · {{ message.locale === 'es' ? 'Español' : 'Inglés' }} ·
+          <span class="inbox__email">{{ message.email }}</span>
+        </p>
+      </div>
+      <!-- Interpolation only: whatever a visitor wrote is shown as text, never as HTML. -->
+      <p class="inbox__text">{{ message.message }}</p>
+      <div class="inbox__actions">
+        <a class="button" [href]="'mailto:' + message.email">Responder</a>
+        <button class="button" type="button" (click)="toggleRead(message)">
+          {{ message.read ? 'Marcar como no leído' : 'Marcar como leído' }}
+        </button>
+        <button class="button inbox__delete" type="button" (click)="remove(message)">Eliminar</button>
+      </div>
+    </li>
+  }
+</ul>
+
+@if (failed()) {
+  <p class="inbox__empty" role="alert">No se pudieron cargar los mensajes.</p>
+}
+@if (hasMore() || failed()) {
+  <button class="button" type="button" (click)="loadMore()" [disabled]="loading()">
+    {{ loading() ? 'Cargando…' : failed() ? 'Reintentar' : 'Cargar más' }}
+  </button>
+}

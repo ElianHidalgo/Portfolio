@@ -1,0 +1,48 @@
+<h1 class="admin-page__title">Panel de administración</h1>
+
+<div class="dashboard">
+  <section class="dashboard__card" aria-labelledby="inbox-title">
+    <h2 id="inbox-title" class="dashboard__title">Mensajes</h2>
+    @if (unread() !== null) {
+      <p class="dashboard__figure">Mensajes sin leer: {{ unread() }}</p>
+    } @else {
+      <p class="dashboard__figure dashboard__figure--muted">Cargando…</p>
+    }
+    <a routerLink="/admin/mensajes">Ver mensajes</a>
+  </section>
+
+  <section class="dashboard__card" aria-labelledby="publish-title">
+    <h2 id="publish-title" class="dashboard__title">Sitio público</h2>
+    @switch (lastPublished()) {
+      @case (undefined) {
+        <p class="dashboard__figure dashboard__figure--muted">Cargando…</p>
+      }
+      @case (null) {
+        <p class="dashboard__figure">Aún no se ha publicado</p>
+      }
+      @default {
+        <p class="dashboard__figure">Última publicación: {{ formatDate(lastPublished()!) }}</p>
+      }
+    }
+    <p class="dashboard__hint">Publicar regenera el sitio con los datos actuales; tarda de 1 a 3 minutos.</p>
+    <button class="button button--primary" type="button" (click)="publish()" [disabled]="publishState() === 'sending'">
+      {{ publishState() === 'sending' ? 'Publicando…' : 'Publicar sitio' }}
+    </button>
+    <p class="dashboard__feedback" role="status">
+      @switch (publishState()) {
+        @case ('done') {
+          <span class="dashboard__feedback--ok">Publicación solicitada. El sitio se actualizará en 1–3 minutos.</span>
+        }
+        @case ('limited') {
+          <span class="dashboard__feedback--error">Ya hay una publicación en curso. Espera un minuto.</span>
+        }
+        @case ('unconfigured') {
+          <span class="dashboard__feedback--error">La publicación no está configurada (falta el deploy hook).</span>
+        }
+        @case ('error') {
+          <span class="dashboard__feedback--error">No se pudo publicar. Inténtalo de nuevo.</span>
+        }
+      }
+    </p>
+  </section>
+</div>

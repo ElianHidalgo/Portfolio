@@ -1,0 +1,87 @@
+.admin-page__title {
+  margin: 0 0 var(--space-l);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.inbox {
+  display: grid;
+  gap: var(--space-m);
+  margin: 0 0 var(--space-l);
+  padding: 0;
+  list-style: none;
+}
+
+.inbox__item {
+  display: grid;
+  gap: var(--space-s);
+  padding: var(--space-m);
+  border: 1px solid var(--color-line);
+  border-left-width: 4px;
+  border-radius: var(--radius);
+
+  &.is-unread {
+    border-left-color: var(--color-accent);
+  }
+}
+
+.inbox__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-xs) var(--space-s);
+}
+
+.inbox__name {
+  margin: 0;
+  font-weight: 600;
+}
+
+.inbox__badge {
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius);
+  font-size: var(--text-s);
+  font-weight: 600;
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+
+.inbox__meta {
+  flex-basis: 100%;
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.inbox__email {
+  overflow-wrap: anywhere;
+}
+
+/* Keeps the visitor's line breaks; long words wrap instead of overflowing on phones. */
+.inbox__text {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.inbox__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-s);
+}
+
+.inbox__delete {
+  border-color: var(--color-error);
+  color: var(--color-error);
+
+  &:hover {
+    color: var(--color-paper);
+    background: var(--color-error);
+  }
+}
+
+.inbox__empty {
+  margin: 0 0 var(--space-l);
+  color: var(--color-muted);
+}

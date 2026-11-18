@@ -1,0 +1,61 @@
+.admin-page__title {
+  margin: 0 0 var(--space-l);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+/* Two cards side by side on wide screens, stacked on phones. */
+.dashboard {
+  display: grid;
+  gap: var(--space-m);
+
+  @media (min-width: 48rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.dashboard__card {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: var(--space-s);
+  padding: var(--space-l);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius);
+}
+
+.dashboard__title {
+  margin: 0;
+  font-size: var(--text-s);
+  font-weight: 500;
+  color: var(--color-muted);
+}
+
+.dashboard__figure {
+  margin: 0;
+  font-size: var(--text-l);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+
+  &--muted {
+    color: var(--color-muted);
+  }
+}
+
+.dashboard__hint,
+.dashboard__feedback {
+  margin: 0;
+  font-size: var(--text-s);
+  color: var(--color-muted);
+}
+
+.dashboard__feedback--ok {
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}
+
+.dashboard__feedback--error {
+  font-weight: 600;
+  color: var(--color-error);
+}

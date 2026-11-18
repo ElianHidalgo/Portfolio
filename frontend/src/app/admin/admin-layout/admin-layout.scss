@@ -12,10 +12,19 @@
 
 .admin-header__inner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-m);
+  gap: var(--space-xs) var(--space-m);
   min-height: 3.5rem;
+  padding-block: var(--space-xs);
+}
+
+/* On phones the two groups wrap as wholes, never mid-label. */
+.admin-header__sections a,
+.admin-header__actions a,
+.admin-header__actions .button {
+  white-space: nowrap;
 }
 
 .admin-header__sections {
