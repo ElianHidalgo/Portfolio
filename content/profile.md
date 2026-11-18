@@ -1,6 +1,7 @@
 # Profile content
 
-Approved 2026-11-15 and loaded by migration `V4__owner_profile_content.sql`.
+Approved 2026-11-15 and loaded by migration `V4__owner_profile_content.sql`; the UDLA internship
+was marked as finished (ended 2026-11-12) by `V10__udla_internship_finished.sql`.
 To change it before the admin panel exists (part 8), edit this file and ask Claude
 for a new migration.
 
@@ -26,7 +27,7 @@ for a new migration.
 
 Estudio Ingeniería de Software en la Universidad de las Américas (UDLA), en Quito, y busco una pasantía en desarrollo backend o DevOps.
 
-En mi pasantía actual en la UDLA automatizo procesos con RPA —uno de los bots redujo un 75 % el tiempo de procesamiento manual—, doy soporte N2 sobre el ERP Banner y escribo consultas en SQL Server y PL/SQL.
+Entre mayo y noviembre de 2026 hice mi pasantía en la UDLA: automaticé procesos con RPA —uno de los bots redujo un 75 % el tiempo de procesamiento manual—, di soporte N2 sobre el ERP Banner y escribí consultas en SQL Server y PL/SQL.
 
 Fuera del trabajo construyo proyectos propios con Java, Spring Boot y .NET. Este portafolio es uno de ellos: una API en Spring Boot y un frontend en Angular, con el código abierto en GitHub.
 
@@ -34,7 +35,7 @@ Fuera del trabajo construyo proyectos propios con Java, Spring Boot y .NET. Este
 
 I'm a Software Engineering student at Universidad de las Américas (UDLA) in Quito, looking for an internship in backend development or DevOps.
 
-In my current internship at UDLA I automate processes with RPA — one of the bots cut manual processing time by 75% — provide Level 2 support on the Banner ERP, and write SQL Server and PL/SQL queries.
+From May to November 2026 I interned at UDLA, where I automated processes with RPA — one of the bots cut manual processing time by 75% — provided Level 2 support on the Banner ERP, and wrote SQL Server and PL/SQL queries.
 
 Outside work I build my own projects with Java, Spring Boot and .NET. This portfolio is one of them: a Spring Boot API and an Angular front end, with the source code open on GitHub.
 

@@ -1,6 +1,9 @@
 package dev.elianhidalgo.portfolio.profile;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -41,6 +44,18 @@ class ProfileApiTests {
                 .andExpect(jsonPath("$.linkedinUrl").value("https://www.linkedin.com/in/victor-hidalgo-889249303/"))
                 .andExpect(jsonPath("$.cvUrl.es").value("cv/cv-es.pdf"))
                 .andExpect(jsonPath("$.cvUrl.en").value("cv/cv-en.pdf"));
+    }
+
+    @Test
+    void describesTheUdlaInternshipAsFinished() throws Exception {
+        // The UDLA internship ended on 2026-11-12 (May–November 2026).
+        mockMvc.perform(get("/api/profile"))
+                .andExpect(jsonPath("$.about.es", allOf(
+                        containsString("Entre mayo y noviembre de 2026 hice mi pasantía en la UDLA"),
+                        not(containsString("pasantía actual")))))
+                .andExpect(jsonPath("$.about.en", allOf(
+                        containsString("From May to November 2026 I interned at UDLA"),
+                        not(containsString("current internship")))));
     }
 
     @Test
