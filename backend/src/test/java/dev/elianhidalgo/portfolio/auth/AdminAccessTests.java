@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import dev.elianhidalgo.portfolio.TestTokens;
 import dev.elianhidalgo.portfolio.TestcontainersConfiguration;
 import java.time.Duration;
 import java.time.Instant;

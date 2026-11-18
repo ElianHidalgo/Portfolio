@@ -37,6 +37,10 @@ public class ContactMessage {
         this.createdAt = Instant.now();
     }
 
+    public void markRead(boolean read) {
+        this.read = read;
+    }
+
     public Long getId() { return id; }
     public String getName() { return name; }
     public String getEmail() { return email; }
