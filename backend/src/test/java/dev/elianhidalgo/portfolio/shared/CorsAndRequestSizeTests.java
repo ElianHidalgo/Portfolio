@@ -3,7 +3,9 @@ package dev.elianhidalgo.portfolio.shared;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -87,5 +89,24 @@ class CorsAndRequestSizeTests {
                 .andExpect(status().isContentTooLarge())
                 .andExpect(header().string("Access-Control-Allow-Origin", SITE))
                 .andExpect(header().string("X-Content-Type-Options", "nosniff"));
+    }
+
+    @Test
+    void corsAllowsPutFromTheSite() throws Exception {
+        mockMvc.perform(options("/api/admin/profile").header("Origin", SITE)
+                        .header("Access-Control-Request-Method", "PUT")
+                        .header("Access-Control-Request-Headers", "authorization,content-type"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", SITE));
+    }
+
+    @Test
+    void putAndPatchBodiesAreLimited() throws Exception {
+        mockMvc.perform(put("/api/admin/profile").contentType(APPLICATION_JSON).content("x".repeat(17 * 1024)))
+                .andExpect(status().isContentTooLarge())
+                .andExpect(jsonPath("$.detail").value("Request body too large"));
+        mockMvc.perform(patch("/api/admin/messages/1/read").contentType(APPLICATION_JSON)
+                        .header("Transfer-Encoding", "chunked"))
+                .andExpect(status().isLengthRequired());
     }
 }

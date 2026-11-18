@@ -30,6 +30,22 @@ public class Profile {
         // for JPA
     }
 
+    public void update(ProfileChanges changes, Instant now) {
+        this.fullName = changes.fullName();
+        this.headlineEs = changes.headlineEs();
+        this.headlineEn = changes.headlineEn();
+        this.aboutEs = changes.aboutEs();
+        this.aboutEn = changes.aboutEn();
+        this.location = changes.location();
+        this.email = changes.email();
+        this.githubUrl = changes.githubUrl();
+        this.linkedinUrl = changes.linkedinUrl();
+        this.avatarUrl = changes.avatarUrl();
+        this.cvUrlEs = changes.cvUrlEs();
+        this.cvUrlEn = changes.cvUrlEn();
+        this.updatedAt = now;
+    }
+
     public String getFullName() { return fullName; }
     public String getHeadlineEs() { return headlineEs; }
     public String getHeadlineEn() { return headlineEn; }
