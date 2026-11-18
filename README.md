@@ -42,11 +42,16 @@ When running with Docker Compose, **nginx is the single entry point** at `http:/
 | `GET /api/admin/profile` · `PUT /api/admin/profile` | Read/replace the profile, same shape as the public `GET /api/profile`. `githubUrl`/`linkedinUrl` must be `https`; `avatarUrl` and `cvUrl.*` are `https` or a relative path (`^[A-Za-z0-9][A-Za-z0-9._/-]*$`, no `..`); blank optional fields become `null`; texts are trimmed; `about` ≤ 2500 characters; `400` if invalid |
 | `POST /api/admin/skills` · `PUT /api/admin/skills/{id}` · `DELETE /api/admin/skills/{id}` | Add a skill (`201`, placed last) · edit it · delete it (`204`); `409` for a duplicate name (case-insensitive), `404` if unknown |
 | `PUT /api/admin/skills/order` | Reorder skills with `{"ids": [every id]}`; `400` on a partial or stale list |
+| `GET /api/admin/projects` · `GET /api/admin/projects/{id}` | List every project, hidden ones included · read one; `404` if unknown |
+| `POST /api/admin/projects` · `PUT /api/admin/projects/{id}` · `DELETE /api/admin/projects/{id}` | Create a project (`201`, with `slug`, placed last; `409` for a duplicate slug) · edit it (the `slug` and `imageUrl` never change) · delete it (`204`). Hiding or deleting the last published project answers `409`. `featured` and `published` are required; title ≤ 120, summary ≤ 300, description ≤ 4000, up to 20 technologies of ≤ 40 characters with no case-insensitive duplicates; repo/demo links must be `https`; `400` if invalid. Bodies under `/api/admin/` may be up to 64 KiB (16 KiB elsewhere) |
+| `PUT /api/admin/projects/order` | Reorder projects with `{"ids": [every id]}`; `400` on a partial or stale list |
 | `POST /api/contact` | Stores a contact message `{name, email, message, locale, website}` → `202`; `400` if invalid, `429` past 5 messages per client per hour or 50 stored per 24 h; `website` is a honeypot (filled → `202`, nothing stored) |
 
 ### Changing the CV or avatar
 
 The admin panel (`/es/admin/perfil/`) edits text and links only; it does not upload files. To change the CV or avatar, replace the file in `frontend/public/` and keep the same path, or set the field to an `https://` link. Profile and skills edits reach the public site after pressing "Publicar".
+
+The projects editor (`/es/admin/proyectos/`) works the same way: text and links only. A project's image is not editable in the panel; to change it, put the file in `frontend/public/` and update `image_url` with a Flyway migration. New projects start hidden and last; edits reach the public site after pressing "Publicar".
 
 Translatable texts are returned in both languages as `{"es": "...", "en": "..."}`; the front end picks the one for the page's language. Errors use the `application/problem+json` format (RFC 9457).
 
