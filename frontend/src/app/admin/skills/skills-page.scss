@@ -80,3 +80,8 @@
   flex-wrap: wrap;
   gap: var(--space-xs);
 }
+
+/* Spans the whole row / form so the message sits right under the field that failed. */
+.skills__error {
+  grid-column: 1 / -1;
+}

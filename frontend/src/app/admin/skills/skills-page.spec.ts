@@ -96,14 +96,38 @@ describe('SkillsPage', () => {
     await addKotlin();
     http.expectOne(`${API}/skills`).flush({}, { status: 409, statusText: 'Conflict' });
     await render();
-    expect(el().textContent).toContain('Ya existe una skill con ese nombre.');
+    const error = el().querySelector('form #new-skill-error') as HTMLElement;
+    expect(error.textContent).toContain('Ya existe una skill con ese nombre.');
+    expect(error.getAttribute('role')).toBe('alert');
+    const field = el().querySelector('#new-skill-name') as HTMLInputElement;
+    expect(field.getAttribute('aria-describedby')).toBe('new-skill-error');
+    expect(field.getAttribute('aria-invalid')).toBe('true');
+    expect(rows().some((row) => row.querySelector('[role="alert"]'))).toBe(false);
+  });
+
+  it('shows a rename conflict inside the failing row', async () => {
+    const row = rows()[1];
+    const name = row.querySelector('input') as HTMLInputElement;
+    name.value = 'Java';
+    name.dispatchEvent(new Event('input'));
+    await render();
+    button(rows()[1], 'Guardar').click();
+    await render();
+    http.expectOne(`${API}/skills/3`).flush({}, { status: 409, statusText: 'Conflict' });
+    await render();
+    const failing = rows()[1];
+    const error = failing.querySelector('[role="alert"]') as HTMLElement;
+    expect(error.textContent).toContain('Ya existe una skill con ese nombre.');
+    expect((failing.querySelector('input') as HTMLInputElement).getAttribute('aria-describedby')).toBe(error.id);
+    expect(rows()[0].querySelector('[role="alert"]')).toBeNull();
+    expect(el().querySelector('form [role="alert"]')).toBeNull();
   });
 
   it('shows a generic failure', async () => {
     await addKotlin();
     http.expectOne(`${API}/skills`).flush({}, { status: 500, statusText: 'Server Error' });
     await render();
-    expect(el().textContent).toContain('No se pudo guardar. Inténtalo de nuevo.');
+    expect(el().querySelector('form #new-skill-error')?.textContent).toContain('No se pudo guardar. Inténtalo de nuevo.');
   });
 
   it('renames and recategorizes', async () => {

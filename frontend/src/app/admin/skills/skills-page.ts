@@ -37,7 +37,8 @@ export class SkillsPage {
   protected readonly newName = signal('');
   protected readonly newCategory = signal<SkillCategory>('BACKEND');
   protected readonly notice = signal('');
-  protected readonly failure = signal('');
+  /** The last failure and where it belongs: the add form or one row. */
+  protected readonly failure = signal<{ scope: 'add' | number; text: string } | null>(null);
 
   protected readonly groups = computed(() =>
     CATEGORIES.map(({ value, label }) => ({
@@ -90,7 +91,7 @@ export class SkillsPage {
       },
       error: (error: unknown) => {
         this.adding.set(false);
-        this.fail(error);
+        this.fail('add', error);
       },
     });
   }
@@ -113,7 +114,7 @@ export class SkillsPage {
       },
       error: (error: unknown) => {
         this.busyId.set(null);
-        this.fail(error);
+        this.fail(skill.id, error);
       },
     });
   }
@@ -131,7 +132,7 @@ export class SkillsPage {
       },
       error: (error: unknown) => {
         this.busyId.set(null);
-        this.fail(error);
+        this.fail(skill.id, error);
       },
     });
   }
@@ -162,7 +163,7 @@ export class SkillsPage {
           });
         } else {
           this.busyId.set(null);
-          this.fail(error);
+          this.fail(skill.id, error);
         }
       },
     });
@@ -183,14 +184,21 @@ export class SkillsPage {
 
   private clearMessages(): void {
     this.notice.set('');
-    this.failure.set('');
+    this.failure.set(null);
   }
 
-  private fail(error: unknown): void {
-    this.failure.set(
-      error instanceof HttpErrorResponse && error.status === 409
-        ? 'Ya existe una skill con ese nombre.'
-        : 'No se pudo guardar. Inténtalo de nuevo.',
-    );
+  private fail(scope: 'add' | number, error: unknown): void {
+    this.failure.set({
+      scope,
+      text:
+        error instanceof HttpErrorResponse && error.status === 409
+          ? 'Ya existe una skill con ese nombre.'
+          : 'No se pudo guardar. Inténtalo de nuevo.',
+    });
+  }
+
+  protected failureFor(scope: 'add' | number): string {
+    const failure = this.failure();
+    return failure && failure.scope === scope ? failure.text : '';
   }
 }

@@ -140,6 +140,16 @@ a {
     text-decoration: none;
   }
 
+  /* Unavailable: faded and muted, whatever the variant; hover does nothing. */
+  &:disabled,
+  &:disabled:hover {
+    border-color: var(--color-line);
+    color: var(--color-muted);
+    background: transparent;
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
   &--primary {
     border-color: var(--color-accent);
     color: var(--color-on-accent);

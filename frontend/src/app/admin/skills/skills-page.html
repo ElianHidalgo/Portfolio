@@ -9,7 +9,7 @@
   <form class="skills__add admin-form" (submit)="$event.preventDefault(); add()">
     <div class="admin-form__field">
       <label for="new-skill-name">Nombre</label>
-      <input id="new-skill-name" maxlength="60" autocomplete="off" [value]="newName()" (input)="newName.set($any($event.target).value)" />
+      <input id="new-skill-name" maxlength="60" autocomplete="off" [attr.aria-invalid]="failureFor('add') ? true : null" [attr.aria-describedby]="failureFor('add') ? 'new-skill-error' : null" [value]="newName()" (input)="newName.set($any($event.target).value)" />
     </div>
     <div class="admin-form__field">
       <label for="new-skill-category">Categoría</label>
@@ -19,13 +19,13 @@
         }
       </select>
     </div>
+    @if (failureFor('add')) {
+      <p id="new-skill-error" class="admin-form__error skills__error" role="alert">{{ failureFor('add') }}</p>
+    }
     <button class="button button--primary" type="submit" [disabled]="adding() || newName().trim() === ''">Agregar</button>
   </form>
 
   <p class="admin-form__feedback" role="status">
-    @if (failure()) {
-      <span class="admin-form__feedback--error">{{ failure() }}</span>
-    }
     @if (notice()) {
       <span>{{ notice() }}</span>
     }
@@ -43,6 +43,8 @@
               <input
                 class="skills__name"
                 [attr.aria-label]="'Nombre de ' + skill.name"
+                [attr.aria-invalid]="failureFor(skill.id) ? true : null"
+                [attr.aria-describedby]="failureFor(skill.id) ? 'skill-error-' + skill.id : null"
                 maxlength="60"
                 autocomplete="off"
                 [value]="draft(skill).name"
@@ -63,6 +65,9 @@
                 <button class="button button--primary" type="button" [disabled]="busyId() !== null || !changed(skill)" (click)="save(skill)">Guardar</button>
                 <button class="button" type="button" [disabled]="busyId() !== null" (click)="remove(skill)">Eliminar</button>
               </div>
+              @if (failureFor(skill.id)) {
+                <p [id]="'skill-error-' + skill.id" class="admin-form__error skills__error" role="alert">{{ failureFor(skill.id) }}</p>
+              }
             </li>
           }
         </ul>
