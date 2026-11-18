@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AdminApi } from '../api/admin-api';
 import { AdminProject } from '../api/admin-models';
 
@@ -13,6 +13,7 @@ import { AdminProject } from '../api/admin-models';
 })
 export class ProjectsPage {
   private readonly api = inject(AdminApi);
+  private readonly router = inject(Router);
 
   protected readonly projects = signal<AdminProject[]>([]);
   protected readonly loaded = signal(false);
@@ -24,6 +25,9 @@ export class ProjectsPage {
   protected readonly failure = signal<{ id: number; text: string } | null>(null);
 
   constructor() {
+    // The edit page hands over a one-time notice through the navigation state.
+    const notice = this.router.getCurrentNavigation()?.extras.state?.['notice'];
+    if (typeof notice === 'string') this.notice.set(notice);
     this.load();
   }
 

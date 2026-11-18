@@ -1,0 +1,150 @@
+<h1 class="admin-page__title">{{ creating ? 'Nuevo proyecto' : 'Editar proyecto' }}</h1>
+
+@if (loadFailed() === 'missing') {
+  <p class="admin-form__feedback admin-form__feedback--error" role="alert">Proyecto no encontrado.</p>
+  <p class="project-edit__back"><a class="button" routerLink="/admin/proyectos">Volver a proyectos</a></p>
+} @else if (loadFailed()) {
+  <p class="admin-form__feedback admin-form__feedback--error" role="alert">No se pudo cargar el proyecto. Recarga la página.</p>
+} @else if (!loaded()) {
+  <p class="admin-form__feedback">Cargando…</p>
+} @else {
+  <form class="admin-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+    @if (creating) {
+      <div class="admin-form__field">
+        <label for="slug">URL del proyecto (no se puede cambiar después)</label>
+        <input
+          id="slug"
+          formControlName="slug"
+          autocomplete="off"
+          [attr.aria-invalid]="invalid('slug') || conflict()"
+          [attr.aria-describedby]="invalid('slug') || conflict() ? 'slug-error' : null"
+        />
+        @if (conflict()) {
+          <p id="slug-error" class="admin-form__error" role="alert">Ya existe un proyecto con esa URL.</p>
+        } @else if (invalid('slug')) {
+          <p id="slug-error" class="admin-form__error" role="alert">Solo minúsculas, números y guiones (p. ej. mi-proyecto)</p>
+        }
+      </div>
+    } @else {
+      <p class="project-edit__slug">URL: /es/projects/{{ slug() }}</p>
+    }
+
+    <div class="project-edit__pair">
+      <div class="admin-form__field">
+        <label for="title-es">Título (español)</label>
+        <input id="title-es" formControlName="titleEs" [attr.aria-invalid]="invalid('titleEs')" [attr.aria-describedby]="invalid('titleEs') ? 'title-es-error' : null" />
+        @if (invalid('titleEs')) {
+          <p id="title-es-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ titleMax }} caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="title-en">Título (inglés)</label>
+        <input id="title-en" formControlName="titleEn" [attr.aria-invalid]="invalid('titleEn')" [attr.aria-describedby]="invalid('titleEn') ? 'title-en-error' : null" />
+        @if (invalid('titleEn')) {
+          <p id="title-en-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ titleMax }} caracteres.</p>
+        }
+      </div>
+    </div>
+
+    <div class="project-edit__pair">
+      <div class="admin-form__field">
+        <label for="summary-es">Resumen (español)</label>
+        <textarea id="summary-es" formControlName="summaryEs" rows="3" [attr.aria-invalid]="invalid('summaryEs')" [attr.aria-describedby]="invalid('summaryEs') ? 'summary-es-error' : null"></textarea>
+        <p class="project-edit__counter">{{ length('summaryEs') }} / {{ summaryMax }}</p>
+        @if (invalid('summaryEs')) {
+          <p id="summary-es-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ summaryMax }} caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="summary-en">Resumen (inglés)</label>
+        <textarea id="summary-en" formControlName="summaryEn" rows="3" [attr.aria-invalid]="invalid('summaryEn')" [attr.aria-describedby]="invalid('summaryEn') ? 'summary-en-error' : null"></textarea>
+        <p class="project-edit__counter">{{ length('summaryEn') }} / {{ summaryMax }}</p>
+        @if (invalid('summaryEn')) {
+          <p id="summary-en-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ summaryMax }} caracteres.</p>
+        }
+      </div>
+    </div>
+
+    <div class="project-edit__pair">
+      <div class="admin-form__field">
+        <label for="description-es">Descripción (español)</label>
+        <textarea id="description-es" formControlName="descriptionEs" rows="8" [attr.aria-invalid]="invalid('descriptionEs')" [attr.aria-describedby]="invalid('descriptionEs') ? 'description-es-error' : null"></textarea>
+        <p class="project-edit__counter">{{ length('descriptionEs') }} / {{ descriptionMax }}</p>
+        @if (invalid('descriptionEs')) {
+          <p id="description-es-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ descriptionMax }} caracteres.</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="description-en">Descripción (inglés)</label>
+        <textarea id="description-en" formControlName="descriptionEn" rows="8" [attr.aria-invalid]="invalid('descriptionEn')" [attr.aria-describedby]="invalid('descriptionEn') ? 'description-en-error' : null"></textarea>
+        <p class="project-edit__counter">{{ length('descriptionEn') }} / {{ descriptionMax }}</p>
+        @if (invalid('descriptionEn')) {
+          <p id="description-en-error" class="admin-form__error" role="alert">Obligatorio, máximo {{ descriptionMax }} caracteres.</p>
+        }
+      </div>
+    </div>
+
+    <div class="admin-form__field">
+      <label for="technologies">Tecnologías</label>
+      <input id="technologies" formControlName="technologies" autocomplete="off" [attr.aria-invalid]="invalid('technologies')" [attr.aria-describedby]="invalid('technologies') ? 'technologies-error' : 'technologies-hint'" />
+      <p id="technologies-hint" class="project-edit__hint">Separadas por comas</p>
+      @if (invalid('technologies')) {
+        <p id="technologies-error" class="admin-form__error" role="alert">{{ technologiesError() }}</p>
+      }
+    </div>
+
+    <div class="project-edit__pair">
+      <div class="admin-form__field">
+        <label for="repoUrl">Repositorio</label>
+        <input id="repoUrl" formControlName="repoUrl" [attr.aria-invalid]="invalid('repoUrl')" [attr.aria-describedby]="invalid('repoUrl') ? 'repoUrl-error' : null" />
+        @if (invalid('repoUrl')) {
+          <p id="repoUrl-error" class="admin-form__error" role="alert">Debe empezar con https://</p>
+        }
+      </div>
+      <div class="admin-form__field">
+        <label for="demoUrl">Demo</label>
+        <input id="demoUrl" formControlName="demoUrl" [attr.aria-invalid]="invalid('demoUrl')" [attr.aria-describedby]="invalid('demoUrl') ? 'demoUrl-error' : null" />
+        @if (invalid('demoUrl')) {
+          <p id="demoUrl-error" class="admin-form__error" role="alert">Debe empezar con https://</p>
+        }
+      </div>
+    </div>
+
+    <div class="project-edit__checks">
+      <label class="project-edit__check"><input id="featured" type="checkbox" formControlName="featured" /> Destacado</label>
+      <div class="project-edit__published">
+        <label class="project-edit__check">
+          <input id="published" type="checkbox" formControlName="published" [attr.aria-describedby]="!creating && conflict() ? 'published-error' : null" />
+          Publicado
+        </label>
+        @if (!creating && conflict()) {
+          <p id="published-error" class="admin-form__error" role="alert">No puedes ocultar el último proyecto publicado.</p>
+        }
+      </div>
+    </div>
+
+    <p class="admin-form__feedback" role="status">
+      @switch (status()) {
+        @case ('saved') {
+          <span class="project-edit__ok">Proyecto guardado.</span>
+        }
+        @case ('invalid') {
+          <span class="admin-form__feedback--error">Revisa los campos marcados.</span>
+          @if (serverDetail()) {
+            <span> {{ serverDetail() }}</span>
+          }
+        }
+        @case ('tooLarge') {
+          <span class="admin-form__feedback--error">El texto es demasiado largo.</span>
+        }
+        @case ('error') {
+          <span class="admin-form__feedback--error">No se pudo guardar. Inténtalo de nuevo.</span>
+        }
+      }
+    </p>
+
+    <button class="button button--primary" type="submit" [disabled]="sending()">
+      {{ sending() ? 'Guardando…' : 'Guardar' }}
+    </button>
+  </form>
+}
